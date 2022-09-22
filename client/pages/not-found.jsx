@@ -1,17 +1,8 @@
 import React from 'react';
 
-const styles = {
-  pageContent: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 'calc(100vh - 3.5rem)'
-  }
-};
-
 export default function NotFound(props) {
   return (
-    <div style={styles.pageContent}>
+    <div className="d-flex align-items-center justify-content-center" style={{ minHeight: 'calc(100vh - 3.5rem)' }}>
       <div>
         <div>
           <h3>

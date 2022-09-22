@@ -19,8 +19,18 @@ const jsonMiddleware = express.json();
 
 app.use(jsonMiddleware);
 
-app.get('/api/patients', (req, res) => {
-  res.json({ hello: 'world' });
+app.get('/api/patients', (req, res, next) => {
+  const sql = `
+    select "patientId",
+           "firstName",
+           "lastName",
+           "isActive",
+           "email"
+      from "patients"
+  `;
+  db.query(sql)
+    .then(result => res.json(result.rows))
+    .catch(err => next(err));
 });
 
 app.post('/api/patients', (req, res) => {

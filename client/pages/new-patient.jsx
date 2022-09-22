@@ -1,10 +1,11 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default class NewPatientForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      patients: [],
+      isTaken: false,
       firstName: '',
       lastName: '',
       patientEmail: '',
@@ -16,7 +17,19 @@ export default class NewPatientForm extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidMount() {
+    fetch('/api/patients')
+      .then(res => res.json())
+      .then(patients => this.setState({ patients }));
+  }
+
   handleChange(event) {
+    for (let i = 0; i < this.state.patients.length; i++) {
+      if (this.state.patientEmail === this.state.patients[i].email) {
+        this.setState({ isTaken: true });
+        return;
+      }
+    }
     this.setState({
       [event.target.id]: event.target.value
     });
@@ -34,6 +47,7 @@ export default class NewPatientForm extends React.Component {
     };
     this.props.onSubmit(newPatient);
     this.setState({
+      isTaken: false,
       firstName: '',
       lastName: '',
       patientEmail: '',
@@ -44,16 +58,22 @@ export default class NewPatientForm extends React.Component {
   }
 
   render() {
+    let emailExists;
+    this.state.isTaken ? emailExists = 'text-danger mb-3' : emailExists = 'd-none';
 
     return (
       <div className="container w-75">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-7 mb-3">
-            <h1>New Patient</h1>
+            <div className="d-flex align-items-center">
+              <h1 className="me-3">New Patients</h1>
+              <i className="fa-solid fa-user-plus fa-2xl mb-2"></i>
+            </div>
           </div>
         </div>
         <div className="row justify-content-center">
           <form className="col-10 col-lg-6" onSubmit={this.handleSubmit}>
+            <div className={emailExists}>A patient profile with this email already exists</div>
             <div className="mb-3">
               <label htmlFor="firstName" className="form-label">First Name</label>
               <input type="text" required className="form-control" id="firstName" value={this.state.firstName} onChange={this.handleChange}/>
@@ -83,7 +103,7 @@ export default class NewPatientForm extends React.Component {
                 <a href="#"><button type="button" className="btn btn-secondary">Cancel</button></a>
               </div>
               <div className="">
-                <button type="submit" className="btn btn-primary">Save Profile</button>
+                <a href="#"><button type="submit" className="btn btn-primary">Save Profile</button></a>
               </div>
             </div>
           </form>
