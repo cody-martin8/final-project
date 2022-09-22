@@ -60,6 +60,33 @@ app.post('/api/patients', (req, res) => {
     });
 });
 
+app.post('/api/exercises', (req, res) => {
+  const { name, targetArea, description } = req.body;
+  if (!name || !targetArea || !description) {
+    res.status(400).json({
+      error: 'name, targetArea, and description are required fields'
+    });
+    return;
+  }
+  const sql = `
+    insert into "exercises" ("name", "targetArea", "description")
+    values ($1, $2, $3)
+    returning *
+  `;
+  const params = [name, targetArea, description];
+  db.query(sql, params)
+    .then(result => {
+      const [exercise] = result.rows;
+      res.status(201).json(exercise);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'an unexpected error occurred'
+      });
+    });
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
