@@ -24,12 +24,6 @@ export default class NewPatientForm extends React.Component {
   }
 
   handleChange(event) {
-    for (let i = 0; i < this.state.patients.length; i++) {
-      if (this.state.patientEmail === this.state.patients[i].email) {
-        this.setState({ isTaken: true });
-        return;
-      }
-    }
     this.setState({
       [event.target.id]: event.target.value
     });
@@ -58,8 +52,14 @@ export default class NewPatientForm extends React.Component {
   }
 
   render() {
+    const emailArray = [];
+    for (let i = 0; i < this.state.patients.length; i++) {
+      emailArray.push(this.state.patients[i].email);
+    }
+    const isTaken = emailArray.includes(this.state.patientEmail);
+
     let emailExists;
-    this.state.isTaken ? emailExists = 'text-danger mb-3' : emailExists = 'd-none';
+    isTaken ? emailExists = 'text-danger mb-3' : emailExists = 'd-none';
 
     return (
       <div className="container w-75">
