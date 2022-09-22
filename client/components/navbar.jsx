@@ -1,6 +1,7 @@
 import React from 'react';
 
 export default function Navbar(props) {
+
   return (
     <header className="mb-4">
       <nav className="navbar navbar-dark py-3" style={{ backgroundColor: '#5a7d7c' }}>

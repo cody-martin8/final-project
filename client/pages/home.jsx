@@ -2,6 +2,7 @@ import React from 'react';
 import PatientTable from '../components/patient-table';
 
 export default function Home(props) {
+
   return (
     <div className="container w-75">
       <div className="row justify-content-center">

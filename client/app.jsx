@@ -28,7 +28,9 @@ export default class App extends React.Component {
       method: 'POST',
       body: JSON.stringify(newPatient)
     })
-      .then(res => res.json());
+      .then(res => {
+        location.hash = '#';
+      });
   }
 
   renderPage() {

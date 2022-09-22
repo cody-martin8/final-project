@@ -103,7 +103,7 @@ export default class NewPatientForm extends React.Component {
                 <a href="#"><button type="button" className="btn btn-secondary">Cancel</button></a>
               </div>
               <div className="">
-                <a href="#"><button type="submit" className="btn btn-primary">Save Profile</button></a>
+                <button type="submit" className="btn btn-primary">Save Profile</button>
               </div>
             </div>
           </form>
