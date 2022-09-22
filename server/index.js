@@ -1,14 +1,63 @@
 require('dotenv/config');
+const pg = require('pg');
 const express = require('express');
 const staticMiddleware = require('./static-middleware');
 const errorMiddleware = require('./error-middleware');
+
+const db = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 const app = express();
 
 app.use(staticMiddleware);
 
-app.get('/api/hello', (req, res) => {
-  res.json({ hello: 'world' });
+const jsonMiddleware = express.json();
+
+app.use(jsonMiddleware);
+
+app.get('/api/patients', (req, res, next) => {
+  const sql = `
+    select "patientId",
+           "firstName",
+           "lastName",
+           "isActive",
+           "email"
+      from "patients"
+  `;
+  db.query(sql)
+    .then(result => res.json(result.rows))
+    .catch(err => next(err));
+});
+
+app.post('/api/patients', (req, res) => {
+  const { firstName, lastName, patientEmail, age, injuryAilment, notes } = req.body;
+  if (!firstName || !lastName || !patientEmail || !age || !injuryAilment) {
+    res.status(400).json({
+      error: 'firstName, lastName, patientEmail, age, and injuryAilment are required fields'
+    });
+    return;
+  }
+  const sql = `
+    insert into "patients" ("firstName", "lastName", "email", "age", "injuryAilment", "notes", "isActive")
+    values ($1, $2, $3, $4, $5, $6, 'true')
+    returning *
+  `;
+  const params = [firstName, lastName, patientEmail, age, injuryAilment, notes];
+  db.query(sql, params)
+    .then(result => {
+      const [patient] = result.rows;
+      res.status(201).json(patient);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'an unexpected error occurred'
+      });
+    });
 });
 
 app.use(errorMiddleware);
