@@ -100,10 +100,10 @@ export default class NewPatientForm extends React.Component {
             </div>
             <div className="d-flex justify-content-between">
               <div className="">
-                <a href="#"><button type="button" className="btn btn-secondary">Cancel</button></a>
+                <a href="#" className="btn btn-secondary">Cancel</a>
               </div>
               <div className="">
-                <button type="submit" className="btn btn-primary">Save Profile</button>
+                <button type="submit" className="btn" style={{ backgroundColor: '#D78521', color: 'white' }}>Save Profile</button>
               </div>
             </div>
           </form>

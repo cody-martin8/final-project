@@ -11,7 +11,7 @@ export default function Home(props) {
             <h1 className="me-3">Your Patients</h1>
             <i className="fa-solid fa-users fa-2xl mb-2"></i>
           </div>
-          <a href="#newPatient"><button type="button" className="btn" style={{ backgroundColor: '#282A3E', color: 'white' }}>New Patient</button></a>
+          <a href="#newPatient" className="btn mb-3" style={{ backgroundColor: '#282A3E', color: 'white' }}>New Patient</a>
         </div>
       </div>
       <PatientTable />
