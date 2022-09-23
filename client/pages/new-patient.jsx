@@ -5,7 +5,6 @@ export default class NewPatientForm extends React.Component {
     super(props);
     this.state = {
       patients: [],
-      isTaken: false,
       firstName: '',
       lastName: '',
       patientEmail: '',
@@ -41,7 +40,6 @@ export default class NewPatientForm extends React.Component {
     };
     this.props.onSubmit(newPatient);
     this.setState({
-      isTaken: false,
       firstName: '',
       lastName: '',
       patientEmail: '',
@@ -66,7 +64,7 @@ export default class NewPatientForm extends React.Component {
         <div className="row justify-content-center">
           <div className="col-12 col-lg-7 mb-3">
             <div className="d-flex align-items-center">
-              <h1 className="me-3">New Patients</h1>
+              <h1 className="me-3">New Patient</h1>
               <i className="fa-solid fa-user-plus fa-2xl mb-2"></i>
             </div>
           </div>
@@ -99,10 +97,10 @@ export default class NewPatientForm extends React.Component {
               <textarea type="textarea" className="form-control" id="notes" rows="3" value={this.state.notes} onChange={this.handleChange} />
             </div>
             <div className="d-flex justify-content-between">
-              <div className="">
+              <div>
                 <a href="#" className="btn btn-secondary">Cancel</a>
               </div>
-              <div className="">
+              <div>
                 <button type="submit" className="btn" style={{ backgroundColor: '#D78521', color: 'white' }}>Save Profile</button>
               </div>
             </div>

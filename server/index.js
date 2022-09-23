@@ -60,6 +60,19 @@ app.post('/api/patients', (req, res) => {
     });
 });
 
+app.get('/api/exercises', (req, res, next) => {
+  const sql = `
+    select "exerciseId",
+           "name",
+           "targetArea",
+           "description"
+      from "exercises"
+  `;
+  db.query(sql)
+    .then(result => res.json(result.rows))
+    .catch(err => next(err));
+});
+
 app.post('/api/exercises', (req, res) => {
   const { name, targetArea, description } = req.body;
   if (!name || !targetArea || !description) {
