@@ -23,10 +23,10 @@ export default function Navbar(props) {
                   <a href="#newPatient" className="text-decoration-none">New Patient</a>
                 </div>
                 <div className="mb-3">
-                  <a href="#" className="text-decoration-none">Exercises</a>
+                  <a href="#exercises" className="text-decoration-none">Exercises</a>
                 </div>
                 <div className="mb-3">
-                  <a href="#" className="text-decoration-none">New Exercise</a>
+                  <a href="#newExercise" className="text-decoration-none">New Exercise</a>
                 </div>
               </div>
             </div>
