@@ -60,7 +60,7 @@ export default class App extends React.Component {
       return <Home />;
     }
     if (route.path === 'exercises') {
-      return <YourExercises targetArea={this.props.targetArea}/>;
+      return <YourExercises />;
     }
     if (route.path === 'newPatient') {
       return <NewPatientForm onSubmit={this.addPatient}/>;
