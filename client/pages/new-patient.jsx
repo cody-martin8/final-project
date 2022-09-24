@@ -57,7 +57,7 @@ export default class NewPatientForm extends React.Component {
     const isTaken = emailArray.includes(this.state.patientEmail);
 
     let emailExists;
-    isTaken ? emailExists = 'text-danger mb-3' : emailExists = 'd-none';
+    isTaken ? emailExists = 'alert alert-danger mb-3' : emailExists = 'd-none';
 
     return (
       <div className="container w-75">

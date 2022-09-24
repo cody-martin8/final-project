@@ -60,7 +60,7 @@ export default class App extends React.Component {
       return <Home />;
     }
     if (route.path === 'exercises') {
-      return <YourExercises />;
+      return <YourExercises targetArea={this.props.targetArea}/>;
     }
     if (route.path === 'newPatient') {
       return <NewPatientForm onSubmit={this.addPatient}/>;
@@ -80,8 +80,8 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { user, route, currentPatient } = this.state;
-    const contextValue = { user, route, currentPatient };
+    const { user, route } = this.state;
+    const contextValue = { user, route };
     return (
       <AppContext.Provider value={contextValue}>
         <>
