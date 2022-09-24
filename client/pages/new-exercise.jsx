@@ -56,7 +56,7 @@ export default class NewExerciseForm extends React.Component {
           <div className="col-12 col-lg-7 mb-3">
             <div className="d-flex align-items-center">
               <h1 className="me-3">New Exercise</h1>
-              <i className="fa-solid fa-user-plus fa-2xl mb-2"></i>
+              <i className="fa-solid fa-folder-plus fa-2xl"></i>
             </div>
           </div>
         </div>

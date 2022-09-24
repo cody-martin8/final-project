@@ -1,9 +1,11 @@
 import React from 'react';
+import AppContext from './lib/app-context';
 import Navbar from './components/navbar';
 import Home from './pages/home';
 import YourExercises from './pages/your-exercises';
 import NewPatientForm from './pages/new-patient';
 import NewExerciseForm from './pages/new-exercise';
+import PatientProfile from './pages/patient-profile';
 import NotFound from './pages/not-found';
 import { parseRoute } from './lib';
 
@@ -11,9 +13,12 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      route: parseRoute(window.location.hash)
+      user: null,
+      route: parseRoute(window.location.hash),
+      currentPatient: null
     };
     this.addPatient = this.addPatient.bind(this);
+    this.addExercise = this.addExercise.bind(this);
   }
 
   componentDidMount() {
@@ -62,15 +67,23 @@ export default class App extends React.Component {
     if (route.path === 'newExercise') {
       return <NewExerciseForm onSubmit={this.addExercise} />;
     }
+    if (route.path === 'patientProfile') {
+      const patientId = route.params.get('patientId');
+      return <PatientProfile patientId={patientId} />;
+    }
     return <NotFound />;
   }
 
   render() {
+    const { user, route, currentPatient } = this.state;
+    const contextValue = { user, route, currentPatient };
     return (
-      <>
-        <Navbar />
-        { this.renderPage() }
-      </>
+      <AppContext.Provider value={contextValue}>
+        <>
+          <Navbar />
+          { this.renderPage() }
+        </>
+      </AppContext.Provider>
     );
   }
 }
