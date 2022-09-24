@@ -69,7 +69,7 @@ export default class YourExercises extends React.Component {
               <h1 className="me-3">Your Exercises</h1>
               <i className="fa-regular fa-folder-open fa-2xl mb-1"></i>
             </div>
-            <a href="#newExercise" className="btn my-2" style={{ backgroundColor: '#282A3E', color: 'white' }}>New Exercise</a>
+            <a href="#newExercise" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>New Exercise</a>
           </div>
         </div>
         <div className="row justify-content-center">

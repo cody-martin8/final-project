@@ -86,6 +86,29 @@ app.post('/api/patients', (req, res) => {
     });
 });
 
+app.get('/api/exercises/:exerciseId', (req, res, next) => {
+  const exerciseId = Number(req.params.exerciseId);
+  if (!exerciseId) {
+    throw new ClientError(400, 'exerciseId must be a positive integer');
+  }
+  const sql = `
+    select "name",
+           "targetArea",
+           "description"
+      from "exercises"
+     where "exerciseId" = $1
+  `;
+  const params = [exerciseId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows[0]) {
+        throw new ClientError(404, `cannot find exercise with exerciseId ${exerciseId}`);
+      }
+      res.json(result.rows[0]);
+    })
+    .catch(err => next(err));
+});
+
 app.get('/api/exercises', (req, res, next) => {
   const sql = `
     select "exerciseId",
