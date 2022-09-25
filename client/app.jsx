@@ -63,7 +63,8 @@ export default class App extends React.Component {
       return <YourExercises />;
     }
     if (route.path === 'newPatient') {
-      return <NewPatientForm onSubmit={this.addPatient}/>;
+      const patientId = route.params.get('patientId');
+      return <NewPatientForm patientId={patientId} onSubmit={this.addPatient}/>;
     }
     if (route.path === 'newExercise') {
       return <NewExerciseForm onSubmit={this.addExercise} />;

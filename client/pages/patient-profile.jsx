@@ -24,7 +24,7 @@ export default class PatientProfile extends React.Component {
     if (!this.state.patient) return null;
     if (!this.state.exercises) return null;
     const exercises = this.state.exercises;
-    const { firstName, lastName, age, injuryAilment, notes } = this.state.patient;
+    const { patientId, firstName, lastName, age, injuryAilment, notes } = this.state.patient;
     const name = `${firstName} ${lastName}`;
 
     let notesSection;
@@ -46,7 +46,6 @@ export default class PatientProfile extends React.Component {
               <i className="fa-solid fa-angle-left fa-sm"></i>
               <span className="">Your Patients</span>
             </a>
-            {/* Put the Edit icon here */}
           </div>
         </div>
         <div className="row justify-content-center">
@@ -55,7 +54,8 @@ export default class PatientProfile extends React.Component {
               <div className="card-body">
                 <div className="mb-3 d-flex justify-content-between">
                   <div className="d-flex align-items-center">
-                    <h3 className="mb-0 me-3">{ name }</h3>
+                    <h3 className="mb-0 me-4">{ name }</h3>
+                    <a href={`#newPatient?patientId=${patientId}`} className="text-dark"><i className="fa-solid fa-pen-to-square fa-xl"></i></a>
                   </div>
                   <div className="d-flex align-items-center">
                     <h5 className="mt-2">Age: { age }</h5>
