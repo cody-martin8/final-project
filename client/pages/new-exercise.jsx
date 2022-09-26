@@ -48,7 +48,7 @@ export default class NewExerciseForm extends React.Component {
     const isTaken = nameArray.includes(this.state.name);
 
     let exerciseExists;
-    isTaken ? exerciseExists = 'text-danger mb-3' : exerciseExists = 'd-none';
+    isTaken ? exerciseExists = 'alert alert-danger mb-3' : exerciseExists = 'd-none';
 
     return (
       <div className="container w-75">
@@ -62,7 +62,7 @@ export default class NewExerciseForm extends React.Component {
         </div>
         <div className="row justify-content-center">
           <form className="col-10 col-lg-6" onSubmit={this.handleSubmit}>
-            <div className={exerciseExists}>An exercise with this name already exists</div>
+            <div className={exerciseExists} role="alert">An exercise with this name already exists</div>
             <div className="mb-3">
               <label htmlFor="name" className="form-label">Name</label>
               <input type="text" required className="form-control" id="name" value={this.state.name} onChange={this.handleChange} />
@@ -86,7 +86,7 @@ export default class NewExerciseForm extends React.Component {
             </div>
             <div className="d-flex justify-content-between">
               <div>
-                <a href="#" className="btn btn-secondary">Cancel</a>
+                <a href="#exercises" className="btn btn-secondary">Cancel</a>
               </div>
               <div>
                 <button type="submit" className="btn" style={{ backgroundColor: '#D78521', color: 'white' }}>Save Exercise</button>

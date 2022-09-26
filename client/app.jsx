@@ -6,6 +6,7 @@ import YourExercises from './pages/your-exercises';
 import NewPatientForm from './pages/new-patient';
 import NewExerciseForm from './pages/new-exercise';
 import PatientProfile from './pages/patient-profile';
+import ExerciseProfile from './pages/exercise-profile';
 import NotFound from './pages/not-found';
 import { parseRoute } from './lib';
 
@@ -71,12 +72,16 @@ export default class App extends React.Component {
       const patientId = route.params.get('patientId');
       return <PatientProfile patientId={patientId} />;
     }
+    if (route.path === 'exerciseProfile') {
+      const exerciseId = route.params.get('exerciseId');
+      return <ExerciseProfile exerciseId={exerciseId} />;
+    }
     return <NotFound />;
   }
 
   render() {
-    const { user, route, currentPatient } = this.state;
-    const contextValue = { user, route, currentPatient };
+    const { user, route } = this.state;
+    const contextValue = { user, route };
     return (
       <AppContext.Provider value={contextValue}>
         <>
