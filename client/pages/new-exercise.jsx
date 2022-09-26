@@ -17,6 +17,17 @@ export default class NewExerciseForm extends React.Component {
     fetch('/api/exercises')
       .then(res => res.json())
       .then(exercises => this.setState({ exercises }));
+    if (this.props.exerciseId !== null) {
+      fetch(`/api/exercises/${this.props.exerciseId}`)
+        .then(res => res.json())
+        .then(editExercise => {
+          this.setState({
+            name: editExercise.name,
+            targetArea: editExercise.targetArea,
+            description: editExercise.description
+          });
+        });
+    }
   }
 
   handleChange(event) {
@@ -27,12 +38,17 @@ export default class NewExerciseForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const newExercise = {
+    const exercise = {
       name: this.state.name,
       targetArea: this.state.targetArea,
       description: this.state.description
     };
-    this.props.newExercise(newExercise);
+    if (this.props.exerciseId === null) {
+      this.props.newExercise(exercise);
+    } else {
+      exercise.exerciseId = this.props.exerciseId;
+      this.props.editExercise(exercise);
+    }
     this.setState({
       name: '',
       targetArea: '',
@@ -45,7 +61,13 @@ export default class NewExerciseForm extends React.Component {
     for (let i = 0; i < this.state.exercises.length; i++) {
       nameArray.push(this.state.exercises[i].name);
     }
-    const isTaken = nameArray.includes(this.state.name);
+    let isTaken, formHeader;
+    if (this.props.exerciseId === null) {
+      isTaken = nameArray.includes(this.state.name);
+      formHeader = 'New Exercise';
+    } else {
+      formHeader = 'Edit Exercise';
+    }
 
     let exerciseExists;
     isTaken ? exerciseExists = 'alert alert-danger mb-3' : exerciseExists = 'd-none';
@@ -55,7 +77,7 @@ export default class NewExerciseForm extends React.Component {
         <div className="row justify-content-center">
           <div className="col-12 col-lg-7 mb-3">
             <div className="d-flex align-items-center">
-              <h1 className="me-3">New Exercise</h1>
+              <h1 className="me-3">{formHeader}</h1>
               <i className="fa-solid fa-folder-plus fa-2xl"></i>
             </div>
           </div>

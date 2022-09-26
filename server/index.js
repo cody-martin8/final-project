@@ -138,7 +138,8 @@ app.get('/api/exercises/:exerciseId', (req, res, next) => {
     throw new ClientError(400, 'exerciseId must be a positive integer');
   }
   const sql = `
-    select "name",
+    select "exerciseId",
+           "name",
            "targetArea",
            "description"
       from "exercises"
