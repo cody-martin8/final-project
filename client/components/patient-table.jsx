@@ -45,14 +45,20 @@ export default class PatientTable extends React.Component {
 function Patient(props) {
   const { patientId, firstName, lastName, injuryAilment, isActive } = props.patient;
   const name = `${firstName} ${lastName}`;
-  let statusColor;
-  isActive ? statusColor = '#86DEB7' : statusColor = '#D78521';
+  let statusColor, isActiveStatus;
+  if (isActive === 'true') {
+    statusColor = '#86DEB7';
+    isActiveStatus = 'Active';
+  } else {
+    statusColor = '#D78521';
+    isActiveStatus = 'Inactive';
+  }
 
   return (
     <>
-      <td><a href={`#patientProfile?patientId=${patientId}`} className="text-decoration-none btn bg-secondary" style={{ color: 'white' }}>{name}</a></td>
+      <td><a href={`#patientProfile?patientId=${patientId}`} className="text-decoration-none" style={{ color: 'black' }}><p className="my-2 h6">{name}</p></a></td>
       <td className="d-none d-sm-none d-md-table-cell"><p className="my-2">{ injuryAilment }</p></td>
-      <td><span className="badge rounded-pill mt-2" style={{ backgroundColor: statusColor }}>Active</span></td>
+      <td><span className="badge rounded-pill mt-2" style={{ backgroundColor: statusColor }}>{isActiveStatus}</span></td>
       <td className="d-none d-lg-table-cell"><i className="fa-solid fa-check-to-slot ms-5 mt-2"></i></td>
     </>
   );

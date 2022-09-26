@@ -17,16 +17,16 @@ export default function Navbar(props) {
               </div>
               <div className="offcanvas-body">
                 <div className="mb-3">
-                  <a href="#" className="text-decoration-none">Patients</a>
+                  <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#'; }}>Patients</button>
                 </div>
                 <div className="mb-3">
-                  <a href="#newPatient" className="text-decoration-none">New Patient</a>
+                  <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#newPatient'; }}>New Patient</button>
                 </div>
                 <div className="mb-3">
-                  <a href="#exercises" className="text-decoration-none">Exercises</a>
+                  <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#exercises'; }}>Exercises</button>
                 </div>
                 <div className="mb-3">
-                  <a href="#newExercise" className="text-decoration-none">New Exercise</a>
+                  <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#newExercise'; }}>New Exercise</button>
                 </div>
               </div>
             </div>
