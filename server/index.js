@@ -29,9 +29,11 @@ app.get('/api/patients/:patientId', (req, res, next) => {
     select "patientId",
            "firstName",
            "lastName",
+           "email",
            "age",
            "injuryAilment",
-           "notes"
+           "notes",
+           "isActive"
       from "patients"
      where "patientId" = $1
   `;

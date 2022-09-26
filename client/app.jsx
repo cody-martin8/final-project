@@ -28,16 +28,29 @@ export default class App extends React.Component {
     });
   }
 
-  addPatient(newPatient) {
+  addPatient(patient) {
     fetch('/api/patients', {
       headers: {
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify(newPatient)
+      body: JSON.stringify(patient)
     })
       .then(res => {
         location.hash = '#';
+      });
+  }
+
+  editPatient(patient) {
+    fetch(`/api/patients/${patient.patientId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'PATCH',
+      body: JSON.stringify(patient)
+    })
+      .then(res => {
+        location.hash = `#patientProfile?patientId=${patient.patientId}`;
       });
   }
 
@@ -64,7 +77,7 @@ export default class App extends React.Component {
     }
     if (route.path === 'newPatient') {
       const patientId = route.params.get('patientId');
-      return <NewPatientForm patientId={patientId} onSubmit={this.addPatient}/>;
+      return <NewPatientForm patientId={patientId} newPatient={this.addPatient} editPatient={this.editPatient}/>;
     }
     if (route.path === 'newExercise') {
       return <NewExerciseForm onSubmit={this.addExercise} />;

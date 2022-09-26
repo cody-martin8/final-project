@@ -36,6 +36,23 @@ export default class PatientProfile extends React.Component {
 
     return (
       <div className="container w-75">
+        <div className="modal fade" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Make Changes to Profile?</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                A patient can be marked as Inactive in Edit Profile.
+              </div>
+              <div className="modal-footer d-flex justify-content-between">
+                <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-dismiss="modal" onClick={() => { location.href = `#newPatient?patientId=${patientId}`; }}>Edit Profile</button>
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Delete Profile</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="row justify-content-center">
           <div className="col-12 col-lg-8 col-xl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
@@ -54,8 +71,8 @@ export default class PatientProfile extends React.Component {
               <div className="card-body">
                 <div className="mb-3 d-flex justify-content-between">
                   <div className="d-flex align-items-center">
-                    <h3 className="mb-0 me-4">{ name }</h3>
-                    <a href={`#newPatient?patientId=${patientId}`} className="text-dark"><i className="fa-solid fa-pen-to-square fa-xl"></i></a>
+                    <h3 className="mb-0 me-3">{ name }</h3>
+                    <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#exampleModal"></i>
                   </div>
                   <div className="d-flex align-items-center">
                     <h5 className="mt-2">Age: { age }</h5>
