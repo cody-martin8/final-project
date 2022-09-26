@@ -21,10 +21,10 @@ export default class PatientTable extends React.Component {
         <table className="table table-striped w-75">
           <thead>
             <tr>
-              <th className="col-9 col-md-6 col-lg-3">Patient Name</th>
-              <th className="d-none d-sm-none d-md-table-cell col-lg-3">Exercises</th>
-              <th className="col-3">Status</th>
-              <th className="d-none d-lg-table-cell col-lg-3">Mark as Inactive</th>
+              <th className="col-9 col-md-4 col-lg-3">Patient Name</th>
+              <th className="d-none d-sm-none d-md-table-cell col-lg-5">Injury / Ailment</th>
+              <th className="col-auto ps-2">Status</th>
+              <th className="d-none d-lg-table-cell" style={{ width: '9rem' }}>Mark as Inactive</th>
             </tr>
           </thead>
           <tbody>
@@ -43,17 +43,17 @@ export default class PatientTable extends React.Component {
 }
 
 function Patient(props) {
-  const { firstName, lastName, isActive } = props.patient;
+  const { patientId, firstName, lastName, injuryAilment, isActive } = props.patient;
   const name = `${firstName} ${lastName}`;
   let statusColor;
   isActive ? statusColor = '#86DEB7' : statusColor = '#D78521';
 
   return (
     <>
-      <td>{ name }</td>
-      <td className="d-none d-sm-none d-md-table-cell"><i className="fa-solid fa-person-walking ms-4" style={{ transform: 'scaleX(-1)' }}></i></td>
-      <td><span className="badge rounded-pill" style={{ backgroundColor: statusColor }}>Active</span></td>
-      <td className="d-none d-lg-table-cell"><i className="fa-solid fa-check-to-slot ms-5"></i></td>
+      <td><a href={`#patientProfile?patientId=${patientId}`} className="text-decoration-none btn bg-secondary" style={{ color: 'white' }}>{name}</a></td>
+      <td className="d-none d-sm-none d-md-table-cell"><p className="my-2">{ injuryAilment }</p></td>
+      <td><span className="badge rounded-pill mt-2" style={{ backgroundColor: statusColor }}>Active</span></td>
+      <td className="d-none d-lg-table-cell"><i className="fa-solid fa-check-to-slot ms-5 mt-2"></i></td>
     </>
   );
 }

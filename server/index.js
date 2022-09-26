@@ -1,6 +1,7 @@
 require('dotenv/config');
 const pg = require('pg');
 const express = require('express');
+const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const errorMiddleware = require('./error-middleware');
 
@@ -19,11 +20,39 @@ const jsonMiddleware = express.json();
 
 app.use(jsonMiddleware);
 
+app.get('/api/patients/:patientId', (req, res, next) => {
+  const patientId = Number(req.params.patientId);
+  if (!patientId) {
+    throw new ClientError(400, 'patientId must be a positive integer');
+  }
+  const sql = `
+    select "patientId",
+           "firstName",
+           "lastName",
+           "age",
+           "injuryAilment",
+           "notes"
+      from "patients"
+     where "patientId" = $1
+  `;
+  const params = [patientId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows[0]) {
+        throw new ClientError(404, `cannot find patient with patientId ${patientId}`);
+      }
+      res.json(result.rows[0]);
+    })
+    .catch(err => next(err));
+});
+
 app.get('/api/patients', (req, res, next) => {
   const sql = `
     select "patientId",
            "firstName",
            "lastName",
+           "injuryAilment",
+           "age",
            "isActive",
            "email"
       from "patients"
@@ -36,10 +65,7 @@ app.get('/api/patients', (req, res, next) => {
 app.post('/api/patients', (req, res) => {
   const { firstName, lastName, patientEmail, age, injuryAilment, notes } = req.body;
   if (!firstName || !lastName || !patientEmail || !age || !injuryAilment) {
-    res.status(400).json({
-      error: 'firstName, lastName, patientEmail, age, and injuryAilment are required fields'
-    });
-    return;
+    throw new ClientError(400, 'firstName, lastName, patientEmail, age, and injuryAilment are required fields');
   }
   const sql = `
     insert into "patients" ("firstName", "lastName", "email", "age", "injuryAilment", "notes", "isActive")
