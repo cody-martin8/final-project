@@ -67,6 +67,19 @@ export default class App extends React.Component {
       });
   }
 
+  editExercise(exercise) {
+    fetch(`/api/exercises/${exercise.exerciseId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'PATCH',
+      body: JSON.stringify(exercise)
+    })
+      .then(res => {
+        location.hash = `#exerciseProfile?exerciseId=${exercise.exerciseId}`;
+      });
+  }
+
   renderPage() {
     const { route } = this.state;
     if (route.path === '') {
@@ -77,10 +90,11 @@ export default class App extends React.Component {
     }
     if (route.path === 'newPatient') {
       const patientId = route.params.get('patientId');
-      return <NewPatientForm patientId={patientId} newPatient={this.addPatient} editPatient={this.editPatient}/>;
+      return <NewPatientForm patientId={patientId} newPatient={this.addPatient} editPatient={this.editPatient} />;
     }
     if (route.path === 'newExercise') {
-      return <NewExerciseForm onSubmit={this.addExercise} />;
+      const exerciseId = route.params.get('exerciseId');
+      return <NewExerciseForm exerciseId={exerciseId} newExercise={this.addExercise} editExercise={this.editExercise} />;
     }
     if (route.path === 'patientProfile') {
       const patientId = route.params.get('patientId');

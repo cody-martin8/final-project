@@ -32,7 +32,7 @@ export default class NewExerciseForm extends React.Component {
       targetArea: this.state.targetArea,
       description: this.state.description
     };
-    this.props.onSubmit(newExercise);
+    this.props.newExercise(newExercise);
     this.setState({
       name: '',
       targetArea: '',
