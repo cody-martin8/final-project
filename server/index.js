@@ -138,7 +138,8 @@ app.get('/api/exercises/:exerciseId', (req, res, next) => {
     throw new ClientError(400, 'exerciseId must be a positive integer');
   }
   const sql = `
-    select "name",
+    select "exerciseId",
+           "name",
            "targetArea",
            "description"
       from "exercises"
@@ -186,6 +187,43 @@ app.post('/api/exercises', (req, res) => {
     .then(result => {
       const [exercise] = result.rows;
       res.status(201).json(exercise);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'an unexpected error occurred'
+      });
+    });
+});
+
+app.patch('/api/exercises/:exerciseId', (req, res) => {
+  const { name, targetArea, description } = req.body;
+  if (!name || !targetArea || !description) {
+    throw new ClientError(400, 'name, targetArea, and description are required fields');
+  }
+  const exerciseId = Number(req.params.exerciseId);
+  if (!Number.isInteger(exerciseId) || exerciseId < 1) {
+    throw new ClientError(400, 'exerciseId must be a positive integer');
+  }
+  const sql = `
+    update "exercises"
+       set "name" = $1,
+           "targetArea" = $2,
+           "description" = $3
+     where "exerciseId" = $4
+     returning *
+  `;
+  const params = [name, targetArea, description, exerciseId];
+  db.query(sql, params)
+    .then(result => {
+      const [exercise] = result.rows;
+      if (!exercise) {
+        res.status(404).json({
+          error: `cannot find exercise with exerciseId ${exerciseId}`
+        });
+        return;
+      }
+      res.json(exercise);
     })
     .catch(err => {
       console.error(err);
