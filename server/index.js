@@ -259,6 +259,32 @@ app.patch('/api/exercises/:exerciseId', (req, res) => {
     });
 });
 
+app.delete('/api/exercises/:exerciseId', (req, res) => {
+  const exerciseId = Number(req.params.exerciseId);
+  if (!Number.isInteger(exerciseId) || exerciseId < 1) {
+    throw new ClientError(400, 'exerciseId must be a positive integer');
+  }
+  const sql = `
+    delete from "exercises"
+     where "exerciseId" = $1
+    returning *;
+  `;
+  const params = [exerciseId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows[0]) {
+        throw new ClientError(404, `cannot find exercise with exerciseId ${exerciseId}`);
+      }
+      res.sendStatus(204);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'an unexpected error occurred'
+      });
+    });
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
