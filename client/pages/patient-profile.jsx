@@ -8,6 +8,7 @@ export default class PatientProfile extends React.Component {
       exercises: [],
       patient: null
     };
+    this.deleteProfile = this.deleteProfile.bind(this);
   }
 
   componentDidMount() {
@@ -18,6 +19,18 @@ export default class PatientProfile extends React.Component {
     fetch(`/api/patients/${this.props.patientId}`)
       .then(res => res.json())
       .then(patient => this.setState({ patient }));
+  }
+
+  deleteProfile() {
+    fetch(`/api/patients/${this.props.patientId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'DELETE'
+    })
+      .then(res => {
+        location.hash = '#';
+      });
   }
 
   render() {
@@ -36,19 +49,37 @@ export default class PatientProfile extends React.Component {
 
     return (
       <div className="container w-75">
-        <div className="modal fade" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div className="modal-dialog">
+        <div className="modal fade" id="editModal">
+          <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">Make Changes to Profile?</h5>
-                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 className="modal-title" id="editModalLabel">Make Changes to Profile?</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
               </div>
               <div className="modal-body">
                 A patient can be marked as Inactive in Edit Profile.
               </div>
               <div className="modal-footer d-flex justify-content-between">
                 <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-dismiss="modal" onClick={() => { location.href = `#newPatient?patientId=${patientId}`; }}>Edit Profile</button>
-                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Delete Profile</button>
+                <button type="button" className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Profile</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="modal fade" id="deleteModal">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="deleteModalLabel">Are You Sure?</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div className="modal-body">
+                <p>This patient profile will be permanently deleted.</p>
+                <p className="mb-0"><b>Reminder</b> - A patient can be marked as inactive in Edit Profile</p>
+              </div>
+              <div className="modal-footer d-flex justify-content-between">
+                <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-toggle="modal" data-bs-target="#editModal">Cancel</button>
+                <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={this.deleteProfile}>Confirm Delete</button>
               </div>
             </div>
           </div>
@@ -72,7 +103,7 @@ export default class PatientProfile extends React.Component {
                 <div className="mb-3 d-flex justify-content-between">
                   <div className="d-flex align-items-center">
                     <h3 className="mb-0 me-3">{ name }</h3>
-                    <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#exampleModal"></i>
+                    <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#editModal"></i>
                   </div>
                   <div className="d-flex align-items-center">
                     <h5 className="mt-2">Age: { age }</h5>

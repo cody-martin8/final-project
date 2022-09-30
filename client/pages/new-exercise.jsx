@@ -5,6 +5,7 @@ export default class NewExerciseForm extends React.Component {
     super(props);
     this.state = {
       exercises: [],
+      initialName: '',
       name: '',
       targetArea: '',
       description: ''
@@ -22,6 +23,7 @@ export default class NewExerciseForm extends React.Component {
         .then(res => res.json())
         .then(editExercise => {
           this.setState({
+            initialName: editExercise.name,
             name: editExercise.name,
             targetArea: editExercise.targetArea,
             description: editExercise.description
@@ -57,15 +59,18 @@ export default class NewExerciseForm extends React.Component {
   }
 
   render() {
+
     const nameArray = [];
     for (let i = 0; i < this.state.exercises.length; i++) {
       nameArray.push(this.state.exercises[i].name);
     }
+
     let isTaken, formHeader;
     if (this.props.exerciseId === null) {
       isTaken = nameArray.includes(this.state.name);
       formHeader = 'New Exercise';
     } else {
+      isTaken = (nameArray.includes(this.state.name) && this.state.name !== this.state.initialName);
       formHeader = 'Edit Exercise';
     }
 
@@ -93,13 +98,13 @@ export default class NewExerciseForm extends React.Component {
               <label htmlFor="targetArea" className="form-label">Target Area</label>
               <select required className="form-select" id="targetArea" value={this.state.targetArea} onChange={this.handleChange}>
                 <option>Select the target area for this exercise</option>
-                <option value="Ankle and Foot">Ankle and Foot</option>
-                <option value="Cervical">Cervical</option>
-                <option value="Elbow and Hand">Elbow and Hand</option>
-                <option value="Hip and Knee">Hip and Knee</option>
-                <option value="Lumbar Thoracic">Lumbar Thoracic</option>
-                <option value="Shoulder">Shoulder</option>
-                <option value="Other">Other</option>
+                <option value="Ankle and Foot" >Ankle and Foot</option>
+                <option value="Cervical" >Cervical</option>
+                <option value="Elbow and Hand" >Elbow and Hand</option>
+                <option value="Hip and Knee" >Hip and Knee</option>
+                <option value="Lumbar Thoracic" >Lumbar Thoracic</option>
+                <option value="Shoulder" >Shoulder</option>
+                <option value="Other" >Other</option>
               </select>
             </div>
             <div className="mb-3">
