@@ -12,8 +12,7 @@ export default class YourExercises extends React.Component {
   }
 
   handleClick(event) {
-    const view = event.target.id;
-    switch (view) {
+    switch (event.target.id) {
       case 'all':
         this.setState({ targetArea: 'All' });
         break;
@@ -80,10 +79,7 @@ export default class YourExercises extends React.Component {
             <div className="dropdown">
               <a className="btn dropdown-toggle"
                 style={{ backgroundColor: '#D78521', color: 'white' }}
-                href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">
-                Target Area
-              </a>
-
+                href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">Target Area</a>
               <ul className="dropdown-menu">
                 <li><a className="dropdown-item" href="#exercises" id="all" onClick={this.handleClick}>All</a></li>
                 <li><a className="dropdown-item" href="#exercises" id="ankleAndFoot" onClick={this.handleClick}>Ankle and Foot</a></li>

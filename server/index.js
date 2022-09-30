@@ -132,6 +132,32 @@ app.patch('/api/patients/:patientId', (req, res) => {
     });
 });
 
+app.delete('/api/patients/:patientId', (req, res) => {
+  const patientId = Number(req.params.patientId);
+  if (!Number.isInteger(patientId) || patientId < 1) {
+    throw new ClientError(400, 'patientId must be a positive integer');
+  }
+  const sql = `
+    delete from "patients"
+     where "patientId" = $1
+    returning *;
+  `;
+  const params = [patientId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows[0]) {
+        throw new ClientError(404, `cannot find patient with patientId ${patientId}`);
+      }
+      res.sendStatus(204);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'an unexpected error occurred'
+      });
+    });
+});
+
 app.get('/api/exercises/:exerciseId', (req, res, next) => {
   const exerciseId = Number(req.params.exerciseId);
   if (!exerciseId) {
