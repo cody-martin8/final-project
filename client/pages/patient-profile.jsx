@@ -78,8 +78,8 @@ export default class PatientProfile extends React.Component {
                 <p className="mb-0"><b>Reminder</b> - A patient can be marked as inactive in Edit Profile</p>
               </div>
               <div className="modal-footer d-flex justify-content-between">
-                <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-toggle="modal" data-bs-target="#editModal">Cancel</button>
                 <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={this.deleteProfile}>Confirm Delete</button>
+                <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-toggle="modal" data-bs-target="#editModal">Cancel</button>
               </div>
             </div>
           </div>
