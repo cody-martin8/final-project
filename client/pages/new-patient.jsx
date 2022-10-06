@@ -15,6 +15,7 @@ export default class NewPatientForm extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.addPatient = this.addPatient.bind(this);
   }
 
   componentDidMount() {
@@ -62,11 +63,11 @@ export default class NewPatientForm extends React.Component {
       notes: this.state.notes
     };
     if (this.props.patientId === null) {
-      this.props.newPatient(patient);
+      this.addPatient(patient);
     } else {
       patient.isActive = this.state.isActive;
       patient.patientId = this.props.patientId;
-      this.props.editPatient(patient);
+      this.editPatient(patient);
     }
     this.setState({
       firstName: '',
@@ -77,6 +78,32 @@ export default class NewPatientForm extends React.Component {
       notes: '',
       isActive: true
     });
+  }
+
+  addPatient(patient) {
+    fetch('/api/patients', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(patient)
+    })
+      .then(res => {
+        location.hash = '#';
+      });
+  }
+
+  editPatient(patient) {
+    fetch(`/api/patients/${patient.patientId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'PATCH',
+      body: JSON.stringify(patient)
+    })
+      .then(res => {
+        location.hash = `#patientProfile?patientId=${patient.patientId}`;
+      });
   }
 
   render() {

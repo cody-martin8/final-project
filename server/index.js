@@ -285,6 +285,33 @@ app.delete('/api/exercises/:exerciseId', (req, res) => {
     });
 });
 
+app.post('/api/patientExercises', (req, res) => {
+  const { patientId, exerciseId, repetitions, sets, feedback } = req.body;
+  if (!patientId || !exerciseId || !repetitions || !sets) {
+    res.status(400).json({
+      error: 'patientId, exerciseId, repetitions, and sets are required fields'
+    });
+    return;
+  }
+  const sql = `
+    insert into "patientExercises" ("patientId", "exerciseId", "repetitions", "sets", "feedback")
+    values ($1, $2, $3, $4, $5)
+    returning *
+  `;
+  const params = [patientId, exerciseId, repetitions, sets, feedback];
+  db.query(sql, params)
+    .then(result => {
+      const [patientExercise] = result.rows;
+      res.status(201).json(patientExercise);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'an unexpected error occurred'
+      });
+    });
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
