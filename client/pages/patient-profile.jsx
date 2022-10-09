@@ -121,7 +121,7 @@ export default class PatientProfile extends React.Component {
             <div className="d-flex align-items-center">
               <h4 className="me-3">Exercises</h4>
             </div>
-            <a href={`#assignExercise?patientId=${patientId}`} className="btn my-1" style={{ backgroundColor: '#D78521', color: 'white' }}>Add Exercise</a>
+            <a href={`#chooseExercise?patientId=${patientId}`} className="btn my-1" style={{ backgroundColor: '#D78521', color: 'white' }}>Add Exercise</a>
           </div>
           <ExerciseCards exercises={exercises} />
         </div>

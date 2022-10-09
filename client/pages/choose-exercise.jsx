@@ -1,12 +1,12 @@
 import React from 'react';
 import ExerciseCards from '../components/exercise-cards';
 
-export default class AssignExercise extends React.Component {
+export default class ChooseExercise extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       exercises: [],
-      selectedExercise: [],
+      selectedExercise: null,
       patient: null
     };
   }

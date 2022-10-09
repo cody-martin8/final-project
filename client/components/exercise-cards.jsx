@@ -1,13 +1,15 @@
 import React from 'react';
+import { parseRoute } from '../lib';
 
 export default function ExerciseCards(props) {
+  const route = parseRoute(window.location.hash);
 
   return (
     <ul>
       {
         props.exercises.map(exercise => (
           <li key={exercise.exerciseId} className={exercise.view}>
-            <Exercise exercise={exercise} />
+            <Exercise exercise={exercise} route={route} />
           </li>
         ))
       }
@@ -17,18 +19,19 @@ export default function ExerciseCards(props) {
 
 function Exercise(props) {
   const { exerciseId, name, targetArea } = props.exercise;
+  const patientId = props.route.params.get('patientId');
 
   let cardExtra = targetArea;
   let cardLink = `#exerciseProfile?exerciseId=${exerciseId}`;
-  if (location.hash === '#patientProfile') {
+  if (props.route.path === 'patientProfile') {
     cardExtra = targetArea;
     // {/* Replace targetArea with sets/reps */ }
   }
-  if (location.hash === '#assignExercise') {
-    cardLink = '#assignExercise';
+  if (props.route.path === 'chooseExercise') {
+    cardLink = `#assignExercise?patientId=${patientId}?exerciseId=${exerciseId}`;
   }
 
-  // Create an onClick listener that calls this.handleClick (if location.hash = '#assignExercise)
+  // Create an onClick listener that calls this.handleClick (if location.hash = '#assignExercise')
   // inside handleClick, change state of selectedExercise to include event.target
   // Once this is successfully implemented, render patient's exercise cards on profile from patientExercises
 
