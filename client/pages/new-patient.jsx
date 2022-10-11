@@ -153,7 +153,7 @@ export default class NewPatientForm extends React.Component {
             </div>
             <div className="col-3 col-lg-2 mb-3">
               <label htmlFor="age" className="form-label">Age</label>
-              <input type="number" required className="form-control" id="age" min="1" value={this.state.age} onChange={this.handleChange} />
+              <input type="number" required className="form-control" id="age" min="1" max="130" value={this.state.age} onChange={this.handleChange} />
             </div>
             <div className="mb-3">
               <label htmlFor="injuryAilment" className="form-label">Injury / Ailment</label>

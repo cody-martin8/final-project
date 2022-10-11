@@ -28,12 +28,10 @@ function Exercise(props) {
     // {/* Replace targetArea with sets/reps */ }
   }
   if (props.route.path === 'chooseExercise') {
-    cardLink = `#assignExercise?patientId=${patientId}?exerciseId=${exerciseId}`;
+    cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}`;
   }
 
-  // Create an onClick listener that calls this.handleClick (if location.hash = '#assignExercise')
-  // inside handleClick, change state of selectedExercise to include event.target
-  // Once this is successfully implemented, render patient's exercise cards on profile from patientExercises
+  // Render patient's exercise cards on profile from patientExercises
 
   return (
     <div className="card mx-auto col-lg-7 col-xl-7 col-xxl-6">

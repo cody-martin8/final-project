@@ -8,6 +8,7 @@ import NewExerciseForm from './pages/new-exercise';
 import PatientProfile from './pages/patient-profile';
 import ExerciseProfile from './pages/exercise-profile';
 import ChooseExercise from './pages/choose-exercise';
+import AssignExercise from './pages/assign-exercise';
 import NotFound from './pages/not-found';
 import { parseRoute } from './lib';
 
@@ -57,7 +58,7 @@ export default class App extends React.Component {
     if (route.path === 'assignExercise') {
       const patientId = route.params.get('patientId');
       const exerciseId = route.params.get('exerciseId');
-      return <ExerciseProfile patientId={patientId} exerciseId={exerciseId} />;
+      return <AssignExercise patientId={patientId} exerciseId={exerciseId} />;
     }
     return <NotFound />;
   }
