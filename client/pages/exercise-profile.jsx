@@ -1,4 +1,5 @@
 import React from 'react';
+import { parseRoute } from '../lib';
 
 export default class ExerciseProfile extends React.Component {
   constructor(props) {
@@ -30,6 +31,13 @@ export default class ExerciseProfile extends React.Component {
   render() {
     if (!this.state.exercise) return null;
     const { exerciseId, name, targetArea, description } = this.state.exercise;
+
+    const route = parseRoute(window.location.hash);
+
+    // create variable to be used in ternary
+    // variable should contain route.path (pull in parseRoute function)
+    // use ternaries on heading, Your Exercises button, edit button, Assign Exercise button
+    //   and add in form for sets/reps with ternary
 
     return (
       <div className="container w-75">
@@ -70,7 +78,11 @@ export default class ExerciseProfile extends React.Component {
         <div className="row justify-content-center">
           <div className="col-12 col-lg-8 col-xl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
-              <h1 className="me-2">Exercise Profile</h1>
+              {
+                route.path === 'exerciseProfile'
+                  ? <h1 className="me-2">Exercise Profile</h1>
+                  : <h1 className="me-2">Assign Exercise</h1>
+              }
             </div>
             <a href="#exercises" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
               <i className="fa-solid fa-angle-left fa-sm"></i>

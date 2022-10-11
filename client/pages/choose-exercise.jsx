@@ -10,7 +10,6 @@ export default class ChooseExercise extends React.Component {
       patient: null
     };
   }
-  // hello
 
   componentDidMount() {
     fetch('/api/exercises')
