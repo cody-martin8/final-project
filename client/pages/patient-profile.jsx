@@ -5,6 +5,7 @@ export default class PatientProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      patientExercises: [],
       exercises: [],
       patient: null
     };
@@ -12,6 +13,10 @@ export default class PatientProfile extends React.Component {
   }
 
   componentDidMount() {
+    fetch(`/api/patientExercises/${this.props.patientId}`)
+      .then(res => res.json())
+      .then(patientExercises => this.setState({ patientExercises }));
+
     fetch('/api/exercises')
       .then(res => res.json())
       .then(exercises => this.setState({ exercises }));
@@ -35,17 +40,30 @@ export default class PatientProfile extends React.Component {
 
   render() {
     if (!this.state.patient) return null;
-    if (!this.state.exercises) return null;
-    const exercises = this.state.exercises;
+    if (!this.state.patientExercises) return null;
     const { patientId, firstName, lastName, age, injuryAilment, notes } = this.state.patient;
     const name = `${firstName} ${lastName}`;
 
     let notesSection;
     notes ? notesSection = notes : notesSection = 'None';
 
+    const exerciseLibrary = this.state.exercises;
+    const patientExercises = [];
+    for (let i = 0; i < this.state.patientExercises.length; i++) {
+      patientExercises.push(this.state.patientExercises[i].exerciseId);
+    }
+    const exercises = [];
+    for (let i = 0; i < exerciseLibrary.length; i++) {
+      if (patientExercises.includes(exerciseLibrary[i].exerciseId)) {
+        exercises.push(exerciseLibrary[i]);
+      }
+    }
+
     for (let i = 0; i < exercises.length; i++) {
       exercises[i].view = 'd-block mb-3';
     }
+
+    // console.log(this.state.patientExercises);
 
     return (
       <div className="container w-75">

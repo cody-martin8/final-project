@@ -4,7 +4,10 @@ export default class AssignExercise extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      exercise: null
+      exercise: null,
+      sets: '',
+      repetitions: '',
+      hold: ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -16,18 +19,46 @@ export default class AssignExercise extends React.Component {
       .then(exercise => this.setState({ exercise }));
   }
 
-  handleChange() {
-    // console.log('Change');
+  handleChange(event) {
+    this.setState({
+      [event.target.id]: event.target.value
+    });
   }
 
-  handleSubmit() {
-    // console.log('Submit');
+  handleSubmit(event) {
+    event.preventDefault();
+    const patientExercise = {
+      patientId: this.props.patientId,
+      exerciseId: this.props.exerciseId,
+      sets: this.state.sets,
+      repetitions: this.state.repetitions,
+      hold: this.state.hold,
+      feedback: ''
+    };
+    this.addPatientExercise(patientExercise);
+    this.setState({
+      sets: '',
+      repetitions: '',
+      hold: ''
+    });
+  }
+
+  addPatientExercise(patientExercise) {
+    fetch('/api/patientExercises', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(patientExercise)
+    })
+      .then(res => {
+        location.hash = `#patientProfile?patientId=${this.props.patientId}`;
+      });
   }
 
   render() {
     if (!this.state.exercise) return null;
     const { name, targetArea, description } = this.state.exercise;
-    // put exerciseId back in above line
 
     return (
       <div className="container w-75">

@@ -285,20 +285,47 @@ app.delete('/api/exercises/:exerciseId', (req, res) => {
     });
 });
 
+app.get('/api/patientExercises/:patientId', (req, res, next) => {
+  const patientId = Number(req.params.patientId);
+  if (!Number.isInteger(patientId) || patientId < 1) {
+    throw new ClientError(400, 'patientId must be a positive integer');
+  }
+  const sql = `
+    select "patientId",
+           "exerciseId",
+           "sets",
+           "repetitions",
+           "hold",
+           "feedback",
+           "patientExerciseId"
+      from "patientExercises"
+      where "patientId" = $1
+  `;
+  const params = [patientId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows[0]) {
+        throw new ClientError(404, `cannot find patientExercises with patientId ${patientId}`);
+      }
+      res.json(result.rows[0]);
+    })
+    .catch(err => next(err));
+});
+
 app.post('/api/patientExercises', (req, res) => {
-  const { patientId, exerciseId, repetitions, sets, feedback } = req.body;
-  if (!patientId || !exerciseId || !repetitions || !sets) {
+  const { patientId, exerciseId, repetitions, sets, hold, feedback } = req.body;
+  if (!patientId || !exerciseId || !sets) {
     res.status(400).json({
-      error: 'patientId, exerciseId, repetitions, and sets are required fields'
+      error: 'patientId, exerciseId, and sets are required fields'
     });
     return;
   }
   const sql = `
-    insert into "patientExercises" ("patientId", "exerciseId", "repetitions", "sets", "feedback")
-    values ($1, $2, $3, $4, $5)
+    insert into "patientExercises" ("patientId", "exerciseId", "repetitions", "sets", "hold", "feedback")
+    values ($1, $2, $3, $4, $5, $6)
     returning *
   `;
-  const params = [patientId, exerciseId, repetitions, sets, feedback];
+  const params = [patientId, exerciseId, repetitions, sets, hold, feedback];
   db.query(sql, params)
     .then(result => {
       const [patientExercise] = result.rows;
