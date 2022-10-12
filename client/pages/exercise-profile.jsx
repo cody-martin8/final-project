@@ -1,10 +1,12 @@
 import React from 'react';
+import PatientDropdown from '../components/patient-dropdown';
 
 export default class ExerciseProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      exercise: null
+      exercise: null,
+      patients: []
     };
     this.deleteProfile = this.deleteProfile.bind(this);
   }
@@ -13,6 +15,10 @@ export default class ExerciseProfile extends React.Component {
     fetch(`/api/exercises/${this.props.exerciseId}`)
       .then(res => res.json())
       .then(exercise => this.setState({ exercise }));
+
+    fetch('/api/activePatients')
+      .then(res => res.json())
+      .then(patients => this.setState({ patients }));
   }
 
   deleteProfile() {
@@ -91,9 +97,25 @@ export default class ExerciseProfile extends React.Component {
                 <h5 className="card-subtitle ms-4 mb-5 text-muted">{targetArea}</h5>
                 <h5 className="mb-1 text-decoration-underline">Description:</h5>
                 <p className="card-text lead ms-4 mb-5">{description}</p>
-                <a href="#exercises" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
-                  <span>Assign Exercise</span>
-                </a>
+                <div className="d-flex justify-content-between">
+                  <a href="#patientSelect" className="btn my-2" data-bs-toggle="collapse" style={{ backgroundColor: '#D78521', color: 'white' }}>
+                    <span>Assign Exercise</span>
+                  </a>
+                  <div className="collapse" id="patientSelect">
+                    <div className="dropdown">
+                      <a className="btn btn-secondary dropdown-toggle my-2" href="#" id="patients" data-bs-toggle="dropdown">
+                        <span>Select Patient</span>
+                      </a>
+                      <PatientDropdown patients={this.state.patients} exerciseId={exerciseId} />
+                      {/* create new component for rendering the ul with patient names  */}
+                      {/* <ul class="dropdown-menu" aria-labelledby="patients">
+                        <li><a class="dropdown-item" href="#exercises">Action</a></li>
+                        <li><a class="dropdown-item" href="#exercises">Another action</a></li>
+                        <li><a class="dropdown-item" href="#exercises">Something else here</a></li>
+                      </ul> */}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

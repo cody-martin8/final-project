@@ -63,8 +63,6 @@ export default class PatientProfile extends React.Component {
       exercises[i].view = 'd-block mb-3';
     }
 
-    // console.log(this.state.patientExercises);
-
     return (
       <div className="container w-75">
         <div className="modal fade" id="editModal">
@@ -129,7 +127,7 @@ export default class PatientProfile extends React.Component {
                 </div>
                 <h5 className="card-subtitle mb-5 text-muted">{ injuryAilment }</h5>
                 <h6 className="mb-1 text-decoration-underline">Notes:</h6>
-                <p className="card-text">{ notesSection }</p>
+                <p className="card-text mb-2">{ notesSection }</p>
               </div>
             </div>
           </div>
@@ -141,7 +139,7 @@ export default class PatientProfile extends React.Component {
             </div>
             <a href={`#chooseExercise?patientId=${patientId}`} className="btn my-1" style={{ backgroundColor: '#D78521', color: 'white' }}>Add Exercise</a>
           </div>
-          <ExerciseCards exercises={exercises} />
+          <ExerciseCards exercises={exercises} patientExercises={this.state.patientExercises} />
         </div>
       </div>
     );

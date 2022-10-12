@@ -48,6 +48,19 @@ app.get('/api/patients/:patientId', (req, res, next) => {
     .catch(err => next(err));
 });
 
+app.get('/api/activePatients', (req, res, next) => {
+  const sql = `
+    select "patientId",
+           "firstName",
+           "lastName"
+      from "patients"
+     where "isActive" = 'true'
+  `;
+  db.query(sql)
+    .then(result => res.json(result.rows))
+    .catch(err => next(err));
+});
+
 app.get('/api/patients', (req, res, next) => {
   const sql = `
     select "patientId",
@@ -291,8 +304,7 @@ app.get('/api/patientExercises/:patientId', (req, res, next) => {
     throw new ClientError(400, 'patientId must be a positive integer');
   }
   const sql = `
-    select "patientId",
-           "exerciseId",
+    select "exerciseId",
            "sets",
            "repetitions",
            "hold",
@@ -304,10 +316,10 @@ app.get('/api/patientExercises/:patientId', (req, res, next) => {
   const params = [patientId];
   db.query(sql, params)
     .then(result => {
-      if (!result.rows[0]) {
+      if (!result.rows) {
         throw new ClientError(404, `cannot find patientExercises with patientId ${patientId}`);
       }
-      res.json(result.rows[0]);
+      res.json(result.rows);
     })
     .catch(err => next(err));
 });

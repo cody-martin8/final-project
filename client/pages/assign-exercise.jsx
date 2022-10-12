@@ -35,6 +35,12 @@ export default class AssignExercise extends React.Component {
       hold: this.state.hold,
       feedback: ''
     };
+    if (patientExercise.repetitions === '') {
+      patientExercise.repetitions = 0;
+    }
+    if (patientExercise.hold === '') {
+      patientExercise.hold = 0;
+    }
     this.addPatientExercise(patientExercise);
     this.setState({
       sets: '',
@@ -94,11 +100,11 @@ export default class AssignExercise extends React.Component {
                       </div>
                       <div className="col-3 mb-3">
                         <label htmlFor="repetitions" className="form-label h5">Repetitions</label>
-                        <input type="number" className="form-control" id="repetitions" min="1" max="50" value={this.state.repetitions} onChange={this.handleChange} />
+                        <input type="number" className="form-control" id="repetitions" min="0" max="50" value={this.state.repetitions} onChange={this.handleChange} />
                       </div>
                       <div className="col-3 mb-3">
                         <label htmlFor="hold" className="form-label h5">Hold (in sec.)</label>
-                        <input type="number" className="form-control" id="hold" min="1" max="600" value={this.state.hold} onChange={this.handleChange} />
+                        <input type="number" className="form-control" id="hold" min="0" max="600" value={this.state.hold} onChange={this.handleChange} />
                       </div>
                     </div>
                     <div className="d-flex justify-content-end">

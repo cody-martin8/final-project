@@ -9,7 +9,7 @@ export default function ExerciseCards(props) {
       {
         props.exercises.map(exercise => (
           <li key={exercise.exerciseId} className={exercise.view}>
-            <Exercise exercise={exercise} route={route} />
+            <Exercise exercise={exercise} route={route} patientExercises={props.patientExercises} />
           </li>
         ))
       }
@@ -24,8 +24,28 @@ function Exercise(props) {
   let cardExtra = targetArea;
   let cardLink = `#exerciseProfile?exerciseId=${exerciseId}`;
   if (props.route.path === 'patientProfile') {
-    cardExtra = targetArea;
-    // {/* Replace targetArea with sets/reps */ }
+    let patientExercise;
+    for (let i = 0; i < props.patientExercises.length; i++) {
+      if (exerciseId === props.patientExercises[i].exerciseId) {
+        patientExercise = props.patientExercises[i];
+      }
+    }
+    const { sets, repetitions, hold } = patientExercise;
+    let cardSets, cardReps, cardHold;
+    sets === 0
+      ? cardSets = ''
+      : sets === 1
+        ? cardSets = `${sets} set `
+        : cardSets = `${sets} sets `;
+    repetitions === 0
+      ? cardReps = ''
+      : repetitions === 1
+        ? cardReps = `/ ${repetitions} rep `
+        : cardReps = `/ ${repetitions} reps `;
+    hold === 0
+      ? cardHold = ''
+      : cardHold = `/ ${hold} sec hold `;
+    cardExtra = `${cardSets}${cardReps}${cardHold}`;
   }
   if (props.route.path === 'chooseExercise') {
     cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}`;
