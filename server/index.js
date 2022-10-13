@@ -48,6 +48,19 @@ app.get('/api/patients/:patientId', (req, res, next) => {
     .catch(err => next(err));
 });
 
+app.get('/api/activePatients', (req, res, next) => {
+  const sql = `
+    select "patientId",
+           "firstName",
+           "lastName"
+      from "patients"
+     where "isActive" = 'true'
+  `;
+  db.query(sql)
+    .then(result => res.json(result.rows))
+    .catch(err => next(err));
+});
+
 app.get('/api/patients', (req, res, next) => {
   const sql = `
     select "patientId",
@@ -276,6 +289,85 @@ app.delete('/api/exercises/:exerciseId', (req, res) => {
         throw new ClientError(404, `cannot find exercise with exerciseId ${exerciseId}`);
       }
       res.sendStatus(204);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'an unexpected error occurred'
+      });
+    });
+});
+
+app.get('/api/patientExercises/:patientId', (req, res, next) => {
+  const patientId = Number(req.params.patientId);
+  if (!Number.isInteger(patientId) || patientId < 1) {
+    throw new ClientError(400, 'patientId must be a positive integer');
+  }
+  const sql = `
+    select "exerciseId",
+           "sets",
+           "repetitions",
+           "hold",
+           "feedback",
+           "patientExerciseId"
+      from "patientExercises"
+      where "patientId" = $1
+  `;
+  const params = [patientId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows) {
+        throw new ClientError(404, `cannot find patientExercises with patientId ${patientId}`);
+      }
+      res.json(result.rows);
+    })
+    .catch(err => next(err));
+});
+
+app.get('/api/exercisePatients/:exerciseId', (req, res, next) => {
+  const exerciseId = Number(req.params.exerciseId);
+  if (!Number.isInteger(exerciseId) || exerciseId < 1) {
+    throw new ClientError(400, 'exerciseId must be a positive integer');
+  }
+  const sql = `
+    select "patientId",
+           "sets",
+           "repetitions",
+           "hold",
+           "feedback",
+           "patientExerciseId"
+      from "patientExercises"
+      where "exerciseId" = $1
+  `;
+  const params = [exerciseId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows) {
+        throw new ClientError(404, `cannot find patientExercises with exerciseId ${exerciseId}`);
+      }
+      res.json(result.rows);
+    })
+    .catch(err => next(err));
+});
+
+app.post('/api/patientExercises', (req, res) => {
+  const { patientId, exerciseId, repetitions, sets, hold, feedback } = req.body;
+  if (!patientId || !exerciseId || !sets) {
+    res.status(400).json({
+      error: 'patientId, exerciseId, and sets are required fields'
+    });
+    return;
+  }
+  const sql = `
+    insert into "patientExercises" ("patientId", "exerciseId", "repetitions", "sets", "hold", "feedback")
+    values ($1, $2, $3, $4, $5, $6)
+    returning *
+  `;
+  const params = [patientId, exerciseId, repetitions, sets, hold, feedback];
+  db.query(sql, params)
+    .then(result => {
+      const [patientExercise] = result.rows;
+      res.status(201).json(patientExercise);
     })
     .catch(err => {
       console.error(err);

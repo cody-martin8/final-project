@@ -12,6 +12,8 @@ export default class NewExerciseForm extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.addExercise = this.addExercise.bind(this);
+    this.editExercise = this.editExercise.bind(this);
   }
 
   componentDidMount() {
@@ -46,16 +48,42 @@ export default class NewExerciseForm extends React.Component {
       description: this.state.description
     };
     if (this.props.exerciseId === null) {
-      this.props.newExercise(exercise);
+      this.addExercise(exercise);
     } else {
       exercise.exerciseId = this.props.exerciseId;
-      this.props.editExercise(exercise);
+      this.editExercise(exercise);
     }
     this.setState({
       name: '',
       targetArea: '',
       description: ''
     });
+  }
+
+  addExercise(newExercise) {
+    fetch('/api/exercises', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(newExercise)
+    })
+      .then(res => {
+        location.hash = '#exercises';
+      });
+  }
+
+  editExercise(exercise) {
+    fetch(`/api/exercises/${exercise.exerciseId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'PATCH',
+      body: JSON.stringify(exercise)
+    })
+      .then(res => {
+        location.hash = `#exerciseProfile?exerciseId=${exercise.exerciseId}`;
+      });
   }
 
   render() {

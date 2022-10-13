@@ -5,6 +5,7 @@ export default class PatientProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      patientExercises: [],
       exercises: [],
       patient: null
     };
@@ -12,6 +13,10 @@ export default class PatientProfile extends React.Component {
   }
 
   componentDidMount() {
+    fetch(`/api/patientExercises/${this.props.patientId}`)
+      .then(res => res.json())
+      .then(patientExercises => this.setState({ patientExercises }));
+
     fetch('/api/exercises')
       .then(res => res.json())
       .then(exercises => this.setState({ exercises }));
@@ -35,13 +40,24 @@ export default class PatientProfile extends React.Component {
 
   render() {
     if (!this.state.patient) return null;
-    if (!this.state.exercises) return null;
-    const exercises = this.state.exercises;
+    if (!this.state.patientExercises) return null;
     const { patientId, firstName, lastName, age, injuryAilment, notes } = this.state.patient;
     const name = `${firstName} ${lastName}`;
 
     let notesSection;
     notes ? notesSection = notes : notesSection = 'None';
+
+    const exerciseLibrary = this.state.exercises;
+    const patientExercises = [];
+    for (let i = 0; i < this.state.patientExercises.length; i++) {
+      patientExercises.push(this.state.patientExercises[i].exerciseId);
+    }
+    const exercises = [];
+    for (let i = 0; i < exerciseLibrary.length; i++) {
+      if (patientExercises.includes(exerciseLibrary[i].exerciseId)) {
+        exercises.push(exerciseLibrary[i]);
+      }
+    }
 
     for (let i = 0; i < exercises.length; i++) {
       exercises[i].view = 'd-block mb-3';
@@ -85,45 +101,47 @@ export default class PatientProfile extends React.Component {
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-8 col-xl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-9 col-xl-8 col-xxl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h1 className="me-2">Patient Profile</h1>
-              <i className="fa-solid fa-user fa-2xl mb-1"></i>
+              <i className="fa-solid fa-user fa-2xl mb-1 d-none d-sm-block"></i>
             </div>
             <a href="#" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
               <i className="fa-solid fa-angle-left fa-sm"></i>
-              <span className="">Your Patients</span>
+              <span>Patients</span>
             </a>
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-7 col-xl-7 col-xxl-6 mb-5 p-lg-1">
+          <div className="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6 mb-5 p-lg-1">
             <div className="card">
               <div className="card-body">
                 <div className="mb-3 d-flex justify-content-between">
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex align-items-center justify-content-between">
                     <h3 className="mb-0 me-3">{ name }</h3>
                     <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#editModal"></i>
                   </div>
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex d-none d-sm-block align-items-center">
                     <h5 className="mt-2">Age: { age }</h5>
                   </div>
                 </div>
                 <h5 className="card-subtitle mb-5 text-muted">{ injuryAilment }</h5>
                 <h6 className="mb-1 text-decoration-underline">Notes:</h6>
-                <p className="card-text">{ notesSection }</p>
+                <p className="card-text mb-2">{ notesSection }</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="row justify-content-center mb-5">
-          <div className="col-12 col-lg-7 col-xl-7 col-xxl-6 mb-2 p-lg-1 d-flex justify-content-between">
+        <div className="row justify-content-center mb-3">
+          <div className="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6 mb-2 p-lg-1 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h4 className="me-3">Exercises</h4>
             </div>
-            <a href="#patientProfile" className="btn my-1" style={{ backgroundColor: '#D78521', color: 'white' }}>Add Exercise</a>
+            <a href={`#chooseExercise?patientId=${patientId}`} className="btn my-1" style={{ backgroundColor: '#D78521', color: 'white' }}>Add Exercise</a>
           </div>
-          <ExerciseCards exercises={this.state.exercises} />
+        </div>
+        <div className="row justify-content-center mb-5">
+          <ExerciseCards exercises={exercises} patientExercises={this.state.patientExercises} />
         </div>
       </div>
     );

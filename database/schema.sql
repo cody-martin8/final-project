@@ -54,8 +54,9 @@ create table "public"."patientExercises" (
 	"patientExerciseId" serial      not null,
 	"patientId"         integer     not null,
 	"exerciseId"        integer     not null,
-	"repetitions"       text        not null,
-	"sets"              text        not null,
+	"repetitions"       integer     not null,
+	"sets"              integer     not null,
+  "hold"              integer     not null,
 	"feedback"          text        not null,
 	"assigned"          timestamptz not null default now(),
 	constraint "patientExercises_pk" primary key ("patientExerciseId")

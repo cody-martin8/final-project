@@ -7,6 +7,8 @@ import NewPatientForm from './pages/new-patient';
 import NewExerciseForm from './pages/new-exercise';
 import PatientProfile from './pages/patient-profile';
 import ExerciseProfile from './pages/exercise-profile';
+import ChooseExercise from './pages/choose-exercise';
+import AssignExercise from './pages/assign-exercise';
 import NotFound from './pages/not-found';
 import { parseRoute } from './lib';
 
@@ -15,69 +17,14 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       user: null,
-      route: parseRoute(window.location.hash),
-      currentPatient: null
+      route: parseRoute(window.location.hash)
     };
-    this.addPatient = this.addPatient.bind(this);
-    this.addExercise = this.addExercise.bind(this);
   }
 
   componentDidMount() {
     addEventListener('hashchange', event => {
       this.setState({ route: parseRoute(window.location.hash) });
     });
-  }
-
-  addPatient(patient) {
-    fetch('/api/patients', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'POST',
-      body: JSON.stringify(patient)
-    })
-      .then(res => {
-        location.hash = '#';
-      });
-  }
-
-  editPatient(patient) {
-    fetch(`/api/patients/${patient.patientId}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'PATCH',
-      body: JSON.stringify(patient)
-    })
-      .then(res => {
-        location.hash = `#patientProfile?patientId=${patient.patientId}`;
-      });
-  }
-
-  addExercise(newExercise) {
-    fetch('/api/exercises', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'POST',
-      body: JSON.stringify(newExercise)
-    })
-      .then(res => {
-        location.hash = '#exercises';
-      });
-  }
-
-  editExercise(exercise) {
-    fetch(`/api/exercises/${exercise.exerciseId}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'PATCH',
-      body: JSON.stringify(exercise)
-    })
-      .then(res => {
-        location.hash = `#exerciseProfile?exerciseId=${exercise.exerciseId}`;
-      });
   }
 
   renderPage() {
@@ -90,11 +37,11 @@ export default class App extends React.Component {
     }
     if (route.path === 'newPatient') {
       const patientId = route.params.get('patientId');
-      return <NewPatientForm patientId={patientId} newPatient={this.addPatient} editPatient={this.editPatient} />;
+      return <NewPatientForm patientId={patientId} />;
     }
     if (route.path === 'newExercise') {
       const exerciseId = route.params.get('exerciseId');
-      return <NewExerciseForm exerciseId={exerciseId} newExercise={this.addExercise} editExercise={this.editExercise} />;
+      return <NewExerciseForm exerciseId={exerciseId} />;
     }
     if (route.path === 'patientProfile') {
       const patientId = route.params.get('patientId');
@@ -103,6 +50,15 @@ export default class App extends React.Component {
     if (route.path === 'exerciseProfile') {
       const exerciseId = route.params.get('exerciseId');
       return <ExerciseProfile exerciseId={exerciseId} />;
+    }
+    if (route.path === 'chooseExercise') {
+      const patientId = route.params.get('patientId');
+      return <ChooseExercise patientId={patientId} />;
+    }
+    if (route.path === 'assignExercise') {
+      const patientId = route.params.get('patientId');
+      const exerciseId = route.params.get('exerciseId');
+      return <AssignExercise patientId={patientId} exerciseId={exerciseId} />;
     }
     return <NotFound />;
   }

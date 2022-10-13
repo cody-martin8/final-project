@@ -1,10 +1,13 @@
 import React from 'react';
+import PatientDropdown from '../components/patient-dropdown';
 
 export default class ExerciseProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      exercise: null
+      exercise: null,
+      patients: [],
+      patientExercises: []
     };
     this.deleteProfile = this.deleteProfile.bind(this);
   }
@@ -13,6 +16,14 @@ export default class ExerciseProfile extends React.Component {
     fetch(`/api/exercises/${this.props.exerciseId}`)
       .then(res => res.json())
       .then(exercise => this.setState({ exercise }));
+
+    fetch('/api/activePatients')
+      .then(res => res.json())
+      .then(patients => this.setState({ patients }));
+
+    fetch(`/api/exercisePatients/${this.props.exerciseId}`)
+      .then(res => res.json())
+      .then(patientExercises => this.setState({ patientExercises }));
   }
 
   deleteProfile() {
@@ -29,7 +40,20 @@ export default class ExerciseProfile extends React.Component {
 
   render() {
     if (!this.state.exercise) return null;
+    if (!this.state.patients) return null;
+    if (!this.state.patientExercises) return null;
     const { exerciseId, name, targetArea, description } = this.state.exercise;
+
+    const pExercises = [];
+    for (let i = 0; i < this.state.patientExercises.length; i++) {
+      pExercises.push(this.state.patientExercises[i].patientId);
+    }
+    const patients = [];
+    for (let i = 0; i < this.state.patients.length; i++) {
+      if (!pExercises.includes(this.state.patients[i].patientId)) {
+        patients.push(this.state.patients[i]);
+      }
+    }
 
     return (
       <div className="container w-75">
@@ -91,9 +115,19 @@ export default class ExerciseProfile extends React.Component {
                 <h5 className="card-subtitle ms-4 mb-5 text-muted">{targetArea}</h5>
                 <h5 className="mb-1 text-decoration-underline">Description:</h5>
                 <p className="card-text lead ms-4 mb-5">{description}</p>
-                <a href="#exercises" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
-                  <span>Assign Exercise</span>
-                </a>
+                <div className="d-flex justify-content-between">
+                  <a href="#patientSelect" className="btn my-2" data-bs-toggle="collapse" style={{ backgroundColor: '#D78521', color: 'white' }}>
+                    <span>Assign Exercise</span>
+                  </a>
+                  <div className="collapse" id="patientSelect">
+                    <div className="dropdown">
+                      <a className="btn btn-secondary dropdown-toggle my-2" href="#" id="patients" data-bs-toggle="dropdown">
+                        <span>Select Patient</span>
+                      </a>
+                      <PatientDropdown patients={patients} exerciseId={exerciseId} />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
