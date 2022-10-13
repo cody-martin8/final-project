@@ -101,27 +101,27 @@ export default class PatientProfile extends React.Component {
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-8 col-xl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-9 col-xl-8 col-xxl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h1 className="me-2">Patient Profile</h1>
-              <i className="fa-solid fa-user fa-2xl mb-1"></i>
+              <i className="fa-solid fa-user fa-2xl mb-1 d-none d-sm-block"></i>
             </div>
             <a href="#" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
               <i className="fa-solid fa-angle-left fa-sm"></i>
-              <span className="">Your Patients</span>
+              <span>Patients</span>
             </a>
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-7 col-xl-7 col-xxl-6 mb-5 p-lg-1">
+          <div className="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6 mb-5 p-lg-1">
             <div className="card">
               <div className="card-body">
                 <div className="mb-3 d-flex justify-content-between">
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex align-items-center justify-content-between">
                     <h3 className="mb-0 me-3">{ name }</h3>
                     <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#editModal"></i>
                   </div>
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex d-none d-sm-block align-items-center">
                     <h5 className="mt-2">Age: { age }</h5>
                   </div>
                 </div>
@@ -132,13 +132,15 @@ export default class PatientProfile extends React.Component {
             </div>
           </div>
         </div>
-        <div className="row justify-content-center mb-5">
-          <div className="col-12 col-lg-7 col-xl-7 col-xxl-6 mb-2 p-lg-1 d-flex justify-content-between">
+        <div className="row justify-content-center mb-3">
+          <div className="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6 mb-2 p-lg-1 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h4 className="me-3">Exercises</h4>
             </div>
             <a href={`#chooseExercise?patientId=${patientId}`} className="btn my-1" style={{ backgroundColor: '#D78521', color: 'white' }}>Add Exercise</a>
           </div>
+        </div>
+        <div className="row justify-content-center mb-5">
           <ExerciseCards exercises={exercises} patientExercises={this.state.patientExercises} />
         </div>
       </div>

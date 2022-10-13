@@ -4,6 +4,14 @@ import { parseRoute } from '../lib';
 export default function ExerciseCards(props) {
   const route = parseRoute(window.location.hash);
 
+  if (route.path === 'patientProfile' && props.exercises.length === 0) {
+    return (
+      <div className="col-12 col-lg-7 col-xl-7 col-xxl-5 lead d-block d-flex justify-content-center">
+        <p>No exercises have been assigned to this patient yet. You can add exercises by clicking &quotAdd Patient&quot above.</p>
+      </div>
+    );
+  }
+
   return (
     <ul>
       {
@@ -21,8 +29,12 @@ function Exercise(props) {
   const { exerciseId, name, targetArea } = props.exercise;
   const patientId = props.route.params.get('patientId');
 
-  let cardExtra = targetArea;
   let cardLink = `#exerciseProfile?exerciseId=${exerciseId}`;
+  if (props.route.path === 'chooseExercise') {
+    cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}`;
+  }
+
+  let cardExtra = targetArea;
   if (props.route.path === 'patientProfile') {
     let patientExercise;
     for (let i = 0; i < props.patientExercises.length; i++) {
@@ -47,18 +59,13 @@ function Exercise(props) {
       : cardHold = `/ ${hold} sec hold `;
     cardExtra = `${cardSets}${cardReps}${cardHold}`;
   }
-  if (props.route.path === 'chooseExercise') {
-    cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}`;
-  }
-
-  // Render patient's exercise cards on profile from patientExercises
 
   return (
-    <div className="card mx-auto col-lg-7 col-xl-7 col-xxl-6">
+    <div className="card mx-auto col-md-10 col-lg-8 col-xl-7 col-xxl-6">
       <a href={cardLink} className="text-decoration-none text-dark">
-        <div className="card-body ms-2 pb-2 d-flex justify-content-between">
+        <div className="card-body pb-2 d-flex justify-content-between">
           <h5>{ name }</h5>
-          <h6 className="lead d-none d-md-block ms-4 pt-0">{ cardExtra }</h6>
+          <h6 className="lead d-none d-sm-block ms-4 pt-0">{ cardExtra }</h6>
         </div>
       </a>
     </div>
