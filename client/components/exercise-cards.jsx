@@ -7,7 +7,7 @@ export default function ExerciseCards(props) {
   if (route.path === 'patientProfile' && props.exercises.length === 0) {
     return (
       <div className="col-12 col-lg-7 col-xl-7 col-xxl-5 lead d-block d-flex justify-content-center">
-        <p>No exercises have been assigned to this patient yet. You can add exercises by clicking &quotAdd Patient&quot above.</p>
+        <p>No exercises have been assigned to this patient yet. You can add exercises by clicking &quot;Add Patient&quot; above.</p>
       </div>
     );
   }
