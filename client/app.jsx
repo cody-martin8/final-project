@@ -9,6 +9,7 @@ import PatientProfile from './pages/patient-profile';
 import ExerciseProfile from './pages/exercise-profile';
 import ChooseExercise from './pages/choose-exercise';
 import AssignExercise from './pages/assign-exercise';
+import ExerciseAssignment from './pages/exercise-assignment';
 import NotFound from './pages/not-found';
 import { parseRoute } from './lib';
 
@@ -59,6 +60,12 @@ export default class App extends React.Component {
       const patientId = route.params.get('patientId');
       const exerciseId = route.params.get('exerciseId');
       return <AssignExercise patientId={patientId} exerciseId={exerciseId} />;
+    }
+    if (route.path === 'exerciseAssignment') {
+      const patientId = route.params.get('patientId');
+      const exerciseId = route.params.get('exerciseId');
+      const exercise = route.params.get('exercise');
+      return <ExerciseAssignment patientId={patientId} exerciseId={exerciseId} exercise={exercise} />;
     }
     return <NotFound />;
   }

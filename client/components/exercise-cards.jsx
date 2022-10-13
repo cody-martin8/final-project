@@ -58,6 +58,7 @@ function Exercise(props) {
       ? cardHold = ''
       : cardHold = `/ ${hold} sec hold `;
     cardExtra = `${cardSets}${cardReps}${cardHold}`;
+    cardLink = `#exerciseAssignment?patientId=${patientId}&exerciseId=${exerciseId}&exercise=${cardExtra}`;
   }
 
   return (
