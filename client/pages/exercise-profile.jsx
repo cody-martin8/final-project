@@ -6,7 +6,8 @@ export default class ExerciseProfile extends React.Component {
     super(props);
     this.state = {
       exercise: null,
-      patients: []
+      patients: [],
+      patientExercises: []
     };
     this.deleteProfile = this.deleteProfile.bind(this);
   }
@@ -19,6 +20,10 @@ export default class ExerciseProfile extends React.Component {
     fetch('/api/activePatients')
       .then(res => res.json())
       .then(patients => this.setState({ patients }));
+
+    fetch(`/api/exercisePatients/${this.props.exerciseId}`)
+      .then(res => res.json())
+      .then(patientExercises => this.setState({ patientExercises }));
   }
 
   deleteProfile() {
@@ -35,7 +40,20 @@ export default class ExerciseProfile extends React.Component {
 
   render() {
     if (!this.state.exercise) return null;
+    if (!this.state.patients) return null;
+    if (!this.state.patientExercises) return null;
     const { exerciseId, name, targetArea, description } = this.state.exercise;
+
+    const pExercises = [];
+    for (let i = 0; i < this.state.patientExercises.length; i++) {
+      pExercises.push(this.state.patientExercises[i].patientId);
+    }
+    const patients = [];
+    for (let i = 0; i < this.state.patients.length; i++) {
+      if (!pExercises.includes(this.state.patients[i].patientId)) {
+        patients.push(this.state.patients[i]);
+      }
+    }
 
     return (
       <div className="container w-75">
@@ -106,13 +124,7 @@ export default class ExerciseProfile extends React.Component {
                       <a className="btn btn-secondary dropdown-toggle my-2" href="#" id="patients" data-bs-toggle="dropdown">
                         <span>Select Patient</span>
                       </a>
-                      <PatientDropdown patients={this.state.patients} exerciseId={exerciseId} />
-                      {/* create new component for rendering the ul with patient names  */}
-                      {/* <ul class="dropdown-menu" aria-labelledby="patients">
-                        <li><a class="dropdown-item" href="#exercises">Action</a></li>
-                        <li><a class="dropdown-item" href="#exercises">Another action</a></li>
-                        <li><a class="dropdown-item" href="#exercises">Something else here</a></li>
-                      </ul> */}
+                      <PatientDropdown patients={patients} exerciseId={exerciseId} />
                     </div>
                   </div>
                 </div>

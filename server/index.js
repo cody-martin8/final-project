@@ -324,6 +324,32 @@ app.get('/api/patientExercises/:patientId', (req, res, next) => {
     .catch(err => next(err));
 });
 
+app.get('/api/exercisePatients/:exerciseId', (req, res, next) => {
+  const exerciseId = Number(req.params.exerciseId);
+  if (!Number.isInteger(exerciseId) || exerciseId < 1) {
+    throw new ClientError(400, 'exerciseId must be a positive integer');
+  }
+  const sql = `
+    select "patientId",
+           "sets",
+           "repetitions",
+           "hold",
+           "feedback",
+           "patientExerciseId"
+      from "patientExercises"
+      where "exerciseId" = $1
+  `;
+  const params = [exerciseId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows) {
+        throw new ClientError(404, `cannot find patientExercises with exerciseId ${exerciseId}`);
+      }
+      res.json(result.rows);
+    })
+    .catch(err => next(err));
+});
+
 app.post('/api/patientExercises', (req, res) => {
   const { patientId, exerciseId, repetitions, sets, hold, feedback } = req.body;
   if (!patientId || !exerciseId || !sets) {
