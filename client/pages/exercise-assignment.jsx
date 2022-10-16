@@ -68,9 +68,9 @@ export default class ExerciseAssignment extends React.Component {
             <div className="card">
               <div className="card-body">
                 <h5 className="card-subtitle mb-1 text-muted">{patientName}</h5>
-                <div className="d-flex align-items-center justify-content-between mb-5">
+                <div className="d-flex flex-wrap flex-sm-nowrap align-items-center justify-content-between mb-5">
                   <h3 className="mb-0 ms-2">{name}</h3>
-                  <h4 className="card-subtitle text-muted d-none d-sm-block ms-4 pt-0">{this.props.exercise}</h4>
+                  <h4 className="card-subtitle text-muted mt-2 ms-2 pt-0">{this.props.exercise}</h4>
                   {/* <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#editModal"></i> */}
                 </div>
                 <h5 className="mb-1 text-decoration-underline">Description:</h5>
