@@ -20,6 +20,7 @@ export default class NewExerciseForm extends React.Component {
     fetch('/api/exercises')
       .then(res => res.json())
       .then(exercises => this.setState({ exercises }));
+
     if (this.props.exerciseId !== null) {
       fetch(`/api/exercises/${this.props.exerciseId}`)
         .then(res => res.json())

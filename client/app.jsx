@@ -59,7 +59,9 @@ export default class App extends React.Component {
     if (route.path === 'assignExercise') {
       const patientId = route.params.get('patientId');
       const exerciseId = route.params.get('exerciseId');
-      return <AssignExercise patientId={patientId} exerciseId={exerciseId} />;
+      const patientExerciseId = route.params.get('patientExerciseId');
+      const exercise = route.params.get('exercise');
+      return <AssignExercise patientId={patientId} exerciseId={exerciseId} patientExerciseId={patientExerciseId} exercise={exercise} />;
     }
     if (route.path === 'exerciseAssignment') {
       const patientId = route.params.get('patientId');
