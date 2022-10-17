@@ -8,6 +8,7 @@ export default class ExerciseAssignment extends React.Component {
       patient: null,
       patientExercise: null
     };
+    this.deleteAssignment = this.deleteAssignment.bind(this);
   }
 
   componentDidMount() {
@@ -24,6 +25,20 @@ export default class ExerciseAssignment extends React.Component {
       .then(patientExercise => this.setState({ patientExercise }));
   }
 
+  deleteAssignment() {
+    const { patientExerciseId } = this.state.patientExercise;
+    const { patientId } = this.state.patient;
+    fetch(`/api/patientExercises/${patientExerciseId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'DELETE'
+    })
+      .then(res => {
+        location.hash = `#patientProfile?patientId=${patientId}`;
+      });
+  }
+
   render() {
     if (!this.state.patientExercise) return null;
     if (!this.state.exercise) return null;
@@ -35,7 +50,7 @@ export default class ExerciseAssignment extends React.Component {
 
     return (
       <div className="container w-75">
-        {/* <div className="modal fade" id="deleteModal">
+        <div className="modal fade" id="deleteModal">
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
@@ -43,15 +58,15 @@ export default class ExerciseAssignment extends React.Component {
                 <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
               </div>
               <div className="modal-body">
-                <p>This exercise will be permanently deleted.</p>
+                <p>This exercise assignment will be permanently removed.</p>
               </div>
               <div className="modal-footer d-flex justify-content-between">
-                <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={this.deleteProfile}>Confirm Delete</button>
-                <button className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editModal">Cancel</button>
+                <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={this.deleteAssignment}>Remove Assignment</button>
+                <button className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
         <div className="row justify-content-center mb-3 mb-md-5">
           <div className="col-12 col-md-11 col-lg-8 col-xl-7 mb-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
@@ -71,7 +86,6 @@ export default class ExerciseAssignment extends React.Component {
                 <div className="d-flex flex-wrap flex-sm-nowrap align-items-center justify-content-between mb-5">
                   <h3 className="mb-0 ms-2">{name}</h3>
                   <h4 className="card-subtitle text-muted mt-2 ms-2 pt-0">{this.props.exercise}</h4>
-                  {/* <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#editModal"></i> */}
                 </div>
                 <h5 className="mb-1 text-decoration-underline">Description:</h5>
                 <p className="card-text lead ms-4 mb-5">{description}</p>
@@ -79,9 +93,8 @@ export default class ExerciseAssignment extends React.Component {
                   <a href={`#assignExercise?patientExerciseId=${patientExerciseId}&exerciseId=${exerciseId}&patientId=${patientId}&exercise=${this.props.exercise}`} className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
                     <span>Update</span>
                   </a>
-                  <button className="btn btn-danger my-2">
+                  <button className="btn btn-danger my-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
                     <span>Remove</span>
-                    {/* Move modal here, use to confirm Delete request */}
                   </button>
                 </div>
               </div>
