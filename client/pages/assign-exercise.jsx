@@ -5,6 +5,7 @@ export default class AssignExercise extends React.Component {
     super(props);
     this.state = {
       exercise: null,
+      patientExercise: null,
       sets: '',
       repetitions: '',
       hold: ''
@@ -17,6 +18,19 @@ export default class AssignExercise extends React.Component {
     fetch(`/api/exercises/${this.props.exerciseId}`)
       .then(res => res.json())
       .then(exercise => this.setState({ exercise }));
+
+    if (this.props.patientExerciseId !== null) {
+      fetch(`/api/patientExercises/${this.props.patientId}/${this.props.exerciseId}`)
+        .then(res => res.json())
+        .then(patientExercise => {
+          this.setState({
+            patientExercise,
+            sets: patientExercise.sets,
+            repetitions: patientExercise.repetitions,
+            hold: patientExercise.hold
+          });
+        });
+    }
   }
 
   handleChange(event) {
@@ -41,7 +55,11 @@ export default class AssignExercise extends React.Component {
     if (patientExercise.hold === '') {
       patientExercise.hold = 0;
     }
-    this.addPatientExercise(patientExercise);
+    if (this.props.patientExerciseId !== null) {
+      this.updatePatientExercise(patientExercise);
+    } else {
+      this.addPatientExercise(patientExercise);
+    }
     this.setState({
       sets: '',
       repetitions: '',
@@ -62,20 +80,45 @@ export default class AssignExercise extends React.Component {
       });
   }
 
+  updatePatientExercise(patientExercise) {
+    fetch(`/api/patientExercises/${this.props.patientExerciseId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'PATCH',
+      body: JSON.stringify(patientExercise)
+    })
+      .then(res => {
+        location.hash = `patientProfile?patientId=${this.props.patientId}`;
+      });
+  }
+
   render() {
     if (!this.state.exercise) return null;
+    const patientId = this.props.patientId;
+    const exerciseId = this.props.exerciseId;
     const { name, targetArea, description } = this.state.exercise;
+    let heading = 'Assign Exercise';
+    let headingLink = `#chooseExercise?patientId=${this.props.patientId}`;
+    let headingButton = 'Your Exercises';
+    let submitButton = 'Assign Exercise';
+    if (this.props.patientExerciseId !== null) {
+      heading = 'Update Exercise';
+      headingLink = `#exerciseAssignment?patientId=${patientId}&exerciseId=${exerciseId}&exercise=${this.props.exercise}`;
+      headingButton = ' Exercise';
+      submitButton = 'Submit Update';
+    }
 
     return (
       <div className="container w-75">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-9 col-xl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
-              <h1 className="me-2">Assign Exercise</h1>
+              <h1 className="me-2">{heading}</h1>
             </div>
-            <a href={`#chooseExercise?patientId=${this.props.patientId}`} className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
+            <a href={headingLink} className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
               <i className="fa-solid fa-angle-left fa-sm"></i>
-              <span className="ms-1">Your Exercises</span>
+              <span className="ms-1">{headingButton}</span>
             </a>
           </div>
         </div>
@@ -106,9 +149,12 @@ export default class AssignExercise extends React.Component {
                       <input type="number" className="form-control" id="hold" min="0" max="600" value={this.state.hold} onChange={this.handleChange} />
                     </div>
                   </div>
-                  <div className="d-flex justify-content-end">
+                  <div className="d-flex justify-content-between">
+                    <a href={headingLink} className="btn btn-danger ms-3 mb-2">
+                      <span>Cancel</span>
+                    </a>
                     <div>
-                      <button type="submit" className="btn" style={{ backgroundColor: '#D78521', color: 'white' }}>Assign Exercise</button>
+                      <button type="submit" className="btn me-3 mb-2" style={{ backgroundColor: '#D78521', color: 'white' }}>{submitButton}</button>
                     </div>
                   </div>
                 </form>

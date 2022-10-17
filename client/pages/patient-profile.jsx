@@ -108,7 +108,7 @@ export default class PatientProfile extends React.Component {
             </div>
             <a href="#" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
               <i className="fa-solid fa-angle-left fa-sm"></i>
-              <span>Patients</span>
+              <span> Patients</span>
             </a>
           </div>
         </div>
