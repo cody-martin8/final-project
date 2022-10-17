@@ -446,6 +446,32 @@ app.patch('/api/patientExercises/:patientExerciseId', (req, res) => {
     });
 });
 
+app.delete('/api/patientExercises/:patientExerciseId', (req, res) => {
+  const patientExerciseId = Number(req.params.patientExerciseId);
+  if (!Number.isInteger(patientExerciseId) || patientExerciseId < 1) {
+    throw new ClientError(400, 'patientExerciseId must be a positive integer');
+  }
+  const sql = `
+    delete from "patientExercises"
+     where "patientExerciseId" = $1
+    returning *;
+  `;
+  const params = [patientExerciseId];
+  db.query(sql, params)
+    .then(result => {
+      if (!result.rows[0]) {
+        throw new ClientError(404, `cannot find patientExercise with patientExerciseId ${patientExerciseId}`);
+      }
+      res.sendStatus(204);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'an unexpected error occurred'
+      });
+    });
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {
