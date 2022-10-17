@@ -149,9 +149,12 @@ export default class AssignExercise extends React.Component {
                       <input type="number" className="form-control" id="hold" min="0" max="600" value={this.state.hold} onChange={this.handleChange} />
                     </div>
                   </div>
-                  <div className="d-flex justify-content-end">
+                  <div className="d-flex justify-content-between">
+                    <a href={headingLink} className="btn btn-danger ms-3 mb-2">
+                      <span>Cancel</span>
+                    </a>
                     <div>
-                      <button type="submit" className="btn" style={{ backgroundColor: '#D78521', color: 'white' }}>{submitButton}</button>
+                      <button type="submit" className="btn me-3 mb-2" style={{ backgroundColor: '#D78521', color: 'white' }}>{submitButton}</button>
                     </div>
                   </div>
                 </form>
