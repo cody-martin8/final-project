@@ -1,4 +1,5 @@
 import React from 'react';
+import AppContext from '../lib/app-context';
 
 export default class PatientTable extends React.Component {
   constructor(props) {
@@ -9,7 +10,12 @@ export default class PatientTable extends React.Component {
   }
 
   componentDidMount() {
-    fetch('/api/patients')
+    const token = window.localStorage.getItem('react-context-jwt');
+    fetch('/api/patients', {
+      headers: {
+        'X-Access-Token': token
+      }
+    })
       .then(res => res.json())
       .then(patients => this.setState({ patients }));
   }
@@ -63,3 +69,4 @@ function Patient(props) {
     </>
   );
 }
+PatientTable.contextType = AppContext;

@@ -12,6 +12,14 @@ export default function ExerciseCards(props) {
     );
   }
 
+  if (route.path === 'exercises' && props.exercises.length === 0) {
+    return (
+      <div className="col-12 col-lg-7 col-xl-7 col-xxl-5 lead d-block d-flex justify-content-center">
+        <p>No exercises have been created on your account yet. You can create exercises by clicking &quot;New Exercise&quot; above.</p>
+      </div>
+    );
+  }
+
   return (
     <ul>
       {

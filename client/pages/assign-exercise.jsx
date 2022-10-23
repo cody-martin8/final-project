@@ -1,4 +1,6 @@
 import React from 'react';
+import Redirect from '../components/redirect';
+import AppContext from '../lib/app-context';
 
 export default class AssignExercise extends React.Component {
   constructor(props) {
@@ -15,12 +17,20 @@ export default class AssignExercise extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`/api/exercises/${this.props.exerciseId}`)
+    fetch(`/api/exercises/${this.props.exerciseId}`, {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(exercise => this.setState({ exercise }));
 
     if (this.props.patientExerciseId !== null) {
-      fetch(`/api/patientExercises/${this.props.patientId}/${this.props.exerciseId}`)
+      fetch(`/api/patientExercises/${this.props.patientId}/${this.props.exerciseId}`, {
+        headers: {
+          'X-Access-Token': this.context.token
+        }
+      })
         .then(res => res.json())
         .then(patientExercise => {
           this.setState({
@@ -70,7 +80,8 @@ export default class AssignExercise extends React.Component {
   addPatientExercise(patientExercise) {
     fetch('/api/patientExercises', {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Access-Token': this.context.token
       },
       method: 'POST',
       body: JSON.stringify(patientExercise)
@@ -83,7 +94,8 @@ export default class AssignExercise extends React.Component {
   updatePatientExercise(patientExercise) {
     fetch(`/api/patientExercises/${this.props.patientExerciseId}`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Access-Token': this.context.token
       },
       method: 'PATCH',
       body: JSON.stringify(patientExercise)
@@ -94,6 +106,8 @@ export default class AssignExercise extends React.Component {
   }
 
   render() {
+    if (!this.context.user) return <Redirect to="sign-in" />;
+
     if (!this.state.exercise) return null;
     const patientId = this.props.patientId;
     const exerciseId = this.props.exerciseId;
@@ -166,3 +180,4 @@ export default class AssignExercise extends React.Component {
     );
   }
 }
+AssignExercise.contextType = AppContext;

@@ -1,4 +1,6 @@
 import React from 'react';
+import Redirect from '../components/redirect';
+import AppContext from '../lib/app-context';
 
 export default class NewExerciseForm extends React.Component {
   constructor(props) {
@@ -17,12 +19,20 @@ export default class NewExerciseForm extends React.Component {
   }
 
   componentDidMount() {
-    fetch('/api/exercises')
+    fetch('/api/exercises', {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(exercises => this.setState({ exercises }));
 
     if (this.props.exerciseId !== null) {
-      fetch(`/api/exercises/${this.props.exerciseId}`)
+      fetch(`/api/exercises/${this.props.exerciseId}`, {
+        headers: {
+          'X-Access-Token': this.context.token
+        }
+      })
         .then(res => res.json())
         .then(editExercise => {
           this.setState({
@@ -64,7 +74,8 @@ export default class NewExerciseForm extends React.Component {
   addExercise(newExercise) {
     fetch('/api/exercises', {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Access-Token': this.context.token
       },
       method: 'POST',
       body: JSON.stringify(newExercise)
@@ -77,7 +88,8 @@ export default class NewExerciseForm extends React.Component {
   editExercise(exercise) {
     fetch(`/api/exercises/${exercise.exerciseId}`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Access-Token': this.context.token
       },
       method: 'PATCH',
       body: JSON.stringify(exercise)
@@ -88,6 +100,7 @@ export default class NewExerciseForm extends React.Component {
   }
 
   render() {
+    if (!this.context.user) return <Redirect to="sign-in" />;
 
     const nameArray = [];
     for (let i = 0; i < this.state.exercises.length; i++) {
@@ -154,3 +167,4 @@ export default class NewExerciseForm extends React.Component {
     );
   }
 }
+NewExerciseForm.contextType = AppContext;

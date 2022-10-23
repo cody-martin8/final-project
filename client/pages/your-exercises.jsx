@@ -1,4 +1,6 @@
 import React from 'react';
+import Redirect from '../components/redirect';
+import AppContext from '../lib/app-context';
 import ExerciseCards from '../components/exercise-cards';
 
 export default class YourExercises extends React.Component {
@@ -43,12 +45,18 @@ export default class YourExercises extends React.Component {
   }
 
   componentDidMount() {
-    fetch('/api/exercises')
+    fetch('/api/exercises', {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(exercises => this.setState({ exercises }));
   }
 
   render() {
+    if (!this.context.user) return <Redirect to="sign-in" />;
+
     const targetArea = this.state.targetArea;
     const exercises = this.state.exercises;
 
@@ -72,7 +80,7 @@ export default class YourExercises extends React.Component {
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-7 col-xl-7 col-xxl-6 mb-3 p-lg-1 d-flex justify-content-between">
+          <div className="col-12 col-lg-7 col-xl-7 col-xxl-6 mb-4 p-lg-1 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h4 className="me-3">{targetArea} Exercises</h4>
             </div>
@@ -92,9 +100,12 @@ export default class YourExercises extends React.Component {
               </ul>
             </div>
           </div>
-          <ExerciseCards exercises={this.state.exercises} />
+          <div className="row justify-content-center mb-5">
+            <ExerciseCards exercises={this.state.exercises} />
+          </div>
         </div>
       </div>
     );
   }
 }
+YourExercises.contextType = AppContext;
