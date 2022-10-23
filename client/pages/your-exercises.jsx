@@ -74,7 +74,7 @@ export default class YourExercises extends React.Component {
           <div className="col-12 col-lg-8 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h1 className="me-3">Your Exercises</h1>
-              <i className="fa-regular fa-folder-open fa-2xl mb-1"></i>
+              <i className="fa-regular fa-folder-open fa-2xl mb-1 d-none d-sm-block"></i>
             </div>
             <a href="#newExercise" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>New Exercise</a>
           </div>

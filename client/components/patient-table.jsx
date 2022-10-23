@@ -10,10 +10,9 @@ export default class PatientTable extends React.Component {
   }
 
   componentDidMount() {
-    const token = window.localStorage.getItem('react-context-jwt');
     fetch('/api/patients', {
       headers: {
-        'X-Access-Token': token
+        'X-Access-Token': this.context.token
       }
     })
       .then(res => res.json())
@@ -21,6 +20,17 @@ export default class PatientTable extends React.Component {
   }
 
   render() {
+    if (!this.state.patients[0]) {
+      return (
+        <div className="row justify-content-center mt-5">
+          <div className="card col-10 col-lg-10 col-xxl-7 lead d-flex justify-content-center">
+            <div className="card-body">
+              No patient profiles have been created on your account yet. You can create patient profiles by clicking &quot;New Patient&quot; above.
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="row justify-content-center">
