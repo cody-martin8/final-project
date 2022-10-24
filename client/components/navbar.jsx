@@ -20,7 +20,17 @@ export default class Navbar extends React.Component {
                     <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
                   </div>
                   <div className="offcanvas-body">
-                    {user !== null &&
+                    {user === null &&
+                      <>
+                        <div className="mb-3">
+                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#sign-in'; }}>Sign In</button>
+                        </div>
+                        <div className="mb-3">
+                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#sign-up'; }}>Sign Up</button>
+                        </div>
+                      </>
+                    }
+                    {(user !== null && user.accountType === 'therapist') &&
                       <>
                         <div className="mb-3">
                           <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#'; }}>Patients</button>
@@ -39,13 +49,13 @@ export default class Navbar extends React.Component {
                         </div>
                       </>
                     }
-                    {user === null &&
+                    {(user !== null && user.accountType === 'patient') &&
                       <>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#sign-in'; }}>Sign In</button>
+                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#'; }}>My Exercises</button>
                         </div>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#sign-up'; }}>Sign Up</button>
+                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={handleSignOut}>Sign Out</button>
                         </div>
                       </>
                     }

@@ -7,7 +7,8 @@ export default class AuthForm extends React.Component {
     this.state = {
       email: '',
       password: '',
-      accountType: 'therapist',
+      accountType: '',
+      patientId: null,
       error: false
     };
     this.handleChange = this.handleChange.bind(this);
@@ -57,6 +58,12 @@ export default class AuthForm extends React.Component {
     const submitButtonText = action === 'sign-up'
       ? 'Register'
       : 'Log In';
+    const accountTypeDropdown = action === 'sign-up'
+      ? 'mb-3'
+      : 'd-none';
+    const patientIdInput = this.state.accountType === 'patient'
+      ? 'mb-3'
+      : 'd-none';
     const errorText = error
       ? 'alert alert-danger py-2 mb-3'
       : 'd-none';
@@ -88,6 +95,32 @@ export default class AuthForm extends React.Component {
             id="password"
             type="password"
             name="password"
+            onChange={handleChange}
+            className="form-control bg-light" />
+        </div>
+        <div className={accountTypeDropdown}>
+          <label htmlFor="accountType" className="form-label">
+            Account Type
+          </label>
+          <select
+            required
+            id="accountType"
+            name="accountType"
+            onChange={handleChange}
+            defaultValue="default"
+            className="form-select">
+            <option value="default" disabled>Select Account Type</option>
+            <option value="therapist">Physical Therapist</option>
+            <option value="patient">Patient</option>
+          </select>
+        </div>
+        <div className={patientIdInput}>
+          <label htmlFor="patientId" className="form-label">
+            Patient Id
+          </label>
+          <input
+            id="patientId"
+            name="patientId"
             onChange={handleChange}
             className="form-control bg-light" />
         </div>

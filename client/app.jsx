@@ -13,6 +13,8 @@ import ExerciseProfile from './pages/exercise-profile';
 import ChooseExercise from './pages/choose-exercise';
 import AssignExercise from './pages/assign-exercise';
 import ExerciseAssignment from './pages/exercise-assignment';
+import MyExercises from './pages/my-exercises';
+import ExerciseDetails from './pages/exercise-details';
 import NotFound from './pages/not-found';
 
 export default class App extends React.Component {
@@ -52,11 +54,24 @@ export default class App extends React.Component {
 
   renderPage() {
     const { path, params } = this.state.route;
-    if (path === '') {
-      return <Home />;
+    let accountType;
+    if (this.state.user) {
+      accountType = this.state.user.accountType;
     }
     if (path === 'sign-in' || path === 'sign-up') {
       return <Auth />;
+    }
+    if (path === '' && accountType === 'patient') {
+      return <MyExercises />;
+    }
+    if (path === 'exerciseDetails' && accountType === 'patient') {
+      const exerciseId = params.get('exerciseId');
+      const exercise = params.get('exercise');
+      const patientExerciseId = params.get('patientExerciseId');
+      return <ExerciseDetails exerciseId={exerciseId} exercise={exercise} patientExerciseId={patientExerciseId} />;
+    }
+    if (path === '') {
+      return <Home />;
     }
     if (path === 'exercises') {
       return <YourExercises />;
