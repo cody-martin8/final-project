@@ -48,10 +48,10 @@ export default class AuthForm extends React.Component {
     const { action } = this.props;
     const { handleChange, handleSubmit } = this;
     const { error } = this.state;
-    const alternateActionHref = action === 'sign-up'
+    const actionHref = action === 'sign-up'
       ? '#sign-in'
       : '#sign-up';
-    const alternateActionText = action === 'sign-up'
+    const actionText = action === 'sign-up'
       ? 'Sign in instead'
       : 'Register now';
     const submitButtonText = action === 'sign-up'
@@ -93,8 +93,8 @@ export default class AuthForm extends React.Component {
         </div>
         <div className="d-flex justify-content-between align-items-center">
           <small>
-            <a className="text-muted" href={alternateActionHref}>
-              {alternateActionText}
+            <a className="text-muted" href={actionHref}>
+              {actionText}
             </a>
           </small>
           <button type="submit" className="btn" style={{ backgroundColor: '#282A3E', color: 'white' }}>
