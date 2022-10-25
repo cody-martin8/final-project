@@ -3,8 +3,9 @@ import { parseRoute } from '../lib';
 
 export default function ExerciseCards(props) {
   const route = parseRoute(window.location.hash);
+  const exercises = props.exercises;
 
-  if (route.path === 'patientProfile' && props.exercises.length === 0) {
+  if (route.path === 'patientProfile' && exercises.length === 0) {
     return (
       <div className="card col-12 col-lg-7 col-xl-7 col-xxl-6 lead d-block d-flex justify-content-center">
         <div className="card-body">
@@ -14,7 +15,7 @@ export default function ExerciseCards(props) {
     );
   }
 
-  if (route.path === 'exercises' && props.exercises.length === 0) {
+  if (route.path === 'exercises' && exercises.length === 0) {
     return (
       <div className="card col-12 col-lg-7 col-xl-7 col-xxl-6 lead d-block d-flex justify-content-center">
         <div className="card-body">
@@ -27,7 +28,7 @@ export default function ExerciseCards(props) {
   return (
     <ul>
       {
-        props.exercises.map(exercise => (
+        exercises.map(exercise => (
           <li key={exercise.exerciseId} className={exercise.view}>
             <Exercise exercise={exercise} route={route} patientExercises={props.patientExercises} />
           </li>
