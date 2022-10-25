@@ -1,4 +1,6 @@
 import React from 'react';
+import Redirect from '../components/redirect';
+import AppContext from '../lib/app-context';
 import PatientDropdown from '../components/patient-dropdown';
 
 export default class ExerciseProfile extends React.Component {
@@ -13,15 +15,27 @@ export default class ExerciseProfile extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`/api/exercises/${this.props.exerciseId}`)
+    fetch(`/api/exercises/${this.props.exerciseId}`, {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(exercise => this.setState({ exercise }));
 
-    fetch('/api/activePatients')
+    fetch('/api/activePatients', {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(patients => this.setState({ patients }));
 
-    fetch(`/api/exercisePatients/${this.props.exerciseId}`)
+    fetch(`/api/exercisePatients/${this.props.exerciseId}`, {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(patientExercises => this.setState({ patientExercises }));
   }
@@ -29,7 +43,8 @@ export default class ExerciseProfile extends React.Component {
   deleteProfile() {
     fetch(`/api/exercises/${this.props.exerciseId}`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Access-Token': this.context.token
       },
       method: 'DELETE'
     })
@@ -39,6 +54,8 @@ export default class ExerciseProfile extends React.Component {
   }
 
   render() {
+    if (!this.context.user) return <Redirect to="sign-in" />;
+
     if (!this.state.exercise) return null;
     if (!this.state.patients) return null;
     if (!this.state.patientExercises) return null;
@@ -136,3 +153,4 @@ export default class ExerciseProfile extends React.Component {
     );
   }
 }
+ExerciseProfile.contextType = AppContext;

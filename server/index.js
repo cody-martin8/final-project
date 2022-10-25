@@ -1,9 +1,12 @@
 require('dotenv/config');
 const pg = require('pg');
+const argon2 = require('argon2');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const errorMiddleware = require('./error-middleware');
+const authorizationMiddleware = require('./authorization-middleware');
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -20,7 +23,66 @@ const jsonMiddleware = express.json();
 
 app.use(jsonMiddleware);
 
+app.post('/api/auth/sign-up', (req, res, next) => {
+  const { email, password, accountType } = req.body;
+  if (!email || !password || !accountType) {
+    throw new ClientError(400, 'email, password, and accountType are required fields');
+  }
+  argon2
+    .hash(password)
+    .then(hashedPassword => {
+      const sql = `
+        insert into "users" ("email", "hashedPassword", "accountType")
+        values ($1, $2, $3)
+        returning "userId", "email", "accountType", "createdAt"
+      `;
+      const params = [email, hashedPassword, accountType];
+      return db.query(sql, params);
+    })
+    .then(result => {
+      const [user] = result.rows;
+      res.status(201).json(user);
+    })
+    .catch(err => next(err));
+});
+
+app.post('/api/auth/sign-in', (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new ClientError(401, 'invalid login');
+  }
+  const sql = `
+    select "userId",
+           "hashedPassword"
+      from "users"
+     where "email" = $1
+  `;
+  const params = [email];
+  db.query(sql, params)
+    .then(result => {
+      const [user] = result.rows;
+      if (!user) {
+        throw new ClientError(401, 'invalid login');
+      }
+      const { userId, hashedPassword } = user;
+      return argon2
+        .verify(hashedPassword, password)
+        .then(isMatching => {
+          if (!isMatching) {
+            throw new ClientError(401, 'invalid login');
+          }
+          const payload = { userId, email };
+          const token = jwt.sign(payload, process.env.TOKEN_SECRET);
+          res.json({ token, user: payload });
+        });
+    })
+    .catch(err => next(err));
+});
+
+app.use(authorizationMiddleware);
+
 app.get('/api/patients/:patientId', (req, res, next) => {
+  const { userId } = req.user;
   const patientId = Number(req.params.patientId);
   if (!Number.isInteger(patientId) || patientId < 1) {
     throw new ClientError(400, 'patientId must be a positive integer');
@@ -36,8 +98,9 @@ app.get('/api/patients/:patientId', (req, res, next) => {
            "isActive"
       from "patients"
      where "patientId" = $1
+       and "userId" = $2
   `;
-  const params = [patientId];
+  const params = [patientId, userId];
   db.query(sql, params)
     .then(result => {
       if (!result.rows[0]) {
@@ -49,19 +112,23 @@ app.get('/api/patients/:patientId', (req, res, next) => {
 });
 
 app.get('/api/activePatients', (req, res, next) => {
+  const { userId } = req.user;
   const sql = `
     select "patientId",
            "firstName",
            "lastName"
       from "patients"
      where "isActive" = 'true'
+       and "userId" = $1
   `;
-  db.query(sql)
+  const params = [userId];
+  db.query(sql, params)
     .then(result => res.json(result.rows))
     .catch(err => next(err));
 });
 
 app.get('/api/patients', (req, res, next) => {
+  const { userId } = req.user;
   const sql = `
     select "patientId",
            "firstName",
@@ -71,23 +138,26 @@ app.get('/api/patients', (req, res, next) => {
            "isActive",
            "email"
       from "patients"
+     where "userId" = $1
   `;
-  db.query(sql)
+  const params = [userId];
+  db.query(sql, params)
     .then(result => res.json(result.rows))
     .catch(err => next(err));
 });
 
 app.post('/api/patients', (req, res) => {
+  const { userId } = req.user;
   const { firstName, lastName, patientEmail, age, injuryAilment, notes } = req.body;
   if (!firstName || !lastName || !patientEmail || !age || !injuryAilment) {
     throw new ClientError(400, 'firstName, lastName, patientEmail, age, and injuryAilment are required fields');
   }
   const sql = `
-    insert into "patients" ("firstName", "lastName", "email", "age", "injuryAilment", "notes", "isActive")
-    values ($1, $2, $3, $4, $5, $6, 'true')
+    insert into "patients" ("firstName", "lastName", "email", "age", "injuryAilment", "notes", "isActive", "userId")
+    values ($1, $2, $3, $4, $5, $6, 'true', $7)
     returning *
   `;
-  const params = [firstName, lastName, patientEmail, age, injuryAilment, notes];
+  const params = [firstName, lastName, patientEmail, age, injuryAilment, notes, userId];
   db.query(sql, params)
     .then(result => {
       const [patient] = result.rows;
@@ -102,6 +172,7 @@ app.post('/api/patients', (req, res) => {
 });
 
 app.patch('/api/patients/:patientId', (req, res) => {
+  const { userId } = req.user;
   const { firstName, lastName, patientEmail, age, injuryAilment, notes, isActive } = req.body;
   if (!firstName || !lastName || !patientEmail || !age || !injuryAilment) {
     throw new ClientError(400, 'firstName, lastName, patientEmail, age, and injuryAilment are required fields');
@@ -123,9 +194,10 @@ app.patch('/api/patients/:patientId', (req, res) => {
            "notes" = $6,
            "isActive" = $7
      where "patientId" = $8
+       and "userId" = $9
      returning *
   `;
-  const params = [firstName, lastName, patientEmail, injuryAilment, age, notes, isActive, patientId];
+  const params = [firstName, lastName, patientEmail, injuryAilment, age, notes, isActive, patientId, userId];
   db.query(sql, params)
     .then(result => {
       const [patient] = result.rows;
@@ -146,6 +218,7 @@ app.patch('/api/patients/:patientId', (req, res) => {
 });
 
 app.delete('/api/patients/:patientId', (req, res) => {
+  const { userId } = req.user;
   const patientId = Number(req.params.patientId);
   if (!Number.isInteger(patientId) || patientId < 1) {
     throw new ClientError(400, 'patientId must be a positive integer');
@@ -153,9 +226,10 @@ app.delete('/api/patients/:patientId', (req, res) => {
   const sql = `
     delete from "patients"
      where "patientId" = $1
+       and "userId" = $2
     returning *;
   `;
-  const params = [patientId];
+  const params = [patientId, userId];
   db.query(sql, params)
     .then(result => {
       if (!result.rows[0]) {
@@ -172,6 +246,7 @@ app.delete('/api/patients/:patientId', (req, res) => {
 });
 
 app.get('/api/exercises/:exerciseId', (req, res, next) => {
+  const { userId } = req.user;
   const exerciseId = Number(req.params.exerciseId);
   if (!exerciseId) {
     throw new ClientError(400, 'exerciseId must be a positive integer');
@@ -183,8 +258,9 @@ app.get('/api/exercises/:exerciseId', (req, res, next) => {
            "description"
       from "exercises"
      where "exerciseId" = $1
+       and "userId" = $2
   `;
-  const params = [exerciseId];
+  const params = [exerciseId, userId];
   db.query(sql, params)
     .then(result => {
       if (!result.rows[0]) {
@@ -196,19 +272,23 @@ app.get('/api/exercises/:exerciseId', (req, res, next) => {
 });
 
 app.get('/api/exercises', (req, res, next) => {
+  const { userId } = req.user;
   const sql = `
     select "exerciseId",
            "name",
            "targetArea",
            "description"
       from "exercises"
+     where "userId" = $1
   `;
-  db.query(sql)
+  const params = [userId];
+  db.query(sql, params)
     .then(result => res.json(result.rows))
     .catch(err => next(err));
 });
 
 app.post('/api/exercises', (req, res) => {
+  const { userId } = req.user;
   const { name, targetArea, description } = req.body;
   if (!name || !targetArea || !description) {
     res.status(400).json({
@@ -217,11 +297,11 @@ app.post('/api/exercises', (req, res) => {
     return;
   }
   const sql = `
-    insert into "exercises" ("name", "targetArea", "description")
-    values ($1, $2, $3)
+    insert into "exercises" ("name", "targetArea", "description", "userId")
+    values ($1, $2, $3, $4)
     returning *
   `;
-  const params = [name, targetArea, description];
+  const params = [name, targetArea, description, userId];
   db.query(sql, params)
     .then(result => {
       const [exercise] = result.rows;
@@ -236,6 +316,7 @@ app.post('/api/exercises', (req, res) => {
 });
 
 app.patch('/api/exercises/:exerciseId', (req, res) => {
+  const { userId } = req.user;
   const { name, targetArea, description } = req.body;
   if (!name || !targetArea || !description) {
     throw new ClientError(400, 'name, targetArea, and description are required fields');
@@ -250,9 +331,10 @@ app.patch('/api/exercises/:exerciseId', (req, res) => {
            "targetArea" = $2,
            "description" = $3
      where "exerciseId" = $4
+       and "userId" = $5
      returning *
   `;
-  const params = [name, targetArea, description, exerciseId];
+  const params = [name, targetArea, description, exerciseId, userId];
   db.query(sql, params)
     .then(result => {
       const [exercise] = result.rows;
@@ -273,6 +355,7 @@ app.patch('/api/exercises/:exerciseId', (req, res) => {
 });
 
 app.delete('/api/exercises/:exerciseId', (req, res) => {
+  const { userId } = req.user;
   const exerciseId = Number(req.params.exerciseId);
   if (!Number.isInteger(exerciseId) || exerciseId < 1) {
     throw new ClientError(400, 'exerciseId must be a positive integer');
@@ -280,9 +363,10 @@ app.delete('/api/exercises/:exerciseId', (req, res) => {
   const sql = `
     delete from "exercises"
      where "exerciseId" = $1
+       and "userId" = $2
     returning *;
   `;
-  const params = [exerciseId];
+  const params = [exerciseId, userId];
   db.query(sql, params)
     .then(result => {
       if (!result.rows[0]) {
@@ -299,6 +383,7 @@ app.delete('/api/exercises/:exerciseId', (req, res) => {
 });
 
 app.get('/api/patientExercises/:patientId', (req, res, next) => {
+  const { userId } = req.user;
   const patientId = Number(req.params.patientId);
   if (!Number.isInteger(patientId) || patientId < 1) {
     throw new ClientError(400, 'patientId must be a positive integer');
@@ -311,9 +396,10 @@ app.get('/api/patientExercises/:patientId', (req, res, next) => {
            "feedback",
            "patientExerciseId"
       from "patientExercises"
-      where "patientId" = $1
+     where "patientId" = $1
+       and "userId" = $2
   `;
-  const params = [patientId];
+  const params = [patientId, userId];
   db.query(sql, params)
     .then(result => {
       if (!result.rows) {
@@ -325,6 +411,7 @@ app.get('/api/patientExercises/:patientId', (req, res, next) => {
 });
 
 app.get('/api/exercisePatients/:exerciseId', (req, res, next) => {
+  const { userId } = req.user;
   const exerciseId = Number(req.params.exerciseId);
   if (!Number.isInteger(exerciseId) || exerciseId < 1) {
     throw new ClientError(400, 'exerciseId must be a positive integer');
@@ -337,9 +424,10 @@ app.get('/api/exercisePatients/:exerciseId', (req, res, next) => {
            "feedback",
            "patientExerciseId"
       from "patientExercises"
-      where "exerciseId" = $1
+     where "exerciseId" = $1
+       and "userId" = $2
   `;
-  const params = [exerciseId];
+  const params = [exerciseId, userId];
   db.query(sql, params)
     .then(result => {
       if (!result.rows) {
@@ -351,6 +439,7 @@ app.get('/api/exercisePatients/:exerciseId', (req, res, next) => {
 });
 
 app.get('/api/patientExercises/:patientId/:exerciseId', (req, res, next) => {
+  const { userId } = req.user;
   const patientId = Number(req.params.patientId);
   const exerciseId = Number(req.params.exerciseId);
   if (!Number.isInteger(patientId) || patientId < 1) {
@@ -368,10 +457,11 @@ app.get('/api/patientExercises/:patientId/:exerciseId', (req, res, next) => {
            "exerciseId",
            "patientExerciseId"
       from "patientExercises"
-      where "patientId" = $1
-        and "exerciseId" = $2
+     where "patientId" = $1
+       and "exerciseId" = $2
+       and "userId" = $3
   `;
-  const params = [patientId, exerciseId];
+  const params = [patientId, exerciseId, userId];
   db.query(sql, params)
     .then(result => {
       if (!result.rows[0]) {
@@ -383,6 +473,7 @@ app.get('/api/patientExercises/:patientId/:exerciseId', (req, res, next) => {
 });
 
 app.post('/api/patientExercises', (req, res) => {
+  const { userId } = req.user;
   const { patientId, exerciseId, repetitions, sets, hold, feedback } = req.body;
   if (!patientId || !exerciseId || !sets) {
     res.status(400).json({
@@ -391,11 +482,11 @@ app.post('/api/patientExercises', (req, res) => {
     return;
   }
   const sql = `
-    insert into "patientExercises" ("patientId", "exerciseId", "repetitions", "sets", "hold", "feedback")
-    values ($1, $2, $3, $4, $5, $6)
+    insert into "patientExercises" ("patientId", "exerciseId", "repetitions", "sets", "hold", "feedback", "userId")
+    values ($1, $2, $3, $4, $5, $6, $7)
     returning *
   `;
-  const params = [patientId, exerciseId, repetitions, sets, hold, feedback];
+  const params = [patientId, exerciseId, repetitions, sets, hold, feedback, userId];
   db.query(sql, params)
     .then(result => {
       const [patientExercise] = result.rows;
@@ -410,6 +501,7 @@ app.post('/api/patientExercises', (req, res) => {
 });
 
 app.patch('/api/patientExercises/:patientExerciseId', (req, res) => {
+  const { userId } = req.user;
   const { sets, repetitions, hold } = req.body;
   if (!sets) {
     throw new ClientError(400, 'sets is a required field');
@@ -424,9 +516,10 @@ app.patch('/api/patientExercises/:patientExerciseId', (req, res) => {
            "repetitions" = $2,
            "hold" = $3
      where "patientExerciseId" = $4
+       and "userId" = $5
      returning *
   `;
-  const params = [sets, repetitions, hold, patientExerciseId];
+  const params = [sets, repetitions, hold, patientExerciseId, userId];
   db.query(sql, params)
     .then(result => {
       const [patientExercise] = result.rows;
@@ -447,6 +540,7 @@ app.patch('/api/patientExercises/:patientExerciseId', (req, res) => {
 });
 
 app.delete('/api/patientExercises/:patientExerciseId', (req, res) => {
+  const { userId } = req.user;
   const patientExerciseId = Number(req.params.patientExerciseId);
   if (!Number.isInteger(patientExerciseId) || patientExerciseId < 1) {
     throw new ClientError(400, 'patientExerciseId must be a positive integer');
@@ -454,9 +548,10 @@ app.delete('/api/patientExercises/:patientExerciseId', (req, res) => {
   const sql = `
     delete from "patientExercises"
      where "patientExerciseId" = $1
+       and "userId" = $2
     returning *;
   `;
-  const params = [patientExerciseId];
+  const params = [patientExerciseId, userId];
   db.query(sql, params)
     .then(result => {
       if (!result.rows[0]) {

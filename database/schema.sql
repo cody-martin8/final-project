@@ -8,9 +8,9 @@ create schema "public";
 
 create table "public"."users" (
 	"userId"         serial      not null,
-	"patientId"      integer     not null,
+	"patientId"      integer     default null,
 	"email"          text        not null unique,
-	"hashedPassword" text        not null unique,
+	"hashedPassword" text        not null,
 	"accountType"    text        not null,
 	"createdAt"      timestamptz not null default now(),
 	constraint "users_pk" primary key ("userId")
@@ -22,7 +22,8 @@ create table "public"."users" (
 
 create table "public"."patients" (
 	"patientId"     serial      not null,
-	"email"         text        not null unique,
+	"userId"        integer     not null,
+	"email"         text        not null,
 	"firstName"     text        not null,
 	"lastName"      text        not null,
 	"injuryAilment" text        not null,
@@ -39,6 +40,7 @@ create table "public"."patients" (
 
 create table "public"."exercises" (
 	"exerciseId"  serial      not null,
+	"userId"      integer     not null,
 	"name"        text        not null,
 	"targetArea"  text        not null,
 	"description" text        not null,
@@ -52,12 +54,13 @@ create table "public"."exercises" (
 
 create table "public"."patientExercises" (
 	"patientExerciseId" serial      not null,
+	"userId"            integer     not null,
 	"patientId"         integer     not null,
 	"exerciseId"        integer     not null,
 	"repetitions"       integer     not null,
 	"sets"              integer     not null,
   "hold"              integer     not null,
-	"feedback"          text        not null,
+	"feedback"          text        default null,
 	"assigned"          timestamptz not null default now(),
 	constraint "patientExercises_pk" primary key ("patientExerciseId")
 ) with (

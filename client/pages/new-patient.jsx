@@ -1,4 +1,6 @@
 import React from 'react';
+import Redirect from '../components/redirect';
+import AppContext from '../lib/app-context';
 
 export default class NewPatientForm extends React.Component {
   constructor(props) {
@@ -19,13 +21,21 @@ export default class NewPatientForm extends React.Component {
   }
 
   componentDidMount() {
-    fetch('/api/patients')
+    fetch('/api/patients', {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(patients => {
         this.setState({ patients });
       });
     if (this.props.patientId !== null) {
-      fetch(`/api/patients/${this.props.patientId}`)
+      fetch(`/api/patients/${this.props.patientId}`, {
+        headers: {
+          'X-Access-Token': this.context.token
+        }
+      })
         .then(res => res.json())
         .then(editPatient => {
           this.setState({
@@ -83,7 +93,8 @@ export default class NewPatientForm extends React.Component {
   addPatient(patient) {
     fetch('/api/patients', {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Access-Token': this.context.token
       },
       method: 'POST',
       body: JSON.stringify(patient)
@@ -96,7 +107,8 @@ export default class NewPatientForm extends React.Component {
   editPatient(patient) {
     fetch(`/api/patients/${patient.patientId}`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Access-Token': this.context.token
       },
       method: 'PATCH',
       body: JSON.stringify(patient)
@@ -107,6 +119,7 @@ export default class NewPatientForm extends React.Component {
   }
 
   render() {
+    if (!this.context.user) return <Redirect to="sign-in" />;
 
     const emailArray = [];
     for (let i = 0; i < this.state.patients.length; i++) {
@@ -181,3 +194,4 @@ export default class NewPatientForm extends React.Component {
     );
   }
 }
+NewPatientForm.contextType = AppContext;

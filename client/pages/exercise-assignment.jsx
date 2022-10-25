@@ -1,4 +1,6 @@
 import React from 'react';
+import Redirect from '../components/redirect';
+import AppContext from '../lib/app-context';
 
 export default class ExerciseAssignment extends React.Component {
   constructor(props) {
@@ -12,15 +14,27 @@ export default class ExerciseAssignment extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`/api/exercises/${this.props.exerciseId}`)
+    fetch(`/api/exercises/${this.props.exerciseId}`, {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(exercise => this.setState({ exercise }));
 
-    fetch(`/api/patients/${this.props.patientId}`)
+    fetch(`/api/patients/${this.props.patientId}`, {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(patient => this.setState({ patient }));
 
-    fetch(`/api/patientExercises/${this.props.patientId}/${this.props.exerciseId}`)
+    fetch(`/api/patientExercises/${this.props.patientId}/${this.props.exerciseId}`, {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(patientExercise => this.setState({ patientExercise }));
   }
@@ -30,7 +44,8 @@ export default class ExerciseAssignment extends React.Component {
     const { patientId } = this.state.patient;
     fetch(`/api/patientExercises/${patientExerciseId}`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Access-Token': this.context.token
       },
       method: 'DELETE'
     })
@@ -40,6 +55,8 @@ export default class ExerciseAssignment extends React.Component {
   }
 
   render() {
+    if (!this.context.user) return <Redirect to="sign-in" />;
+
     if (!this.state.patientExercise) return null;
     if (!this.state.exercise) return null;
     if (!this.state.patient) return null;
@@ -105,3 +122,4 @@ export default class ExerciseAssignment extends React.Component {
     );
   }
 }
+ExerciseAssignment.contextType = AppContext;

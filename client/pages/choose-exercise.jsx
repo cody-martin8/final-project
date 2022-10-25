@@ -1,4 +1,6 @@
 import React from 'react';
+import Redirect from '../components/redirect';
+import AppContext from '../lib/app-context';
 import ExerciseCards from '../components/exercise-cards';
 
 export default class ChooseExercise extends React.Component {
@@ -44,16 +46,26 @@ export default class ChooseExercise extends React.Component {
   }
 
   componentDidMount() {
-    fetch('/api/exercises')
+    fetch('/api/exercises', {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(exercises => this.setState({ exercises }));
 
-    fetch(`/api/patientExercises/${this.props.patientId}`)
+    fetch(`/api/patientExercises/${this.props.patientId}`, {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
       .then(res => res.json())
       .then(patientExercises => this.setState({ patientExercises }));
   }
 
   render() {
+    if (!this.context.user) return <Redirect to="sign-in" />;
+
     if (!this.state.exercises) return null;
     if (!this.state.patientExercises) return null;
 
@@ -112,3 +124,4 @@ export default class ChooseExercise extends React.Component {
     );
   }
 }
+ChooseExercise.contextType = AppContext;
