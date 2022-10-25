@@ -60,7 +60,7 @@ export default class ExerciseAssignment extends React.Component {
     if (!this.state.patientExercise) return null;
     if (!this.state.exercise) return null;
     if (!this.state.patient) return null;
-    const patientExerciseId = this.state.patientExercise.patientExerciseId;
+    const { patientExerciseId, feedback } = this.state.patientExercise;
     const { exerciseId, name, description } = this.state.exercise;
     const { firstName, lastName, patientId } = this.state.patient;
     const patientName = `${firstName} ${lastName}`;
@@ -105,7 +105,13 @@ export default class ExerciseAssignment extends React.Component {
                   <h4 className="card-subtitle text-muted mt-2 ms-2 pt-0">{this.props.exercise}</h4>
                 </div>
                 <h5 className="mb-1 text-decoration-underline">Description:</h5>
-                <p className="card-text lead ms-4 mb-5">{description}</p>
+                <p className="card-text lead ms-4 mb-4">{description}</p>
+                {(feedback) &&
+                  <>
+                    <h5 className="mb-1">Patient Feedback:</h5>
+                    <p className="card-text lead ms-4 mb-5">{feedback}</p>
+                  </>
+                }
                 <div className="d-flex justify-content-around">
                   <a href={`#assignExercise?patientExerciseId=${patientExerciseId}&exerciseId=${exerciseId}&patientId=${patientId}&exercise=${this.props.exercise}`} className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
                     <span>Update</span>
