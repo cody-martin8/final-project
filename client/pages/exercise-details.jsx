@@ -10,8 +10,8 @@ export default class ExerciseDetails extends React.Component {
       patientExercise: null,
       feedback: ''
     };
-    // this.handleChange = this.handleChange.bind(this);
-    // this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -23,51 +23,51 @@ export default class ExerciseDetails extends React.Component {
       .then(res => res.json())
       .then(exercise => this.setState({ exercise }));
 
-    // fetch(`/api/patientExercises/${this.context.user.patientId}/${this.props.exerciseId}`, {
-    //   headers: {
-    //     'X-Access-Token': this.context.token
-    //   }
-    // })
-    //   .then(res => res.json())
-    //   .then(patientExercise => {
-    //     if (patientExercise.feedback) {
-    //       this.setState({
-    //         patientExercise,
-    //         feedback: patientExercise.feedback
-    //       });
-    //     } else {
-    //       this.setState({ patientExercise });
-    //     }
-    //   });
+    fetch(`/api/patientExercises/${this.context.user.patientId}/${this.props.exerciseId}`, {
+      headers: {
+        'X-Access-Token': this.context.token
+      }
+    })
+      .then(res => res.json())
+      .then(patientExercise => {
+        if (patientExercise.feedback) {
+          this.setState({
+            patientExercise,
+            feedback: patientExercise.feedback
+          });
+        } else {
+          this.setState({ patientExercise });
+        }
+      });
   }
 
-  // handleChange(event) {
-  //   const { value } = event.target;
-  //   this.setState({ feedback: value });
-  // }
+  handleChange(event) {
+    const { value } = event.target;
+    this.setState({ feedback: value });
+  }
 
-  // handleSubmit(event) {
-  //   event.preventDefault();
-  //   const { sets, repetitions, hold } = this.state.patientExercise;
-  //   const exerciseFeedback = {
-  //     sets,
-  //     repetitions,
-  //     hold,
-  //     feedback: this.state.feedback
-  //   }
-  //   fetch(`/api/patientExercises/${this.props.patientExerciseId}`, {
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'X-Access-Token': this.context.token
-  //     },
-  //     method: 'PATCH',
-  //     body: JSON.stringify(exerciseFeedback)
-  //   })
-  //     .then(res => {
-  //       location.hash = '#';
-  //     });
-  //   this.setState({ feedback: '' });
-  // }
+  handleSubmit(event) {
+    event.preventDefault();
+    const { sets, repetitions, hold } = this.state.patientExercise;
+    const exerciseFeedback = {
+      sets,
+      repetitions,
+      hold,
+      feedback: this.state.feedback
+    };
+    fetch(`/api/patientExercises/${this.props.patientExerciseId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Access-Token': this.context.token
+      },
+      method: 'PATCH',
+      body: JSON.stringify(exerciseFeedback)
+    })
+      .then(res => {
+        location.hash = '#';
+      });
+    this.setState({ feedback: '' });
+  }
 
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
@@ -97,7 +97,7 @@ export default class ExerciseDetails extends React.Component {
               </div>
               <h5 className="mb-3 ms-2 text-decoration-underline">Description:</h5>
               <p className="card-text lead mx-3 mb-5">{description}</p>
-              {/* <div className="row justify-content-center">
+              <div className="row justify-content-center">
                 <form className="px-4 mb-3" onSubmit={this.handleSubmit}>
                   <div className="mb-4">
                     <label htmlFor="exerciseFeedback" className="form-label lead">Exercise Feedback</label>
@@ -105,14 +105,14 @@ export default class ExerciseDetails extends React.Component {
                   </div>
                   <div className="d-flex justify-content-between">
                     <div>
-                      <a href="#" className="btn btn-secondary">Clear</a>
+                      <a href="#" className="btn btn-secondary">Return</a>
                     </div>
                     <div>
                       <button type="submit" className="btn" style={{ backgroundColor: '#D78521', color: 'white' }}>Save Feedback</button>
                     </div>
                   </div>
                 </form>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
