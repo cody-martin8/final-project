@@ -7,6 +7,9 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const errorMiddleware = require('./error-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
+const sgMail = require('@sendgrid/mail');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -22,6 +25,53 @@ app.use(staticMiddleware);
 const jsonMiddleware = express.json();
 
 app.use(jsonMiddleware);
+
+app.post('/api/patient-sign-up', (req, res) => {
+  const { patientEmail } = req.body;
+  const msg = {
+    to: patientEmail,
+    from: {
+      email: '12martincody@gmail.com',
+      name: 'PT Connection'
+    },
+    subject: 'Account Sign-Up with PT Connection',
+    text: 'Dear [Patient], Welcome to PT Connection! To sign up for an account so that you can view your exercises, please follow the link below: https://pt-connection.cmartin.dev/ Thank you, PT Connection',
+    html: '<span>Dear Patient,</span><br> <p>Welcome to PT Connection!<br><br> To sign up for an account so that you can view your exercises, please follow the link below:</p> <span><a href=https://pt-connection.cmartin.dev/>PT Connection Account Sign-Up</a></span><br><br> <span>Thank you,</span><br> <span>PT Connection</span>'
+  };
+  sgMail
+    .send(msg)
+    .then(response => {
+      // console.log(response[0].statusCode)
+      // console.log(response[0].headers)
+      res.json(response[0].statusCode);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+});
+
+app.post('/api/forgot-password', (req, res) => {
+  const msg = {
+    to: 'tallguy894@gmail.com',
+    from: {
+      email: '12martincody@gmail.com',
+      name: 'PT Connection'
+    },
+    subject: 'Password Reset Request',
+    text: 'Hello [Patient], We have received your request to reset your password. Please follow the link below to change your password: https://pt-connection.cmartin.dev/ If you did not make this request, please ignore this email. Thank you, PT Connection',
+    html: '<span>Hello Patient,</span><br> <p>Thank you for using PT Connection!<br><br> We have received your request to reset your password. Please follow the link below to change your password:</p> <span><a href=https://pt-connection.cmartin.dev/>Password Reset</a></span><br> <p>If you did not make this request, please ignore this email.</p> <span>Thank you,</span><br> <span>PT Connection</span>'
+  };
+  sgMail
+    .send(msg)
+    .then(response => {
+      // console.log(response[0].statusCode)
+      // console.log(response[0].headers)
+      res.json(response[0].statusCode);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+});
 
 app.post('/api/auth/sign-up', (req, res, next) => {
   const { email, password, accountType, patientId } = req.body;

@@ -13,6 +13,15 @@ export default class AuthForm extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(event) {
+    event.preventDefault();
+    fetch('/api/forgot-password', {
+      method: 'POST'
+    });
+    // Add .then for displaying 'Email Sent' notification.
   }
 
   handleChange(event) {
@@ -130,6 +139,10 @@ export default class AuthForm extends React.Component {
               {actionText}
             </a>
           </small>
+          <button className="btn" style={{ backgroundColor: '#FFC857', color: 'white' }} onClick={this.handleClick}>
+            Send Email
+            {/* Reformat to a Forgot Password button */}
+          </button>
           <button type="submit" className="btn" style={{ backgroundColor: '#282A3E', color: 'white' }}>
             {submitButtonText}
           </button>

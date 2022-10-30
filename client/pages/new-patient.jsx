@@ -13,7 +13,8 @@ export default class NewPatientForm extends React.Component {
       age: '',
       injuryAilment: '',
       notes: '',
-      isActive: true
+      isActive: true,
+      emailSignUp: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -54,6 +55,10 @@ export default class NewPatientForm extends React.Component {
     if (event.target.id === 'isActive') {
       this.setState({
         isActive: !this.state.isActive
+      });
+    } else if (event.target.id === 'emailSignUp') {
+      this.setState({
+        emailSignUp: !this.state.emailSignUp
       });
     } else {
       this.setState({
@@ -102,6 +107,17 @@ export default class NewPatientForm extends React.Component {
       .then(res => {
         location.hash = '#';
       });
+
+    const patientEmail = {
+      patientEmail: patient.patientEmail
+    };
+    fetch('/api/patient-sign-up', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(patientEmail)
+    });
   }
 
   editPatient(patient) {
@@ -116,6 +132,19 @@ export default class NewPatientForm extends React.Component {
       .then(res => {
         location.hash = `#patientProfile?patientId=${patient.patientId}`;
       });
+
+    const patientEmail = {
+      patientEmail: patient.patientEmail
+    };
+    if (this.state.emailSignUp === true) {
+      fetch('/api/patient-sign-up', {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify(patientEmail)
+      });
+    }
   }
 
   render() {
@@ -126,14 +155,14 @@ export default class NewPatientForm extends React.Component {
       emailArray.push(this.state.patients[i].email);
     }
 
-    let formHeader, isActiveSwitch, isTaken;
+    let formHeader, existingPatient, isTaken;
     if (this.props.patientId === null) {
       isTaken = emailArray.includes(this.state.patientEmail);
       formHeader = 'New Patient';
-      isActiveSwitch = 'd-none';
+      existingPatient = 'd-none';
     } else {
       formHeader = 'Edit Patient';
-      isActiveSwitch = 'form-check form-switch mb-4';
+      existingPatient = 'form-check form-switch mb-4';
     }
 
     let emailExists;
@@ -176,9 +205,13 @@ export default class NewPatientForm extends React.Component {
               <label htmlFor="notes" className="form-label">Notes</label>
               <textarea type="textarea" className="form-control" id="notes" rows="3" value={this.state.notes} onChange={this.handleChange} />
             </div>
-            <div className={isActiveSwitch}>
+            <div className={existingPatient}>
               <label className="form-check-label" htmlFor="isActive">Is this patient no longer active?</label>
-              <input className="form-check-input" type="checkbox" role="switch" id="isActive" value={this.state.isActive} onChange={this.handleChange} />
+              <input className="form-check-input" type="checkbox" role="switch" id="isActive" onChange={this.handleChange} />
+            </div>
+            <div className={existingPatient}>
+              <label className="form-check-label" htmlFor="isActive">Send Patient Account Sign-Up Email?</label>
+              <input className="form-check-input" type="checkbox" role="switch" id="emailSignUp" onChange={this.handleChange} />
             </div>
             <div className="d-flex justify-content-between">
               <div>
