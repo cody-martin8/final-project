@@ -13,15 +13,19 @@ export default class AuthForm extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(event) {
-    event.preventDefault();
-    fetch('/api/forgot-password', {
-      method: 'POST'
-    });
-    // Add .then for displaying 'Email Sent' notification.
+  componentDidMount() {
+    if (this.props.patientId && this.props.email) {
+      const { patientId, email } = this.props;
+      this.setState({
+        patientId,
+        email,
+        accountType: 'patient'
+      });
+    } else {
+      this.setState({ accountType: 'therapist' });
+    }
   }
 
   handleChange(event) {
@@ -57,25 +61,28 @@ export default class AuthForm extends React.Component {
   render() {
     const { action } = this.props;
     const { handleChange, handleSubmit } = this;
-    const { error } = this.state;
+    const { accountType, error } = this.state;
     const actionHref = action === 'sign-up'
       ? '#sign-in'
-      : '#sign-up';
+      : '#sign-up?patientId=3&email=tallguy894@gmail.com';
     const actionText = action === 'sign-up'
       ? 'Sign in instead'
       : 'Register now';
+    let actionDisplay = action === 'sign-up'
+      ? 'text-muted ps-1'
+      : 'd-none';
     const submitButtonText = action === 'sign-up'
       ? 'Register'
       : 'Log In';
-    const accountTypeDropdown = action === 'sign-up'
-      ? 'mb-3'
-      : 'd-none';
-    const patientIdInput = this.state.accountType === 'patient'
-      ? 'mb-3'
-      : 'd-none';
+    const forgotPasswordLink = action === 'sign-up'
+      ? 'd-none'
+      : 'text-muted ps-1';
     const errorText = error
       ? 'alert alert-danger py-2 mb-3'
       : 'd-none';
+    if (accountType === 'patient') {
+      actionDisplay = 'd-none';
+    }
     return (
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
@@ -92,6 +99,7 @@ export default class AuthForm extends React.Component {
             id="email"
             type="email"
             name="email"
+            value={this.state.email}
             onChange={handleChange}
             className="form-control bg-light" />
         </div>
@@ -107,45 +115,27 @@ export default class AuthForm extends React.Component {
             onChange={handleChange}
             className="form-control bg-light" />
         </div>
-        <div className={accountTypeDropdown}>
-          <label htmlFor="accountType" className="form-label">
-            Account Type
-          </label>
-          <select
-            required
-            id="accountType"
-            name="accountType"
-            onChange={handleChange}
-            defaultValue="default"
-            className="form-select">
-            <option value="default" disabled>Select Account Type</option>
-            <option value="therapist">Physical Therapist</option>
-            <option value="patient">Patient</option>
-          </select>
-        </div>
-        <div className={patientIdInput}>
-          <label htmlFor="patientId" className="form-label">
-            Patient Id
-          </label>
-          <input
-            id="patientId"
-            name="patientId"
-            onChange={handleChange}
-            className="form-control bg-light" />
-        </div>
         <div className="d-flex justify-content-between align-items-center">
           <small>
-            <a className="text-muted" href={actionHref}>
+            <a className={actionDisplay} href={actionHref}>
               {actionText}
             </a>
           </small>
-          <button className="btn" style={{ backgroundColor: '#FFC857', color: 'white' }} onClick={this.handleClick}>
-            Send Email
-            {/* Reformat to a Forgot Password button */}
-          </button>
-          <button type="submit" className="btn" style={{ backgroundColor: '#282A3E', color: 'white' }}>
+          <button type="submit" className="btn px-4" style={{ backgroundColor: '#282A3E', color: 'white' }}>
             {submitButtonText}
           </button>
+        </div>
+        <div className="d-flex justify-content-between mt-2">
+          <small>
+            <a className={forgotPasswordLink} href={actionHref}>
+              {actionText}
+            </a>
+          </small>
+          <small>
+            <a className={forgotPasswordLink} href="#forgotPassword">
+              Forgot Password
+            </a>
+          </small>
         </div>
       </form>
     );

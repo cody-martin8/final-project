@@ -108,15 +108,16 @@ export default class NewPatientForm extends React.Component {
         location.hash = '#';
       });
 
-    const patientEmail = {
-      patientEmail: patient.patientEmail
+    const patientEmailDetails = {
+      patientEmail: patient.patientEmail,
+      patientId: patient.patientId
     };
     fetch('/api/patient-sign-up', {
       headers: {
         'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: JSON.stringify(patientEmail)
+      body: JSON.stringify(patientEmailDetails)
     });
   }
 
@@ -133,8 +134,9 @@ export default class NewPatientForm extends React.Component {
         location.hash = `#patientProfile?patientId=${patient.patientId}`;
       });
 
-    const patientEmail = {
-      patientEmail: patient.patientEmail
+    const patientEmailDetails = {
+      patientEmail: patient.patientEmail,
+      patientId: patient.patientId
     };
     if (this.state.emailSignUp === true) {
       fetch('/api/patient-sign-up', {
@@ -142,7 +144,7 @@ export default class NewPatientForm extends React.Component {
           'Content-Type': 'application/json'
         },
         method: 'POST',
-        body: JSON.stringify(patientEmail)
+        body: JSON.stringify(patientEmailDetails)
       });
     }
   }

@@ -5,6 +5,8 @@ import parseRoute from './lib/parse-route';
 import Navbar from './components/navbar';
 import Home from './pages/home';
 import Auth from './pages/auth';
+import ForgotPassword from './pages/forgot-password';
+import ResetPassword from './pages/reset-password';
 import YourExercises from './pages/your-exercises';
 import NewPatientForm from './pages/new-patient';
 import NewExerciseForm from './pages/new-exercise';
@@ -59,7 +61,17 @@ export default class App extends React.Component {
       accountType = this.state.user.accountType;
     }
     if (path === 'sign-in' || path === 'sign-up') {
-      return <Auth />;
+      const patientId = params.get('patientId');
+      const email = params.get('email');
+      return <Auth patientId={patientId} email={email} />;
+    }
+    if (path === 'forgotPassword') {
+      return <ForgotPassword />;
+    }
+    if (path === 'resetPassword') {
+      const userId = params.get('userId');
+      const email = params.get('email');
+      return <ResetPassword userId={userId} email={email} />;
     }
     if (path === '' && accountType === 'patient') {
       return <MyExercises />;

@@ -27,7 +27,7 @@ const jsonMiddleware = express.json();
 app.use(jsonMiddleware);
 
 app.post('/api/patient-sign-up', (req, res) => {
-  const { patientEmail } = req.body;
+  const { patientEmail, patientId } = req.body;
   const msg = {
     to: patientEmail,
     from: {
@@ -35,14 +35,15 @@ app.post('/api/patient-sign-up', (req, res) => {
       name: 'PT Connection'
     },
     subject: 'Account Sign-Up with PT Connection',
-    text: 'Dear [Patient], Welcome to PT Connection! To sign up for an account so that you can view your exercises, please follow the link below: https://pt-connection.cmartin.dev/ Thank you, PT Connection',
-    html: '<span>Dear Patient,</span><br> <p>Welcome to PT Connection!<br><br> To sign up for an account so that you can view your exercises, please follow the link below:</p> <span><a href=https://pt-connection.cmartin.dev/>PT Connection Account Sign-Up</a></span><br><br> <span>Thank you,</span><br> <span>PT Connection</span>'
+    // Upon completion, change below links to reflect domain instead of localhost
+    text: `Dear [Patient], Welcome to PT Connection! To register for an account so that you can view your exercises, please follow the link below: http://localhost:3000/#sign-up?patientId=${patientId}&email=${patientEmail} Thank you, PT Connection`,
+    html: `<span>Dear Patient,</span><br> <p>Welcome to PT Connection!<br><br> To register for an account so that you can view your exercises, please follow the link below:</p> <span><a href=http://localhost:3000/#sign-up?patientId=${patientId}&email=${patientEmail}>PT Connection Account Sign-Up</a></span><br><br> <span>Thank you,</span><br> <span>PT Connection</span>`
   };
   sgMail
     .send(msg)
     .then(response => {
-      // console.log(response[0].statusCode)
-      // console.log(response[0].headers)
+      // console.log(response[0].statusCode);
+      // console.log(response[0].headers);
       res.json(response[0].statusCode);
     })
     .catch(error => {
@@ -51,21 +52,22 @@ app.post('/api/patient-sign-up', (req, res) => {
 });
 
 app.post('/api/forgot-password', (req, res) => {
+  const { email, userId } = req.body.user;
   const msg = {
-    to: 'tallguy894@gmail.com',
+    to: email,
     from: {
       email: '12martincody@gmail.com',
       name: 'PT Connection'
     },
     subject: 'Password Reset Request',
-    text: 'Hello [Patient], We have received your request to reset your password. Please follow the link below to change your password: https://pt-connection.cmartin.dev/ If you did not make this request, please ignore this email. Thank you, PT Connection',
-    html: '<span>Hello Patient,</span><br> <p>Thank you for using PT Connection!<br><br> We have received your request to reset your password. Please follow the link below to change your password:</p> <span><a href=https://pt-connection.cmartin.dev/>Password Reset</a></span><br> <p>If you did not make this request, please ignore this email.</p> <span>Thank you,</span><br> <span>PT Connection</span>'
+    text: `Hello [Patient], We have received your request to reset your password. Please follow the link below to change your password: https://localhost:3000/#forgot-password?userId=${userId}&email=${email} If you did not make this request, please ignore this email. Thank you, PT Connection`,
+    html: `<span>Hello Patient,</span><br> <p>Thank you for using PT Connection!<br><br> We have received your request to reset your password. Please follow the link below to change your password:</p> <span><a href=https://localhost:3000/#forgot-password?userId=${userId}&email=${email}>Password Reset</a></span><br> <p>If you did not make this request, please ignore this email.</p> <span>Thank you,</span><br> <span>PT Connection</span>`
   };
   sgMail
     .send(msg)
     .then(response => {
-      // console.log(response[0].statusCode)
-      // console.log(response[0].headers)
+      // console.log(response[0].statusCode);
+      // console.log(response[0].headers);
       res.json(response[0].statusCode);
     })
     .catch(error => {
@@ -127,6 +129,54 @@ app.post('/api/auth/sign-in', (req, res, next) => {
           const token = jwt.sign(payload, process.env.TOKEN_SECRET);
           res.json({ token, user: payload });
         });
+    })
+    .catch(err => next(err));
+});
+
+app.get('/api/users/:email', (req, res, next) => {
+  const email = req.params.email;
+  if (!email) {
+    throw new ClientError(400, 'email is a required field');
+  }
+  const sql = `
+    select "userId",
+           "email"
+      from "users"
+     where "email" = $1
+  `;
+  const params = [email];
+  db.query(sql, params)
+    .then(result => {
+      res.json(result.rows[0]);
+    })
+    .catch(err => next(err));
+});
+
+app.patch('/api/users/:userId', (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new ClientError(400, 'email and password are required fields');
+  }
+  const userId = Number(req.params.userId);
+  if (!Number.isInteger(userId) || userId < 1) {
+    throw new ClientError(400, 'userId must be a positive integer');
+  }
+  argon2
+    .hash(password)
+    .then(hashedPassword => {
+      const sql = `
+        update "users"
+           set "hashedPassword" = $1
+         where "userId" = $2
+           and "email" = $3
+        returning "userId", "email"
+      `;
+      const params = [hashedPassword, userId, email];
+      return db.query(sql, params);
+    })
+    .then(result => {
+      const [user] = result.rows;
+      res.status(201).json(user);
     })
     .catch(err => next(err));
 });
