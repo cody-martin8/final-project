@@ -8,7 +8,7 @@ export default class Home extends React.Component {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-10 mb-3 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">

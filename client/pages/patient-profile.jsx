@@ -81,7 +81,7 @@ export default class PatientProfile extends React.Component {
     }
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="modal fade" id="editModal">
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
@@ -118,7 +118,7 @@ export default class PatientProfile extends React.Component {
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-9 col-xl-8 col-xxl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-9 col-xl-8 col-xxl-7 mb-4 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h1 className="me-2">Patient Profile</h1>
               <i className="fa-solid fa-user fa-2xl mb-1 d-none d-sm-block"></i>

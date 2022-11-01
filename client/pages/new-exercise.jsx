@@ -120,7 +120,7 @@ export default class NewExerciseForm extends React.Component {
     isTaken ? exerciseExists = 'alert alert-danger mb-3' : exerciseExists = 'd-none';
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-7 mb-3">
             <div className="d-flex align-items-center">

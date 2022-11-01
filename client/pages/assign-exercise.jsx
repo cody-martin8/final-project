@@ -114,7 +114,7 @@ export default class AssignExercise extends React.Component {
     const { name, targetArea, description } = this.state.exercise;
     let heading = 'Assign Exercise';
     let headingLink = `#chooseExercise?patientId=${this.props.patientId}`;
-    let headingButton = 'Your Exercises';
+    let headingButton = 'Exercises';
     let submitButton = 'Assign Exercise';
     if (this.props.patientExerciseId !== null) {
       heading = 'Update Exercise';
@@ -124,9 +124,9 @@ export default class AssignExercise extends React.Component {
     }
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-9 col-xl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-9 col-xl-7 mb-4 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h1 className="me-2">{heading}</h1>
             </div>

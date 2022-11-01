@@ -69,9 +69,9 @@ export default class YourExercises extends React.Component {
     }
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-8 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-8 mb-4 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h1 className="me-3">Your Exercises</h1>
               <i className="fa-regular fa-folder-open fa-2xl mb-1 d-none d-sm-block"></i>

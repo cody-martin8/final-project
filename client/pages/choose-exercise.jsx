@@ -90,7 +90,7 @@ export default class ChooseExercise extends React.Component {
     }
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="row justify-content-center mb-2">
           <div className="d-flex align-items-center mb-2 col-12 col-sm-8 col-md-6 col-lg-4 col-xxl-4">
             <h2 className="me-3">Select Exercise</h2>

@@ -27,9 +27,7 @@ export default class ResetPassword extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const userId = {
-      userId: this.state.userId
-    };
+    const userId = this.state.userId;
     fetch(`/api/users/${userId}`, {
       method: 'PATCH',
       headers: {

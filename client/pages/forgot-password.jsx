@@ -23,15 +23,20 @@ export default class ForgotPassword extends React.Component {
     fetch(`/api/users/${email}`)
       .then(res => res.json())
       .then(result => {
-        if (result.user) {
-          const user = result.user;
+        if (result) {
+          const user = result;
           fetch('/api/forgot-password', {
             headers: {
               'Content-Type': 'application/json'
             },
             method: 'POST',
             body: JSON.stringify(user)
-          });
+          })
+            .then(res => res.json())
+            .then(result => {
+              window.location.hash = 'sign-in';
+              // replace with alert saying that Reset Password email was sent
+            });
         }
       });
   }

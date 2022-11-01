@@ -66,7 +66,7 @@ export default class ExerciseAssignment extends React.Component {
     const patientName = `${firstName} ${lastName}`;
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="modal fade" id="deleteModal">
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
@@ -87,7 +87,7 @@ export default class ExerciseAssignment extends React.Component {
         <div className="row justify-content-center mb-3 mb-md-5">
           <div className="col-12 col-md-11 col-lg-8 col-xl-7 mb-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
-              <h1 className="me-2">Exercise Assignment</h1>
+              <h1 className="me-2">Assigned Exercise</h1>
             </div>
             <a href={`#patientProfile?patientId=${patientId}`} className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
               <i className="fa-solid fa-angle-left fa-sm"></i>

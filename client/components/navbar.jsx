@@ -6,11 +6,11 @@ export default class Navbar extends React.Component {
     const { user, handleSignOut } = this.context;
 
     return (
-      <header className="mb-4">
+      <header className="mb-3">
         <nav className="navbar navbar-dark py-3" style={{ backgroundColor: '#5a7d7c' }}>
-          <div className="container mx-4">
+          <div className="container mx-2">
             <div className="col px-0 d-flex justify-content-between">
-              <div className="">
+              <div>
                 <a href="#menu" className="me-5" data-bs-toggle="offcanvas">
                   <i className="fa-solid fa-bars fa-2xl" style={{ color: '#FFC857' }} />
                 </a>

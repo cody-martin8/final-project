@@ -104,21 +104,23 @@ export default class NewPatientForm extends React.Component {
       method: 'POST',
       body: JSON.stringify(patient)
     })
-      .then(res => {
+      .then(res => res.json())
+      .then(patient => {
         location.hash = '#';
+        const name = `${patient.firstName} ${patient.lastName}`;
+        const patientEmailDetails = {
+          patientName: name,
+          patientEmail: patient.email,
+          patientId: patient.patientId
+        };
+        fetch('/api/patient-sign-up', {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify(patientEmailDetails)
+        });
       });
-
-    const patientEmailDetails = {
-      patientEmail: patient.patientEmail,
-      patientId: patient.patientId
-    };
-    fetch('/api/patient-sign-up', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'POST',
-      body: JSON.stringify(patientEmailDetails)
-    });
   }
 
   editPatient(patient) {
@@ -171,7 +173,7 @@ export default class NewPatientForm extends React.Component {
     isTaken ? emailExists = 'alert alert-danger mb-3' : emailExists = 'd-none';
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-7 mb-3">
             <div className="d-flex align-items-center">
@@ -181,7 +183,7 @@ export default class NewPatientForm extends React.Component {
           </div>
         </div>
         <div className="row justify-content-center">
-          <form className="col-10 col-lg-6" onSubmit={this.handleSubmit}>
+          <form className="col-12 col-md-10 col-lg-6" onSubmit={this.handleSubmit}>
             <div className={emailExists}>A patient profile with this email already exists</div>
             <div className="mb-3">
               <label htmlFor="firstName" className="form-label">First Name</label>
