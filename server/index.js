@@ -41,9 +41,8 @@ app.post('/api/patient-sign-up', (req, res) => {
       name: 'PT Connection'
     },
     subject: 'Account Sign-Up with PT Connection',
-    // Upon completion, change below links to reflect domain instead of localhost
-    text: `Dear ${patientName}, Welcome to PT Connection! To register for an account so that you can view your exercises, please follow the link below: http://localhost:3000/#sign-up?patientId=${patientId}&email=${patientEmail} Thank you, PT Connection`,
-    html: `<span>Dear ${patientName},</span><br> <p>Welcome to PT Connection!<br><br> To register for an account so that you can view your exercises, please follow the link below:</p> <span><a href=http://localhost:3000/#sign-up?patientId=${patientId}&email=${patientEmail}>PT Connection Account Sign-Up</a></span><br><br> <span>Thank you,</span><br> <span>PT Connection</span>`
+    text: `Dear ${patientName}, Welcome to PT Connection! To register for an account so that you can view your exercises, please follow the link below: https://pt-connection.cmartin.dev/#sign-up?patientId=${patientId}&email=${patientEmail} Thank you, PT Connection`,
+    html: `<span>Dear ${patientName},</span><br> <p>Welcome to PT Connection!<br><br> To register for an account so that you can view your exercises, please follow the link below:</p> <span><a href=https://pt-connection.cmartin.dev/#sign-up?patientId=${patientId}&email=${patientEmail}>PT Connection Account Sign-Up</a></span><br><br> <span>Thank you,</span><br> <span>PT Connection</span>`
   };
   sgMail
     .send(msg)
@@ -70,9 +69,8 @@ app.post('/api/forgot-password', (req, res) => {
       name: 'PT Connection'
     },
     subject: 'Password Reset Request',
-    // Upon completion, change below links to reflect domain instead of localhost
-    text: `Hello, We have received your request to reset your password. Please follow the link below to change your password: http://localhost:3000/#resetPassword?userId=${userId}&email=${email} If you did not make this request, please ignore this email. Thank you, PT Connection`,
-    html: `<span>Hello,</span><br> <p>Thank you for using PT Connection!<br><br> We have received your request to reset your password. Please follow the link below to change your password:</p> <span><a href=http://localhost:3000/#resetPassword?userId=${userId}&email=${email}>Password Reset</a></span><br> <p>If you did not make this request, please ignore this email.</p> <span>Thank you,</span><br> <span>PT Connection</span>`
+    text: `Hello, We have received your request to reset your password. Please follow the link below to change your password: https://pt-connection.cmartin.dev/#resetPassword?userId=${userId}&email=${email} If you did not make this request, please ignore this email. Thank you, PT Connection`,
+    html: `<span>Hello,</span><br> <p>Thank you for using PT Connection!<br><br> We have received your request to reset your password. Please follow the link below to change your password:</p> <span><a href=https://pt-connection.cmartin.dev/#resetPassword?userId=${userId}&email=${email}>Password Reset</a></span><br> <p>If you did not make this request, please ignore this email.</p> <span>Thank you,</span><br> <span>PT Connection</span>`
   };
   sgMail
     .send(msg)
