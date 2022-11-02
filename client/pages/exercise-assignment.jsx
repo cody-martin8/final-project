@@ -60,13 +60,13 @@ export default class ExerciseAssignment extends React.Component {
     if (!this.state.patientExercise) return null;
     if (!this.state.exercise) return null;
     if (!this.state.patient) return null;
-    const patientExerciseId = this.state.patientExercise.patientExerciseId;
+    const { patientExerciseId, feedback } = this.state.patientExercise;
     const { exerciseId, name, description } = this.state.exercise;
     const { firstName, lastName, patientId } = this.state.patient;
     const patientName = `${firstName} ${lastName}`;
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="modal fade" id="deleteModal">
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
@@ -87,7 +87,7 @@ export default class ExerciseAssignment extends React.Component {
         <div className="row justify-content-center mb-3 mb-md-5">
           <div className="col-12 col-md-11 col-lg-8 col-xl-7 mb-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
-              <h1 className="me-2">Exercise Assignment</h1>
+              <h1 className="me-2">Assigned Exercise</h1>
             </div>
             <a href={`#patientProfile?patientId=${patientId}`} className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
               <i className="fa-solid fa-angle-left fa-sm"></i>
@@ -105,7 +105,13 @@ export default class ExerciseAssignment extends React.Component {
                   <h4 className="card-subtitle text-muted mt-2 ms-2 pt-0">{this.props.exercise}</h4>
                 </div>
                 <h5 className="mb-1 text-decoration-underline">Description:</h5>
-                <p className="card-text lead ms-4 mb-5">{description}</p>
+                <p className="card-text lead ms-4 mb-4">{description}</p>
+                {(feedback) &&
+                  <>
+                    <h5 className="mb-1">Patient Feedback:</h5>
+                    <p className="card-text lead ms-4 mb-5">{feedback}</p>
+                  </>
+                }
                 <div className="d-flex justify-content-around">
                   <a href={`#assignExercise?patientExerciseId=${patientExerciseId}&exerciseId=${exerciseId}&patientId=${patientId}&exercise=${this.props.exercise}`} className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
                     <span>Update</span>

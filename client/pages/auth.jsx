@@ -7,6 +7,7 @@ export default class AuthPage extends React.Component {
   render() {
 
     const { user, route, handleSignIn } = this.context;
+    const { patientId, email } = this.props;
 
     if (user) return <Redirect to="" />;
 
@@ -32,7 +33,9 @@ export default class AuthPage extends React.Component {
               <AuthForm
                 key={route.path}
                 action={route.path}
-                onSignIn={handleSignIn} />
+                onSignIn={handleSignIn}
+                patientId={patientId}
+                email={email} />
             </div>
           </div>
         </div>

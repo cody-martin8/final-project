@@ -7,6 +7,9 @@ const ClientError = require('./client-error');
 const staticMiddleware = require('./static-middleware');
 const errorMiddleware = require('./error-middleware');
 const authorizationMiddleware = require('./authorization-middleware');
+const sgMail = require('@sendgrid/mail');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -22,6 +25,64 @@ app.use(staticMiddleware);
 const jsonMiddleware = express.json();
 
 app.use(jsonMiddleware);
+
+app.post('/api/patient-sign-up', (req, res) => {
+  const { patientEmail, patientId, patientName } = req.body;
+  if (!patientEmail || !patientName) {
+    throw new ClientError(400, 'patientName and patientEmail are required fields');
+  }
+  if (!Number.isInteger(patientId) || patientId < 1) {
+    throw new ClientError(400, 'patientId must be a positive integer');
+  }
+  const msg = {
+    to: patientEmail,
+    from: {
+      email: '12martincody@gmail.com',
+      name: 'PT Connection'
+    },
+    subject: 'Account Sign-Up with PT Connection',
+    // Upon completion, change below links to reflect domain instead of localhost
+    text: `Dear ${patientName}, Welcome to PT Connection! To register for an account so that you can view your exercises, please follow the link below: http://localhost:3000/#sign-up?patientId=${patientId}&email=${patientEmail} Thank you, PT Connection`,
+    html: `<span>Dear ${patientName},</span><br> <p>Welcome to PT Connection!<br><br> To register for an account so that you can view your exercises, please follow the link below:</p> <span><a href=http://localhost:3000/#sign-up?patientId=${patientId}&email=${patientEmail}>PT Connection Account Sign-Up</a></span><br><br> <span>Thank you,</span><br> <span>PT Connection</span>`
+  };
+  sgMail
+    .send(msg)
+    .then(response => {
+      res.json(response[0].statusCode);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+});
+
+app.post('/api/forgot-password', (req, res) => {
+  const { email, userId } = req.body;
+  if (!email) {
+    throw new ClientError(400, 'email is a required field');
+  }
+  if (!Number.isInteger(userId) || userId < 1) {
+    throw new ClientError(400, 'userId must be a positive integer');
+  }
+  const msg = {
+    to: email,
+    from: {
+      email: '12martincody@gmail.com',
+      name: 'PT Connection'
+    },
+    subject: 'Password Reset Request',
+    // Upon completion, change below links to reflect domain instead of localhost
+    text: `Hello, We have received your request to reset your password. Please follow the link below to change your password: http://localhost:3000/#resetPassword?userId=${userId}&email=${email} If you did not make this request, please ignore this email. Thank you, PT Connection`,
+    html: `<span>Hello,</span><br> <p>Thank you for using PT Connection!<br><br> We have received your request to reset your password. Please follow the link below to change your password:</p> <span><a href=http://localhost:3000/#resetPassword?userId=${userId}&email=${email}>Password Reset</a></span><br> <p>If you did not make this request, please ignore this email.</p> <span>Thank you,</span><br> <span>PT Connection</span>`
+  };
+  sgMail
+    .send(msg)
+    .then(response => {
+      res.json(response[0].statusCode);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+});
 
 app.post('/api/auth/sign-up', (req, res, next) => {
   const { email, password, accountType, patientId } = req.body;
@@ -77,6 +138,54 @@ app.post('/api/auth/sign-in', (req, res, next) => {
           const token = jwt.sign(payload, process.env.TOKEN_SECRET);
           res.json({ token, user: payload });
         });
+    })
+    .catch(err => next(err));
+});
+
+app.get('/api/users/:email', (req, res, next) => {
+  const email = req.params.email;
+  if (!email) {
+    throw new ClientError(400, 'email is a required field');
+  }
+  const sql = `
+    select "userId",
+           "email"
+      from "users"
+     where "email" = $1
+  `;
+  const params = [email];
+  db.query(sql, params)
+    .then(result => {
+      res.json(result.rows[0]);
+    })
+    .catch(err => next(err));
+});
+
+app.patch('/api/users/:userId', (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new ClientError(400, 'email and password are required fields');
+  }
+  const userId = Number(req.params.userId);
+  if (!Number.isInteger(userId) || userId < 1) {
+    throw new ClientError(400, 'userId must be a positive integer');
+  }
+  argon2
+    .hash(password)
+    .then(hashedPassword => {
+      const sql = `
+        update "users"
+           set "hashedPassword" = $1
+         where "userId" = $2
+           and "email" = $3
+        returning "userId", "email"
+      `;
+      const params = [hashedPassword, userId, email];
+      return db.query(sql, params);
+    })
+    .then(result => {
+      const [user] = result.rows;
+      res.status(201).json(user);
     })
     .catch(err => next(err));
 });
@@ -147,7 +256,10 @@ app.get('/api/patients', (req, res, next) => {
 });
 
 app.post('/api/patients', (req, res) => {
-  const { userId } = req.user;
+  const userId = Number(req.user.userId);
+  if (!Number.isInteger(userId) || userId < 1) {
+    throw new ClientError(400, 'userId must be a positive integer');
+  }
   const { firstName, lastName, patientEmail, age, injuryAilment, notes } = req.body;
   if (!firstName || !lastName || !patientEmail || !age || !injuryAilment) {
     throw new ClientError(400, 'firstName, lastName, patientEmail, age, and injuryAilment are required fields');
@@ -161,7 +273,7 @@ app.post('/api/patients', (req, res) => {
   db.query(sql, params)
     .then(result => {
       const [patient] = result.rows;
-      res.status(201).json(patient);
+      res.json(patient);
     })
     .catch(err => {
       console.error(err);
@@ -196,6 +308,38 @@ app.patch('/api/patients/:patientId', (req, res) => {
      returning *
   `;
   const params = [firstName, lastName, patientEmail, injuryAilment, age, notes, isActive, patientId];
+  db.query(sql, params)
+    .then(result => {
+      const [patient] = result.rows;
+      if (!patient) {
+        res.status(404).json({
+          error: `cannot find patient with patientId ${patientId}`
+        });
+        return;
+      }
+      res.json(patient);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'an unexpected error occurred'
+      });
+    });
+});
+
+app.patch('/api/patients/markInactive/:patientId', (req, res) => {
+  const { isActive } = req.body;
+  const patientId = Number(req.params.patientId);
+  if (!Number.isInteger(patientId) || patientId < 1) {
+    throw new ClientError(400, 'patientId must be a positive integer');
+  }
+  const sql = `
+    update "patients"
+       set "isActive" = $1
+     where "patientId" = $2
+     returning *
+  `;
+  const params = [isActive, patientId];
   db.query(sql, params)
     .then(result => {
       const [patient] = result.rows;

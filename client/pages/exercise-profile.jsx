@@ -73,7 +73,7 @@ export default class ExerciseProfile extends React.Component {
     }
 
     return (
-      <div className="container w-75">
+      <div className="container px-4">
         <div className="modal fade" id="editModal">
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
@@ -109,13 +109,13 @@ export default class ExerciseProfile extends React.Component {
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-8 col-xl-7 mb-5 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-8 col-xl-7 mb-4 mb-lg-4 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h1 className="me-2">Exercise Profile</h1>
             </div>
             <a href="#exercises" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
               <i className="fa-solid fa-angle-left fa-sm"></i>
-              <span className="ms-1">Your Exercises</span>
+              <span className="ms-1">Exercises</span>
             </a>
           </div>
         </div>
