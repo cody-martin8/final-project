@@ -64,7 +64,7 @@ export default class AuthForm extends React.Component {
     const { accountType, error } = this.state;
     const actionHref = action === 'sign-up'
       ? '#sign-in'
-      : '#sign-up?patientId=3&email=tallguy894@gmail.com';
+      : '#sign-up';
     const actionText = action === 'sign-up'
       ? 'Sign in instead'
       : 'Register now';
