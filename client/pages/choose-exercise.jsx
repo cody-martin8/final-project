@@ -101,8 +101,7 @@ export default class ChooseExercise extends React.Component {
                 href={`#patientProfile?patientId=${this.props.patientId}`}>Cancel</a>
             </div>
             <div className="dropdown">
-              <a className="btn btn-sm dropdown-toggle"
-                style={{ backgroundColor: '#D78521', color: 'white' }}
+              <a className="btn btn-sm dropdown-toggle orange-button"
                 href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">Target Area</a>
               <ul className="dropdown-menu">
                 <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="all" onClick={this.handleClick}>All</a></li>

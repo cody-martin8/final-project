@@ -71,22 +71,21 @@ export default class YourExercises extends React.Component {
     return (
       <div className="container px-4">
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-8 mb-4 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-9 mb-4 mb-lg-4 p-0 d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <h1 className="me-3">Your Exercises</h1>
               <i className="fa-regular fa-folder-open fa-2xl mb-1 d-none d-sm-block"></i>
             </div>
-            <a href="#newExercise" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>New Exercise</a>
+            <a href="#newExercise" className="btn dark-blue-button">New Exercise</a>
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-7 col-xl-7 col-xxl-6 mb-4 p-lg-1 d-flex justify-content-between">
+          <div className="col-12 col-lg-8 col-xl-7 mb-4 p-lg-1 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h4 className="me-3">{targetArea} Exercises</h4>
             </div>
             <div className="dropdown">
-              <a className="btn dropdown-toggle"
-                style={{ backgroundColor: '#D78521', color: 'white' }}
+              <a className="btn dropdown-toggle orange-button"
                 href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">Target Area</a>
               <ul className="dropdown-menu">
                 <li><a className="dropdown-item" href="#exercises" id="all" onClick={this.handleClick}>All</a></li>

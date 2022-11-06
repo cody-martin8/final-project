@@ -23,46 +23,46 @@ export default class Navbar extends React.Component {
                     {user === null &&
                       <>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#sign-in'; }}>Sign In</button>
+                          <button className="lead border-0 bg-white menu-button" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#sign-in'; }}>Sign In</button>
                         </div>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#sign-up'; }}>Sign Up</button>
+                          <button className="lead border-0 bg-white menu-button" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#sign-up'; }}>Sign Up</button>
                         </div>
                       </>
                     }
                     {(user !== null && user.accountType === 'therapist') &&
                       <>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#'; }}>Patients</button>
+                          <button className="lead border-0 bg-white menu-button" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#'; }}>Patients</button>
                         </div>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#newPatient'; }}>New Patient</button>
+                          <button className="lead border-0 bg-white menu-button" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#newPatient'; }}>New Patient</button>
                         </div>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#exercises'; }}>Exercises</button>
+                          <button className="lead border-0 bg-white menu-button" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#exercises'; }}>Exercises</button>
                         </div>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#newExercise'; }}>New Exercise</button>
+                          <button className="lead border-0 bg-white menu-button" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#newExercise'; }}>New Exercise</button>
                         </div>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={handleSignOut}>Sign Out</button>
+                          <button className="lead border-0 bg-white menu-button" data-bs-dismiss="offcanvas" onClick={handleSignOut}>Sign Out</button>
                         </div>
                       </>
                     }
                     {(user !== null && user.accountType === 'patient') &&
                       <>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#'; }}>My Exercises</button>
+                          <button className="lead border-0 bg-white menu-button" data-bs-dismiss="offcanvas" onClick={() => { location.href = '#'; }}>My Exercises</button>
                         </div>
                         <div className="mb-3">
-                          <button className="lead border-0 bg-white" data-bs-dismiss="offcanvas" onClick={handleSignOut}>Sign Out</button>
+                          <button className="lead border-0 bg-white menu-button" data-bs-dismiss="offcanvas" onClick={handleSignOut}>Sign Out</button>
                         </div>
                       </>
                     }
                   </div>
                 </div>
                 <a href="#" className="navbar-brand">
-                  <i className="fa-solid fa-person-walking" style={{ color: '#FFC857' }} /> PT Connection
+                  <i className="fa-solid fa-person-walking site-name" style={{ color: '#FFC857' }} /> PT Connection
                 </a>
               </div>
             </div>

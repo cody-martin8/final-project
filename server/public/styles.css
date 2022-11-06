@@ -1,0 +1,37 @@
+.exercise-card:hover {
+  background-color: rgb(226, 226, 226);
+  transition: 0.2s;
+}
+
+.patient-name-button {
+  color: black;
+}
+
+.patient-name-button:hover,
+.menu-button:hover {
+  color: #d78521;
+}
+
+.edit-button:hover {
+  color: #ffc857;
+}
+
+.dark-blue-button {
+  background-color: #282a3e;
+  color: white;
+}
+
+.dark-blue-button:hover {
+  background-color: #42466b;
+  color: white;
+}
+
+.orange-button {
+  background-color: #d78521;
+  color: white;
+}
+
+.orange-button:hover {
+  background-color: #b87320;
+  color: white;
+}

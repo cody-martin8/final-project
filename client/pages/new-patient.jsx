@@ -52,18 +52,17 @@ export default class NewPatientForm extends React.Component {
   }
 
   handleChange(event) {
-    if (event.target.id === 'isActive') {
+    const { name, value } = event.target;
+    if (name === 'isActive') {
       this.setState({
         isActive: !this.state.isActive
       });
-    } else if (event.target.id === 'emailSignUp') {
+    } else if (name === 'emailSignUp') {
       this.setState({
         emailSignUp: !this.state.emailSignUp
       });
     } else {
-      this.setState({
-        [event.target.id]: event.target.value
-      });
+      this.setState({ [name]: value });
     }
   }
 
@@ -187,42 +186,102 @@ export default class NewPatientForm extends React.Component {
             <div className={emailExists}>A patient profile with this email already exists</div>
             <div className="mb-3">
               <label htmlFor="firstName" className="form-label">First Name</label>
-              <input type="text" required className="form-control" id="firstName" value={this.state.firstName} onChange={this.handleChange}/>
+              <input
+                required
+                id="firstName"
+                type="text"
+                name="firstName"
+                value={this.state.firstName}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className="mb-3">
               <label htmlFor="lastName" className="form-label">Last Name</label>
-              <input type="text" required className="form-control" id="lastName" value={this.state.lastName} onChange={this.handleChange} />
+              <input
+                required
+                id="lastName"
+                type="text"
+                name="lastName"
+                value={this.state.lastName}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className="mb-3">
               <label htmlFor="patientEmail" className="form-label">Email Address</label>
-              <input type="email" required className="form-control" id="patientEmail" value={this.state.patientEmail} onChange={this.handleChange} />
+              <input
+                required
+                id="patientEmail"
+                type="email"
+                name="patientEmail"
+                value={this.state.patientEmail}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className="col-3 col-lg-2 mb-3">
               <label htmlFor="age" className="form-label">Age</label>
-              <input type="number" required className="form-control" id="age" min="1" max="130" value={this.state.age} onChange={this.handleChange} />
+              <input
+                required
+                id="age"
+                type="number"
+                name="age"
+                min="1"
+                max="130"
+                value={this.state.age}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className="mb-3">
               <label htmlFor="injuryAilment" className="form-label">Injury / Ailment</label>
-              <input type="text" required className="form-control" id="injuryAilment" value={this.state.injuryAilment} onChange={this.handleChange} />
+              <input
+                required
+                id="injuryAilment"
+                type="text"
+                name="injuryAilment"
+                value={this.state.injuryAilment}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className="mb-4">
               <label htmlFor="notes" className="form-label">Notes</label>
-              <textarea type="textarea" className="form-control" id="notes" rows="3" value={this.state.notes} onChange={this.handleChange} />
+              <textarea
+                id="notes"
+                type="textarea"
+                name="notes"
+                rows="3"
+                value={this.state.notes}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className={existingPatient}>
               <label className="form-check-label" htmlFor="isActive">Is this patient no longer active?</label>
-              <input className="form-check-input" type="checkbox" role="switch" id="isActive" onChange={this.handleChange} />
+              <input
+                role="switch"
+                id="isActive"
+                type="checkbox"
+                name="isActive"
+                onChange={this.handleChange}
+                className="form-check-input" />
             </div>
             <div className={existingPatient}>
               <label className="form-check-label" htmlFor="isActive">Send Patient Account Sign-Up Email?</label>
-              <input className="form-check-input" type="checkbox" role="switch" id="emailSignUp" onChange={this.handleChange} />
+              <input
+                role="switch"
+                id="emailSignUp"
+                type="checkbox"
+                name="emailSignUp"
+                onChange={this.handleChange}
+                className="form-check-input" />
             </div>
             <div className="d-flex justify-content-between">
               <div>
-                <a href="#" className="btn btn-secondary">Cancel</a>
+                <a href="#" className="btn btn-secondary">
+                  Cancel
+                </a>
               </div>
               <div>
-                <button type="submit" className="btn" style={{ backgroundColor: '#D78521', color: 'white' }}>Save Profile</button>
+                <button type="submit" className="btn orange-button">
+                  Save Profile
+                </button>
               </div>
             </div>
           </form>

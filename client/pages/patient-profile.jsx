@@ -93,7 +93,7 @@ export default class PatientProfile extends React.Component {
                 A patient can be marked as Inactive in Edit Profile.
               </div>
               <div className="modal-footer d-flex justify-content-between">
-                <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-dismiss="modal" onClick={() => { location.href = `#newPatient?patientId=${patientId}`; }}>Edit Profile</button>
+                <button className="btn orange-button" data-bs-dismiss="modal" onClick={() => { location.href = `#newPatient?patientId=${patientId}`; }}>Edit Profile</button>
                 <button type="button" className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Profile</button>
               </div>
             </div>
@@ -112,20 +112,20 @@ export default class PatientProfile extends React.Component {
               </div>
               <div className="modal-footer d-flex justify-content-between">
                 <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={this.deleteProfile}>Confirm Delete</button>
-                <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-toggle="modal" data-bs-target="#editModal">Cancel</button>
+                <button className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editModal">Cancel</button>
               </div>
             </div>
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-9 col-xl-8 col-xxl-7 mb-4 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-9 col-xl-8 col-xxl-7 mb-4 mb-lg-4 p-0 d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
-              <h1 className="me-2">Patient Profile</h1>
-              <i className="fa-solid fa-user fa-2xl mb-1 d-none d-sm-block"></i>
+              <h1 className="me-2 mb-0">Patient Profile</h1>
+              <i className="fa-solid fa-user fa-2xl d-none d-sm-block"></i>
             </div>
-            <a href="#" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
+            <a href="#" className="btn px-2 py-1 orange-button">
               <i className="fa-solid fa-angle-left fa-sm"></i>
-              <span> Patients</span>
+              <h6 className="d-inline mb-1"> Back</h6>
             </a>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default class PatientProfile extends React.Component {
                 <div className="mb-3 d-flex justify-content-between">
                   <div className="d-flex align-items-center justify-content-between">
                     <h3 className="mb-0 me-3">{ name }</h3>
-                    <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#editModal"></i>
+                    <i className="btn fa-solid fa-pen-to-square fa-xl edit-button" data-bs-toggle="modal" data-bs-target="#editModal"></i>
                   </div>
                   <div className="d-flex d-none d-sm-block align-items-center">
                     <h5 className="mt-2">Age: { age }</h5>
@@ -154,7 +154,7 @@ export default class PatientProfile extends React.Component {
             <div className="d-flex align-items-center">
               <h4 className="me-3">Exercises</h4>
             </div>
-            <a href={`#chooseExercise?patientId=${patientId}`} className="btn my-1" style={{ backgroundColor: '#D78521', color: 'white' }}>Add Exercise</a>
+            <a href={`#chooseExercise?patientId=${patientId}`} className="btn btn-sm my-1 orange-button">Add Exercise</a>
           </div>
         </div>
         <div className="row justify-content-center mb-5">

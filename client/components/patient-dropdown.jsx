@@ -18,7 +18,7 @@ export default function PatientDropdown(props) {
 function Patient(props) {
   const { firstName, lastName, patientId } = props.patient;
   const name = `${firstName} ${lastName}`;
-  const dropdownLink = `#assignExercise?patientId=${patientId}&exerciseId=${props.exerciseId}`;
+  const dropdownLink = `#assignExercise?patientId=${patientId}&exerciseId=${props.exerciseId}&pathway=1`;
 
   return (
     <a href={dropdownLink} className="dropdown-item">{name}</a>

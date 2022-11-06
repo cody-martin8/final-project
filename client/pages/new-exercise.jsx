@@ -46,9 +46,8 @@ export default class NewExerciseForm extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({
-      [event.target.id]: event.target.value
-    });
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
   }
 
   handleSubmit(event) {
@@ -134,11 +133,18 @@ export default class NewExerciseForm extends React.Component {
             <div className={exerciseExists} role="alert">An exercise with this name already exists</div>
             <div className="mb-3">
               <label htmlFor="name" className="form-label">Name</label>
-              <input type="text" required className="form-control" id="name" value={this.state.name} onChange={this.handleChange} />
+              <input
+                required
+                id="name"
+                type="text"
+                name="name"
+                value={this.state.name}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className="mb-3">
               <label htmlFor="targetArea" className="form-label">Target Area</label>
-              <select required className="form-select" id="targetArea" value={this.state.targetArea} onChange={this.handleChange}>
+              <select required id="targetArea" name="targetArea" value={this.state.targetArea} onChange={this.handleChange} className="form-select" >
                 <option>Select the target area for this exercise</option>
                 <option value="Ankle and Foot" >Ankle and Foot</option>
                 <option value="Cervical" >Cervical</option>
@@ -151,14 +157,21 @@ export default class NewExerciseForm extends React.Component {
             </div>
             <div className="mb-3">
               <label htmlFor="description" className="form-label">Description</label>
-              <textarea type="textarea" className="form-control" id="description" rows="3" value={this.state.description} onChange={this.handleChange} />
+              <textarea
+                id="description"
+                name="description"
+                type="textarea"
+                rows="3"
+                value={this.state.description}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className="d-flex justify-content-between">
               <div>
                 <a href="#exercises" className="btn btn-secondary">Cancel</a>
               </div>
               <div>
-                <button type="submit" className="btn" style={{ backgroundColor: '#D78521', color: 'white' }}>Save Exercise</button>
+                <button type="submit" className="btn orange-button">Save Exercise</button>
               </div>
             </div>
           </form>

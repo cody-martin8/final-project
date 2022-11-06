@@ -10,12 +10,12 @@ export default class Home extends React.Component {
     return (
       <div className="container px-4">
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-10 mb-3 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-10 mb-3 me-2 p-0 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h1 className="me-3">Your Patients</h1>
               <i className="fa-solid fa-users fa-2xl mb-2 d-none d-sm-block"></i>
             </div>
-            <a href="#newPatient" className="btn my-2" style={{ backgroundColor: '#282A3E', color: 'white' }}>New Patient</a>
+            <a href="#newPatient" className="btn my-2 dark-blue-button">New Patient</a>
           </div>
         </div>
         <PatientTable />

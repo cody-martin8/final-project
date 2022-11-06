@@ -21,15 +21,17 @@ export default class MyExercises extends React.Component {
       .then(res => res.json())
       .then(patientExercises => {
         this.setState({ patientExercises });
-        const userId = patientExercises[0].userId;
-        fetch('/api/exercises', {
-          headers: {
-            'X-Access-Token': this.context.token,
-            'user-id': userId
-          }
-        })
-          .then(res => res.json())
-          .then(exercises => this.setState({ exercises }));
+        if (patientExercises[0]) {
+          const userId = patientExercises[0].userId;
+          fetch('/api/exercises', {
+            headers: {
+              'X-Access-Token': this.context.token,
+              'user-id': userId
+            }
+          })
+            .then(res => res.json())
+            .then(exercises => this.setState({ exercises }));
+        }
       });
   }
 

@@ -85,7 +85,7 @@ export default class ExerciseProfile extends React.Component {
                 You can change the name, target area, and description of an exercise in Edit Exercise.
               </div>
               <div className="modal-footer d-flex justify-content-between">
-                <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-dismiss="modal" onClick={() => { location.href = `#newExercise?exerciseId=${exerciseId}`; }}>Edit Exercise</button>
+                <button className="btn orange-button" data-bs-dismiss="modal" onClick={() => { location.href = `#newExercise?exerciseId=${exerciseId}`; }}>Edit Exercise</button>
                 <button type="button" className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Exercise</button>
               </div>
             </div>
@@ -113,9 +113,9 @@ export default class ExerciseProfile extends React.Component {
             <div className="d-flex align-items-center">
               <h1 className="me-2">Exercise Profile</h1>
             </div>
-            <a href="#exercises" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
+            <a href="#exercises" className="btn my-2 my-xl-3 orange-button">
               <i className="fa-solid fa-angle-left fa-sm"></i>
-              <span className="ms-1">Exercises</span>
+              <span className="ms-1">Back</span>
             </a>
           </div>
         </div>
@@ -126,14 +126,14 @@ export default class ExerciseProfile extends React.Component {
                 <div className="mb-3 d-flex justify-content-between">
                   <div className="d-flex align-items-center">
                     <h3 className="mb-0 me-3">{name}</h3>
-                    <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#editModal"></i>
+                    <i className="btn edit-button fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#editModal"></i>
                   </div>
                 </div>
                 <h5 className="card-subtitle ms-4 mb-5 text-muted">{targetArea}</h5>
                 <h5 className="mb-1 text-decoration-underline">Description:</h5>
                 <p className="card-text lead ms-4 mb-5">{description}</p>
                 <div className="d-flex justify-content-between">
-                  <a href="#patientSelect" className="btn my-2" data-bs-toggle="collapse" style={{ backgroundColor: '#D78521', color: 'white' }}>
+                  <a href="#patientSelect" className="btn my-2 orange-button" data-bs-toggle="collapse">
                     <span>Assign Exercise</span>
                   </a>
                   <div className="collapse" id="patientSelect">
