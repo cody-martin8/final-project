@@ -10,7 +10,8 @@ export default class AssignExercise extends React.Component {
       patientExercise: null,
       sets: '',
       repetitions: '',
-      hold: ''
+      hold: '',
+      isLoading: true
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -23,9 +24,10 @@ export default class AssignExercise extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(exercise => this.setState({ exercise }));
+      .then(exercise => this.setState({ exercise, isLoading: false }));
 
     if (this.props.patientExerciseId !== null) {
+      this.setState({ isLoading: true });
       fetch(`/api/patientExercises/${this.props.patientId}/${this.props.exerciseId}`, {
         headers: {
           'X-Access-Token': this.context.token
@@ -37,7 +39,8 @@ export default class AssignExercise extends React.Component {
             patientExercise,
             sets: patientExercise.sets,
             repetitions: patientExercise.repetitions,
-            hold: patientExercise.hold
+            hold: patientExercise.hold,
+            isLoading: false
           });
         });
     }
@@ -77,6 +80,7 @@ export default class AssignExercise extends React.Component {
   }
 
   addPatientExercise(patientExercise) {
+    this.setState({ isLoading: true });
     fetch('/api/patientExercises', {
       headers: {
         'Content-Type': 'application/json',
@@ -86,11 +90,13 @@ export default class AssignExercise extends React.Component {
       body: JSON.stringify(patientExercise)
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = `#patientProfile?patientId=${this.props.patientId}`;
       });
   }
 
   updatePatientExercise(patientExercise) {
+    this.setState({ isLoading: true });
     fetch(`/api/patientExercises/${this.props.patientExerciseId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -100,6 +106,7 @@ export default class AssignExercise extends React.Component {
       body: JSON.stringify(patientExercise)
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = `patientProfile?patientId=${this.props.patientId}`;
       });
   }
@@ -107,9 +114,19 @@ export default class AssignExercise extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    if (!this.state.exercise) return null;
+    const { exercise, sets, repetitions, hold, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (!exercise) return null;
     const { patientId, exerciseId } = this.props;
-    const { name, targetArea, description } = this.state.exercise;
+    const { name, targetArea, description } = exercise;
     let heading = 'Assign Exercise';
     let headingLink = `#chooseExercise?patientId=${this.props.patientId}`;
     let submitButton = 'Assign Exercise';
@@ -158,7 +175,7 @@ export default class AssignExercise extends React.Component {
                         name="sets"
                         min="1"
                         max="50"
-                        value={this.state.sets}
+                        value={sets}
                         onChange={this.handleChange}
                         className="form-control" />
                     </div>
@@ -170,7 +187,7 @@ export default class AssignExercise extends React.Component {
                         name="repetitions"
                         min="0"
                         max="50"
-                        value={this.state.repetitions}
+                        value={repetitions}
                         onChange={this.handleChange}
                         className="form-control" />
                     </div>
@@ -182,7 +199,7 @@ export default class AssignExercise extends React.Component {
                         name="hold"
                         min="0"
                         max="600"
-                        value={this.state.hold}
+                        value={hold}
                         onChange={this.handleChange}
                         className="form-control" />
                     </div>

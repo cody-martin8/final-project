@@ -5,7 +5,8 @@ export default class PatientTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      patients: []
+      patients: [],
+      isLoading: true
     };
   }
 
@@ -16,10 +17,19 @@ export default class PatientTable extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patients => this.setState({ patients }));
+      .then(patients => this.setState({ patients, isLoading: false }));
   }
 
   render() {
+
+    if (this.state.isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 offset-load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
     if (!this.state.patients[0]) {
       return (
         <div className="row justify-content-center align-items-center mt-4">

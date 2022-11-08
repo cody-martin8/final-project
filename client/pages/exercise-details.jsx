@@ -8,7 +8,8 @@ export default class ExerciseDetails extends React.Component {
     this.state = {
       exercise: null,
       patientExercise: null,
-      feedback: ''
+      feedback: '',
+      isLoading: true
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -33,10 +34,14 @@ export default class ExerciseDetails extends React.Component {
         if (patientExercise.feedback) {
           this.setState({
             patientExercise,
-            feedback: patientExercise.feedback
+            feedback: patientExercise.feedback,
+            isLoading: false
           });
         } else {
-          this.setState({ patientExercise });
+          this.setState({
+            patientExercise,
+            isLoading: false
+          });
         }
       });
   }
@@ -48,6 +53,7 @@ export default class ExerciseDetails extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    this.setState({ isLoading: true });
     const { sets, repetitions, hold } = this.state.patientExercise;
     const exerciseFeedback = {
       sets,
@@ -64,6 +70,7 @@ export default class ExerciseDetails extends React.Component {
       body: JSON.stringify(exerciseFeedback)
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = '#';
       });
     this.setState({ feedback: '' });
@@ -72,7 +79,17 @@ export default class ExerciseDetails extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    if (!this.state.exercise) return null;
+    const { exercise, feedback, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (!exercise) return null;
     const { name, description } = this.state.exercise;
 
     return (
@@ -101,7 +118,7 @@ export default class ExerciseDetails extends React.Component {
                 <form className="px-4 mb-3" onSubmit={this.handleSubmit}>
                   <div className="mb-4">
                     <label htmlFor="exerciseFeedback" className="form-label lead"><h5 className="m-0">Exercise Feedback</h5></label>
-                    <textarea type="textarea" className="form-control" id="exerciseFeedback" rows="3" value={this.state.feedback} onChange={this.handleChange} />
+                    <textarea type="textarea" className="form-control" id="exerciseFeedback" rows="3" value={feedback} onChange={this.handleChange} />
                   </div>
                   <div className="d-flex justify-content-between">
                     <div>

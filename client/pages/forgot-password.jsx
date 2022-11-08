@@ -6,7 +6,8 @@ export default class ForgotPassword extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: ''
+      email: '',
+      isLoading: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -19,6 +20,7 @@ export default class ForgotPassword extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    this.setState({ isLoading: true });
     const email = this.state.email;
     fetch(`/api/users/${email}`)
       .then(res => res.json())
@@ -35,6 +37,7 @@ export default class ForgotPassword extends React.Component {
             .then(res => res.json())
             .then(result => {
               window.location.hash = 'sign-in';
+              this.setState({ isLoading: false });
               // replace with alert saying that Reset Password email was sent
             });
         }
@@ -47,6 +50,16 @@ export default class ForgotPassword extends React.Component {
     const { handleChange, handleSubmit } = this;
 
     if (user) return <Redirect to="" />;
+
+    const { isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
 
     return (
       <div className="container">

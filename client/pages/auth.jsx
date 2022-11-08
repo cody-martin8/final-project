@@ -27,18 +27,12 @@ export default class AuthPage extends React.Component {
             </header>
           </div>
         </div>
-        <div className="row pt-3 align-items-center">
-          <div className="col-10 col-sm-8 col-md-6 col-lg-5 col-xl-4 ms-auto me-auto">
-            <div className="card p-3" style={{ backgroundColor: '#E7E6E6' }}>
-              <AuthForm
-                key={route.path}
-                action={route.path}
-                onSignIn={handleSignIn}
-                patientId={patientId}
-                email={email} />
-            </div>
-          </div>
-        </div>
+        <AuthForm
+          key={route.path}
+          action={route.path}
+          onSignIn={handleSignIn}
+          patientId={patientId}
+          email={email} />
       </div>
     );
   }

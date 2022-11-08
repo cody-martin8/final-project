@@ -9,7 +9,8 @@ export default class PatientProfile extends React.Component {
     this.state = {
       patientExercises: [],
       exercises: [],
-      patient: null
+      patient: null,
+      isLoading: true
     };
     this.deleteProfile = this.deleteProfile.bind(this);
   }
@@ -37,10 +38,12 @@ export default class PatientProfile extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patient => this.setState({ patient }));
+      .then(patient => this.setState({ patient, isLoading: false }));
   }
 
-  deleteProfile() {
+  deleteProfile(event) {
+    event.preventDefault();
+    this.setState({ isLoading: true });
     fetch(`/api/patients/${this.props.patientId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -49,6 +52,7 @@ export default class PatientProfile extends React.Component {
       method: 'DELETE'
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = '#';
       });
   }
@@ -56,28 +60,37 @@ export default class PatientProfile extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    if (!this.state.patient) return null;
-    if (!this.state.patientExercises) return null;
-    const { patientId, firstName, lastName, age, injuryAilment, notes } = this.state.patient;
+    const { patient, exercises, patientExercises, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (!patient || !patientExercises) return null;
+    const { patientId, firstName, lastName, age, injuryAilment, notes } = patient;
     const name = `${firstName} ${lastName}`;
 
     let notesSection;
     notes ? notesSection = notes : notesSection = 'None';
 
-    const exerciseLibrary = this.state.exercises;
-    const patientExercises = [];
-    for (let i = 0; i < this.state.patientExercises.length; i++) {
-      patientExercises.push(this.state.patientExercises[i].exerciseId);
+    const exerciseLibrary = exercises;
+    const patientExercisesArray = [];
+    for (let i = 0; i < patientExercises.length; i++) {
+      patientExercisesArray.push(patientExercises[i].exerciseId);
     }
-    const exercises = [];
+    const exercisesArray = [];
     for (let i = 0; i < exerciseLibrary.length; i++) {
-      if (patientExercises.includes(exerciseLibrary[i].exerciseId)) {
-        exercises.push(exerciseLibrary[i]);
+      if (patientExercisesArray.includes(exerciseLibrary[i].exerciseId)) {
+        exercisesArray.push(exerciseLibrary[i]);
       }
     }
 
-    for (let i = 0; i < exercises.length; i++) {
-      exercises[i].view = 'd-block mb-3';
+    for (let i = 0; i < exercisesArray.length; i++) {
+      exercisesArray[i].view = 'd-block mb-3';
     }
 
     return (
@@ -158,7 +171,7 @@ export default class PatientProfile extends React.Component {
           </div>
         </div>
         <div className="row justify-content-center mb-5">
-          <ExerciseCards exercises={exercises} patientExercises={this.state.patientExercises} />
+          <ExerciseCards exercises={exercisesArray} patientExercises={patientExercises} />
         </div>
       </div>
     );

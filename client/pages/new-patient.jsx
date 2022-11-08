@@ -14,7 +14,8 @@ export default class NewPatientForm extends React.Component {
       injuryAilment: '',
       notes: '',
       isActive: true,
-      emailSignUp: false
+      emailSignUp: false,
+      isLoading: true
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -29,7 +30,7 @@ export default class NewPatientForm extends React.Component {
     })
       .then(res => res.json())
       .then(patients => {
-        this.setState({ patients });
+        this.setState({ patients, isLoading: false });
       });
     if (this.props.patientId !== null) {
       fetch(`/api/patients/${this.props.patientId}`, {
@@ -95,6 +96,7 @@ export default class NewPatientForm extends React.Component {
   }
 
   addPatient(patient) {
+    this.setState({ isLoading: true });
     fetch('/api/patients', {
       headers: {
         'Content-Type': 'application/json',
@@ -105,6 +107,7 @@ export default class NewPatientForm extends React.Component {
     })
       .then(res => res.json())
       .then(patient => {
+        this.setState({ isLoading: false });
         location.hash = '#';
         const name = `${patient.firstName} ${patient.lastName}`;
         const patientEmailDetails = {
@@ -123,6 +126,7 @@ export default class NewPatientForm extends React.Component {
   }
 
   editPatient(patient) {
+    this.setState({ isLoading: true });
     fetch(`/api/patients/${patient.patientId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -132,6 +136,7 @@ export default class NewPatientForm extends React.Component {
       body: JSON.stringify(patient)
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = `#patientProfile?patientId=${patient.patientId}`;
       });
 
@@ -153,14 +158,24 @@ export default class NewPatientForm extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
+    const { patients, firstName, lastName, patientEmail, age, injuryAilment, notes, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
     const emailArray = [];
-    for (let i = 0; i < this.state.patients.length; i++) {
-      emailArray.push(this.state.patients[i].email);
+    for (let i = 0; i < patients.length; i++) {
+      emailArray.push(patients[i].email);
     }
 
     let formHeader, existingPatient, isTaken;
     if (this.props.patientId === null) {
-      isTaken = emailArray.includes(this.state.patientEmail);
+      isTaken = emailArray.includes(patientEmail);
       formHeader = 'New Patient';
       existingPatient = 'd-none';
     } else {
@@ -191,7 +206,7 @@ export default class NewPatientForm extends React.Component {
                 id="firstName"
                 type="text"
                 name="firstName"
-                value={this.state.firstName}
+                value={firstName}
                 onChange={this.handleChange}
                 className="form-control" />
             </div>
@@ -202,7 +217,7 @@ export default class NewPatientForm extends React.Component {
                 id="lastName"
                 type="text"
                 name="lastName"
-                value={this.state.lastName}
+                value={lastName}
                 onChange={this.handleChange}
                 className="form-control" />
             </div>
@@ -213,7 +228,7 @@ export default class NewPatientForm extends React.Component {
                 id="patientEmail"
                 type="email"
                 name="patientEmail"
-                value={this.state.patientEmail}
+                value={patientEmail}
                 onChange={this.handleChange}
                 className="form-control" />
             </div>
@@ -226,7 +241,7 @@ export default class NewPatientForm extends React.Component {
                 name="age"
                 min="1"
                 max="130"
-                value={this.state.age}
+                value={age}
                 onChange={this.handleChange}
                 className="form-control" />
             </div>
@@ -237,7 +252,7 @@ export default class NewPatientForm extends React.Component {
                 id="injuryAilment"
                 type="text"
                 name="injuryAilment"
-                value={this.state.injuryAilment}
+                value={injuryAilment}
                 onChange={this.handleChange}
                 className="form-control" />
             </div>
@@ -248,7 +263,7 @@ export default class NewPatientForm extends React.Component {
                 type="textarea"
                 name="notes"
                 rows="3"
-                value={this.state.notes}
+                value={notes}
                 onChange={this.handleChange}
                 className="form-control" />
             </div>

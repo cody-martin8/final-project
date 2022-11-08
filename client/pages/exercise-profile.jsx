@@ -9,7 +9,8 @@ export default class ExerciseProfile extends React.Component {
     this.state = {
       exercise: null,
       patients: [],
-      patientExercises: []
+      patientExercises: [],
+      isLoading: true
     };
     this.deleteProfile = this.deleteProfile.bind(this);
   }
@@ -37,10 +38,11 @@ export default class ExerciseProfile extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patientExercises => this.setState({ patientExercises }));
+      .then(patientExercises => this.setState({ patientExercises, isLoading: false }));
   }
 
   deleteProfile() {
+    this.setState({ isLoading: true });
     fetch(`/api/exercises/${this.props.exerciseId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -49,6 +51,7 @@ export default class ExerciseProfile extends React.Component {
       method: 'DELETE'
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = '#exercises';
       });
   }
@@ -56,19 +59,27 @@ export default class ExerciseProfile extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    if (!this.state.exercise) return null;
-    if (!this.state.patients) return null;
-    if (!this.state.patientExercises) return null;
-    const { exerciseId, name, targetArea, description } = this.state.exercise;
+    const { patients, exercise, patientExercises, isLoading } = this.state;
 
-    const pExercises = [];
-    for (let i = 0; i < this.state.patientExercises.length; i++) {
-      pExercises.push(this.state.patientExercises[i].patientId);
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
     }
-    const patients = [];
-    for (let i = 0; i < this.state.patients.length; i++) {
-      if (!pExercises.includes(this.state.patients[i].patientId)) {
-        patients.push(this.state.patients[i]);
+
+    if (!exercise || !patients || !patientExercises) return null;
+    const { exerciseId, name, targetArea, description } = exercise;
+
+    const patientExercisesArray = [];
+    for (let i = 0; i < patientExercises.length; i++) {
+      patientExercisesArray.push(patientExercises[i].patientId);
+    }
+    const patientsArray = [];
+    for (let i = 0; i < patients.length; i++) {
+      if (!patientExercisesArray.includes(patients[i].patientId)) {
+        patientsArray.push(patients[i]);
       }
     }
 
@@ -141,7 +152,7 @@ export default class ExerciseProfile extends React.Component {
                       <a className="btn btn-secondary dropdown-toggle my-2" href="#" id="patients" data-bs-toggle="dropdown">
                         <span>Select Patient</span>
                       </a>
-                      <PatientDropdown patients={patients} exerciseId={exerciseId} />
+                      <PatientDropdown patients={patientsArray} exerciseId={exerciseId} />
                     </div>
                   </div>
                 </div>

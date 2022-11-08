@@ -10,7 +10,8 @@ export default class NewExerciseForm extends React.Component {
       initialName: '',
       name: '',
       targetArea: '',
-      description: ''
+      description: '',
+      isLoading: true
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,7 +26,7 @@ export default class NewExerciseForm extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(exercises => this.setState({ exercises }));
+      .then(exercises => this.setState({ exercises, isLoading: false }));
 
     if (this.props.exerciseId !== null) {
       fetch(`/api/exercises/${this.props.exerciseId}`, {
@@ -71,6 +72,7 @@ export default class NewExerciseForm extends React.Component {
   }
 
   addExercise(newExercise) {
+    this.setState({ isLoading: true });
     fetch('/api/exercises', {
       headers: {
         'Content-Type': 'application/json',
@@ -80,11 +82,13 @@ export default class NewExerciseForm extends React.Component {
       body: JSON.stringify(newExercise)
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = '#exercises';
       });
   }
 
   editExercise(exercise) {
+    this.setState({ isLoading: true });
     fetch(`/api/exercises/${exercise.exerciseId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -94,6 +98,7 @@ export default class NewExerciseForm extends React.Component {
       body: JSON.stringify(exercise)
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = `#exerciseProfile?exerciseId=${exercise.exerciseId}`;
       });
   }
@@ -101,17 +106,27 @@ export default class NewExerciseForm extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
+    const { exercises, name, initialName, targetArea, description, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
     const nameArray = [];
-    for (let i = 0; i < this.state.exercises.length; i++) {
-      nameArray.push(this.state.exercises[i].name);
+    for (let i = 0; i < exercises.length; i++) {
+      nameArray.push(exercises[i].name);
     }
 
     let isTaken, formHeader;
     if (this.props.exerciseId === null) {
-      isTaken = nameArray.includes(this.state.name);
+      isTaken = nameArray.includes(name);
       formHeader = 'New Exercise';
     } else {
-      isTaken = (nameArray.includes(this.state.name) && this.state.name !== this.state.initialName);
+      isTaken = (nameArray.includes(name) && name !== initialName);
       formHeader = 'Edit Exercise';
     }
 
@@ -138,13 +153,13 @@ export default class NewExerciseForm extends React.Component {
                 id="name"
                 type="text"
                 name="name"
-                value={this.state.name}
+                value={name}
                 onChange={this.handleChange}
                 className="form-control" />
             </div>
             <div className="mb-3">
               <label htmlFor="targetArea" className="form-label">Target Area</label>
-              <select required id="targetArea" name="targetArea" value={this.state.targetArea} onChange={this.handleChange} className="form-select" >
+              <select required id="targetArea" name="targetArea" value={targetArea} onChange={this.handleChange} className="form-select" >
                 <option>Select the target area for this exercise</option>
                 <option value="Ankle and Foot" >Ankle and Foot</option>
                 <option value="Cervical" >Cervical</option>
@@ -162,7 +177,7 @@ export default class NewExerciseForm extends React.Component {
                 name="description"
                 type="textarea"
                 rows="3"
-                value={this.state.description}
+                value={description}
                 onChange={this.handleChange}
                 className="form-control" />
             </div>

@@ -6,7 +6,8 @@ export default class ResetPassword extends React.Component {
     this.state = {
       userId: null,
       email: '',
-      password: ''
+      password: '',
+      isLoading: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -27,6 +28,7 @@ export default class ResetPassword extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    this.setState({ isLoading: true });
     const userId = this.state.userId;
     fetch(`/api/users/${userId}`, {
       method: 'PATCH',
@@ -37,11 +39,22 @@ export default class ResetPassword extends React.Component {
     })
       .then(res => res.json())
       .then(result => {
+        this.setState({ isLoading: false });
         window.location.hash = 'sign-in';
       });
   }
 
   render() {
+
+    const { isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
 
     const { handleChange, handleSubmit } = this;
 

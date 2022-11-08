@@ -8,7 +8,8 @@ export default class YourExercises extends React.Component {
     super(props);
     this.state = {
       exercises: [],
-      targetArea: 'All'
+      targetArea: 'All',
+      isLoading: true
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -51,14 +52,21 @@ export default class YourExercises extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(exercises => this.setState({ exercises }));
+      .then(exercises => this.setState({ exercises, isLoading: false }));
   }
 
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    const targetArea = this.state.targetArea;
-    const exercises = this.state.exercises;
+    const { targetArea, exercises, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
 
     for (let i = 0; i < exercises.length; i++) {
       targetArea === 'All'
@@ -100,7 +108,7 @@ export default class YourExercises extends React.Component {
             </div>
           </div>
           <div className="row justify-content-center mb-5">
-            <ExerciseCards exercises={this.state.exercises} />
+            <ExerciseCards exercises={exercises} />
           </div>
         </div>
       </div>

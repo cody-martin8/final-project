@@ -8,7 +8,8 @@ export default class MyExercises extends React.Component {
     super(props);
     this.state = {
       patientExercises: [],
-      exercises: []
+      exercises: [],
+      isLoading: true
     };
   }
 
@@ -20,7 +21,7 @@ export default class MyExercises extends React.Component {
     })
       .then(res => res.json())
       .then(patientExercises => {
-        this.setState({ patientExercises });
+        this.setState({ patientExercises, isLoading: false });
         if (patientExercises[0]) {
           const userId = patientExercises[0].userId;
           fetch('/api/exercises', {
@@ -38,15 +39,25 @@ export default class MyExercises extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    const exerciseLibrary = this.state.exercises;
-    const patientExercises = [];
-    for (let i = 0; i < this.state.patientExercises.length; i++) {
-      patientExercises.push(this.state.patientExercises[i].exerciseId);
+    const { exercises, patientExercises, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
     }
-    const exercises = [];
+
+    const exerciseLibrary = exercises;
+    const patientExercisesArray = [];
+    for (let i = 0; i < patientExercises.length; i++) {
+      patientExercisesArray.push(patientExercises[i].exerciseId);
+    }
+    const exercisesArray = [];
     for (let i = 0; i < exerciseLibrary.length; i++) {
-      if (patientExercises.includes(exerciseLibrary[i].exerciseId)) {
-        exercises.push(exerciseLibrary[i]);
+      if (patientExercisesArray.includes(exerciseLibrary[i].exerciseId)) {
+        exercisesArray.push(exerciseLibrary[i]);
       }
     }
 
@@ -62,7 +73,7 @@ export default class MyExercises extends React.Component {
             </div>
           </div>
         </div>
-        <PatientExerciseCards exercises={exercises} patientExercises={this.state.patientExercises} />
+        <PatientExerciseCards exercises={exercisesArray} patientExercises={patientExercises} />
       </div>
     );
   }

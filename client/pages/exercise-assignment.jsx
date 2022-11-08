@@ -8,7 +8,8 @@ export default class ExerciseAssignment extends React.Component {
     this.state = {
       exercise: null,
       patient: null,
-      patientExercise: null
+      patientExercise: null,
+      isLoading: true
     };
     this.deleteAssignment = this.deleteAssignment.bind(this);
   }
@@ -36,10 +37,11 @@ export default class ExerciseAssignment extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patientExercise => this.setState({ patientExercise }));
+      .then(patientExercise => this.setState({ patientExercise, isLoading: false }));
   }
 
   deleteAssignment() {
+    this.setState({ isLoading: true });
     const { patientExerciseId } = this.state.patientExercise;
     const { patientId } = this.state.patient;
     fetch(`/api/patientExercises/${patientExerciseId}`, {
@@ -50,6 +52,7 @@ export default class ExerciseAssignment extends React.Component {
       method: 'DELETE'
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = `#patientProfile?patientId=${patientId}`;
       });
   }
@@ -57,12 +60,20 @@ export default class ExerciseAssignment extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    if (!this.state.patientExercise) return null;
-    if (!this.state.exercise) return null;
-    if (!this.state.patient) return null;
-    const { patientExerciseId, feedback } = this.state.patientExercise;
-    const { exerciseId, name, description } = this.state.exercise;
-    const { firstName, lastName, patientId } = this.state.patient;
+    const { patientExercise, exercise, patient, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (!patientExercise || !exercise || !patient) return null;
+    const { patientExerciseId, feedback } = patientExercise;
+    const { exerciseId, name, description } = exercise;
+    const { firstName, lastName, patientId } = patient;
     const patientName = `${firstName} ${lastName}`;
 
     return (
