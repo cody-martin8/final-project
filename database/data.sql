@@ -1,12 +1,9 @@
-insert into "users" ("patientId", "email", "hashedPassword", "accountType")
-values (null, 'demo@example.com', '$argon2id$v=19$m=4096,t=3,p=1$ND2F5+sXNU5BhrZHhAVTtQ$OVCpH+O5nxjRwW3mUVKk+Ve2wl3wx+VqlQpExNPEhtc', 'therapist');
-
-insert into "patients" ("userId", "email", "firstName", "lastName", "injuryAilment", "age", "notes", "isActive")
-values (1, 'george@example.com', 'George', 'Smith', 'Patellar Tendonitis', 65, 'Limited flexibility, and pain while weight-bearing.', 'false'),
-       (1, 'stacey@example.com', 'Stacey', 'Armstrong', 'Tennis Elbow', 57, 'Pain in wrist and elbow upon rotation.', 'true'),
-       (1, 'maria@example.com', 'Maria', 'Acosta', 'Lower Back Soreness', 46, 'Limited flexibility at the waist, and pain in lower back during back extension.', 'true'),
-       (1, 'veronica@example.com', 'Veronica', 'Nguyen', 'Carpal Tunnel Syndrome', 24, 'Infrequent pain and numbness in thumb and index finger. Difficulty holding weight in hand for long durations.', 'false'),
-       (1, 'david@example.com', 'David', 'Martel', 'Neck Stiffness', 61, 'Limited extension and little to no flexion of the neck. Back of neck tender under pressure.', 'true');
+insert into "patients" ("patientId", "userId", "email", "firstName", "lastName", "injuryAilment", "age", "notes", "isActive")
+values (1, 1, 'george@example.com', 'George', 'Smith', 'Patellar Tendonitis', 65, 'Limited flexibility, and pain while weight-bearing.', 'false'),
+       (2, 1, 'stacey@example.com', 'Stacey', 'Armstrong', 'Tennis Elbow', 57, 'Pain in wrist and elbow upon rotation.', 'true'),
+       (3, 1, 'maria@example.com', 'Maria', 'Acosta', 'Lower Back Soreness', 46, 'Limited flexibility at the waist, and pain in lower back during back extension.', 'true'),
+       (4, 1, 'veronica@example.com', 'Veronica', 'Nguyen', 'Carpal Tunnel Syndrome', 24, 'Infrequent pain and numbness in thumb and index finger. Difficulty holding weight in hand for long durations.', 'false'),
+       (5, 1, 'david@example.com', 'David', 'Martel', 'Neck Stiffness', 61, 'Limited extension and little to no flexion of the neck. Back of neck tender under pressure.', 'true');
 
 insert into "exercises" ("userId", "name", "targetArea", "description")
 values (1, 'Ankle Pumps', 'Ankle and Foot', 'Bend your foot up and down at your ankle joint.'),
@@ -36,3 +33,7 @@ values (1, 1, 7, 15, 3, 0, null),
        (1, 4, 12, 15, 3, 0, null),
        (1, 5, 3, 0, 10, 10, 'This stretch helped with my flexibility, but there was this pinching pain in my upper back.'),
        (1, 5, 4, 0, 10, 10, 'The pinching pain didn''t happen during this exercise. I did have some discomfort at the base of my neck though.');
+
+insert into "users" ("patientId", "email", "hashedPassword", "accountType")
+values (null, 'demo@example.com', '$argon2id$v=19$m=4096,t=3,p=1$ND2F5+sXNU5BhrZHhAVTtQ$OVCpH+O5nxjRwW3mUVKk+Ve2wl3wx+VqlQpExNPEhtc', 'therapist'),
+       (1, 'george@example.com', '$argon2id$v=19$m=4096,t=3,p=1$ND2F5+sXNU5BhrZHhAVTtQ$OVCpH+O5nxjRwW3mUVKk+Ve2wl3wx+VqlQpExNPEhtc', 'patient');

@@ -62,13 +62,32 @@ export default class AuthForm extends React.Component {
           this.setState({ isLoading: false });
         });
     }
-    // if (id === 'patient') {
-    //   console.log('Patient demo pending.');
-    //   demo = {
-    //     email: '',
-    //     password: ''
-    //   };
-    // }
+    if (id === 'patient') {
+      demo = {
+        email: 'george@example.com',
+        password: 'DemoPassword'
+      };
+      this.setState({ isLoading: true });
+      fetch('/api/auth/sign-in', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(demo)
+      })
+        .then(res => res.json())
+        .then(result => {
+          if (result.user && result.token) {
+            this.props.onSignIn(result);
+          }
+          if (result.error === 'invalid login') {
+            this.setState({ error: true });
+          } else {
+            this.setState({ error: false });
+          }
+          this.setState({ isLoading: false });
+        });
+    }
   }
 
   handleChange(event) {
