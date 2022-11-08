@@ -7,7 +7,7 @@ export default function ExerciseCards(props) {
 
   if (route.path === 'patientProfile' && exercises.length === 0) {
     return (
-      <div className="card col-12 col-lg-7 col-xl-7 col-xxl-6 lead d-block d-flex justify-content-center">
+      <div className="card col-12 col-lg-7 col-xl-7 col-xxl-6 lead d-block d-flex justify-content-center" style={{ backgroundColor: 'rgb(226, 226, 226)' }}>
         <div className="card-body">
           No exercises have been assigned to this patient yet. You can add exercises by clicking &quot;Add Exercise&quot; above.
         </div>
@@ -17,7 +17,7 @@ export default function ExerciseCards(props) {
 
   if (route.path === 'exercises' && exercises.length === 0) {
     return (
-      <div className="card col-12 col-lg-7 col-xl-7 col-xxl-6 lead d-block d-flex justify-content-center">
+      <div className="card col-12 col-lg-7 col-xl-7 col-xxl-6 lead d-block d-flex justify-content-center" style={{ backgroundColor: 'rgb(226, 226, 226)' }}>
         <div className="card-body">
           No exercises have been created on your account yet. You can create exercises by clicking &quot;New Exercise&quot; above.
         </div>
@@ -44,7 +44,7 @@ function Exercise(props) {
 
   let cardLink = `#exerciseProfile?exerciseId=${exerciseId}`;
   if (props.route.path === 'chooseExercise') {
-    cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}`;
+    cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}&pathway=0`;
   }
 
   let cardExtra = targetArea;
@@ -75,7 +75,7 @@ function Exercise(props) {
   }
 
   return (
-    <div className="card mx-auto col-md-10 col-lg-8 col-xl-7 col-xxl-6">
+    <div className="card exercise-card mx-auto col-md-10 col-lg-8 col-xl-7 col-xxl-6">
       <a href={cardLink} className="text-decoration-none text-dark">
         <div className="card-body pb-2 d-flex justify-content-between">
           <h5>{ name }</h5>

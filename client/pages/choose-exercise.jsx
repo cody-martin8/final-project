@@ -9,7 +9,8 @@ export default class ChooseExercise extends React.Component {
     this.state = {
       exercises: [],
       patientExercises: [],
-      targetArea: 'All'
+      targetArea: 'All',
+      isLoading: true
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -60,33 +61,40 @@ export default class ChooseExercise extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patientExercises => this.setState({ patientExercises }));
+      .then(patientExercises => this.setState({ patientExercises, isLoading: false }));
   }
 
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
+    const { exercises, patientExercises, targetArea, isLoading } = this.state;
 
-    if (!this.state.exercises) return null;
-    if (!this.state.patientExercises) return null;
-
-    const pExercises = [];
-    for (let i = 0; i < this.state.patientExercises.length; i++) {
-      pExercises.push(this.state.patientExercises[i].exerciseId);
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
     }
-    const exercises = [];
-    for (let i = 0; i < this.state.exercises.length; i++) {
-      if (!pExercises.includes(this.state.exercises[i].exerciseId)) {
-        exercises.push(this.state.exercises[i]);
+
+    if (!exercises || !patientExercises) return null;
+
+    const patientExercisesArray = [];
+    for (let i = 0; i < patientExercises.length; i++) {
+      patientExercisesArray.push(patientExercises[i].exerciseId);
+    }
+    const exercisesArray = [];
+    for (let i = 0; i < exercises.length; i++) {
+      if (!patientExercisesArray.includes(exercises[i].exerciseId)) {
+        exercisesArray.push(exercises[i]);
       }
     }
-    const targetArea = this.state.targetArea;
 
-    for (let i = 0; i < exercises.length; i++) {
+    for (let i = 0; i < exercisesArray.length; i++) {
       targetArea === 'All'
-        ? exercises[i].view = 'd-block mb-3'
-        : exercises[i].targetArea === targetArea
-          ? exercises[i].view = 'd-block mb-3'
-          : exercises[i].view = 'd-none';
+        ? exercisesArray[i].view = 'd-block mb-3'
+        : exercisesArray[i].targetArea === targetArea
+          ? exercisesArray[i].view = 'd-block mb-3'
+          : exercisesArray[i].view = 'd-none';
     }
 
     return (
@@ -101,8 +109,7 @@ export default class ChooseExercise extends React.Component {
                 href={`#patientProfile?patientId=${this.props.patientId}`}>Cancel</a>
             </div>
             <div className="dropdown">
-              <a className="btn btn-sm dropdown-toggle"
-                style={{ backgroundColor: '#D78521', color: 'white' }}
+              <a className="btn btn-sm dropdown-toggle orange-button"
                 href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">Target Area</a>
               <ul className="dropdown-menu">
                 <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="all" onClick={this.handleClick}>All</a></li>
@@ -118,7 +125,7 @@ export default class ChooseExercise extends React.Component {
           </div>
         </div>
         <div className="row justify-content-center mb-5">
-          <ExerciseCards exercises={exercises} />
+          <ExerciseCards exercises={exercisesArray} />
         </div>
       </div>
     );

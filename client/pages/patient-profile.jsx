@@ -9,7 +9,8 @@ export default class PatientProfile extends React.Component {
     this.state = {
       patientExercises: [],
       exercises: [],
-      patient: null
+      patient: null,
+      isLoading: true
     };
     this.deleteProfile = this.deleteProfile.bind(this);
   }
@@ -37,10 +38,12 @@ export default class PatientProfile extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patient => this.setState({ patient }));
+      .then(patient => this.setState({ patient, isLoading: false }));
   }
 
-  deleteProfile() {
+  deleteProfile(event) {
+    event.preventDefault();
+    this.setState({ isLoading: true });
     fetch(`/api/patients/${this.props.patientId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -49,6 +52,7 @@ export default class PatientProfile extends React.Component {
       method: 'DELETE'
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = '#';
       });
   }
@@ -56,28 +60,37 @@ export default class PatientProfile extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    if (!this.state.patient) return null;
-    if (!this.state.patientExercises) return null;
-    const { patientId, firstName, lastName, age, injuryAilment, notes } = this.state.patient;
+    const { patient, exercises, patientExercises, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (!patient || !patientExercises) return null;
+    const { patientId, firstName, lastName, age, injuryAilment, notes } = patient;
     const name = `${firstName} ${lastName}`;
 
     let notesSection;
     notes ? notesSection = notes : notesSection = 'None';
 
-    const exerciseLibrary = this.state.exercises;
-    const patientExercises = [];
-    for (let i = 0; i < this.state.patientExercises.length; i++) {
-      patientExercises.push(this.state.patientExercises[i].exerciseId);
+    const exerciseLibrary = exercises;
+    const patientExercisesArray = [];
+    for (let i = 0; i < patientExercises.length; i++) {
+      patientExercisesArray.push(patientExercises[i].exerciseId);
     }
-    const exercises = [];
+    const exercisesArray = [];
     for (let i = 0; i < exerciseLibrary.length; i++) {
-      if (patientExercises.includes(exerciseLibrary[i].exerciseId)) {
-        exercises.push(exerciseLibrary[i]);
+      if (patientExercisesArray.includes(exerciseLibrary[i].exerciseId)) {
+        exercisesArray.push(exerciseLibrary[i]);
       }
     }
 
-    for (let i = 0; i < exercises.length; i++) {
-      exercises[i].view = 'd-block mb-3';
+    for (let i = 0; i < exercisesArray.length; i++) {
+      exercisesArray[i].view = 'd-block mb-3';
     }
 
     return (
@@ -93,7 +106,7 @@ export default class PatientProfile extends React.Component {
                 A patient can be marked as Inactive in Edit Profile.
               </div>
               <div className="modal-footer d-flex justify-content-between">
-                <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-dismiss="modal" onClick={() => { location.href = `#newPatient?patientId=${patientId}`; }}>Edit Profile</button>
+                <button className="btn orange-button" data-bs-dismiss="modal" onClick={() => { location.href = `#newPatient?patientId=${patientId}`; }}>Edit Profile</button>
                 <button type="button" className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Profile</button>
               </div>
             </div>
@@ -112,20 +125,20 @@ export default class PatientProfile extends React.Component {
               </div>
               <div className="modal-footer d-flex justify-content-between">
                 <button type="button" className="btn btn-danger" data-bs-dismiss="modal" onClick={this.deleteProfile}>Confirm Delete</button>
-                <button className="btn text-light" style={{ backgroundColor: '#D78521' }} data-bs-toggle="modal" data-bs-target="#editModal">Cancel</button>
+                <button className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editModal">Cancel</button>
               </div>
             </div>
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-9 col-xl-8 col-xxl-7 mb-4 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-9 col-xl-8 col-xxl-7 mb-4 mb-lg-4 p-0 d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
-              <h1 className="me-2">Patient Profile</h1>
-              <i className="fa-solid fa-user fa-2xl mb-1 d-none d-sm-block"></i>
+              <h1 className="me-2 mb-0">Patient Profile</h1>
+              <i className="fa-solid fa-user fa-2xl d-none d-sm-block"></i>
             </div>
-            <a href="#" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
+            <a href="#" className="btn px-2 py-1 orange-button">
               <i className="fa-solid fa-angle-left fa-sm"></i>
-              <span> Patients</span>
+              <h6 className="d-inline mb-1"> Back</h6>
             </a>
           </div>
         </div>
@@ -136,7 +149,7 @@ export default class PatientProfile extends React.Component {
                 <div className="mb-3 d-flex justify-content-between">
                   <div className="d-flex align-items-center justify-content-between">
                     <h3 className="mb-0 me-3">{ name }</h3>
-                    <i className="btn fa-solid fa-pen-to-square fa-xl" data-bs-toggle="modal" data-bs-target="#editModal"></i>
+                    <i className="btn fa-solid fa-pen-to-square fa-xl edit-button" data-bs-toggle="modal" data-bs-target="#editModal"></i>
                   </div>
                   <div className="d-flex d-none d-sm-block align-items-center">
                     <h5 className="mt-2">Age: { age }</h5>
@@ -154,11 +167,11 @@ export default class PatientProfile extends React.Component {
             <div className="d-flex align-items-center">
               <h4 className="me-3">Exercises</h4>
             </div>
-            <a href={`#chooseExercise?patientId=${patientId}`} className="btn my-1" style={{ backgroundColor: '#D78521', color: 'white' }}>Add Exercise</a>
+            <a href={`#chooseExercise?patientId=${patientId}`} className="btn btn-sm my-1 orange-button">Add Exercise</a>
           </div>
         </div>
         <div className="row justify-content-center mb-5">
-          <ExerciseCards exercises={exercises} patientExercises={this.state.patientExercises} />
+          <ExerciseCards exercises={exercisesArray} patientExercises={patientExercises} />
         </div>
       </div>
     );

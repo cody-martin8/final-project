@@ -8,7 +8,8 @@ export default class YourExercises extends React.Component {
     super(props);
     this.state = {
       exercises: [],
-      targetArea: 'All'
+      targetArea: 'All',
+      isLoading: true
     };
     this.handleClick = this.handleClick.bind(this);
   }
@@ -51,14 +52,21 @@ export default class YourExercises extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(exercises => this.setState({ exercises }));
+      .then(exercises => this.setState({ exercises, isLoading: false }));
   }
 
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    const targetArea = this.state.targetArea;
-    const exercises = this.state.exercises;
+    const { targetArea, exercises, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
 
     for (let i = 0; i < exercises.length; i++) {
       targetArea === 'All'
@@ -71,22 +79,21 @@ export default class YourExercises extends React.Component {
     return (
       <div className="container px-4">
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-8 mb-4 mb-lg-4 p-0 d-flex justify-content-between">
+          <div className="col-12 col-lg-9 mb-4 mb-lg-4 p-0 d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               <h1 className="me-3">Your Exercises</h1>
               <i className="fa-regular fa-folder-open fa-2xl mb-1 d-none d-sm-block"></i>
             </div>
-            <a href="#newExercise" className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>New Exercise</a>
+            <a href="#newExercise" className="btn dark-blue-button">New Exercise</a>
           </div>
         </div>
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-7 col-xl-7 col-xxl-6 mb-4 p-lg-1 d-flex justify-content-between">
+          <div className="col-12 col-lg-8 col-xl-7 mb-4 p-lg-1 d-flex justify-content-between">
             <div className="d-flex align-items-center">
               <h4 className="me-3">{targetArea} Exercises</h4>
             </div>
             <div className="dropdown">
-              <a className="btn dropdown-toggle"
-                style={{ backgroundColor: '#D78521', color: 'white' }}
+              <a className="btn dropdown-toggle orange-button"
                 href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">Target Area</a>
               <ul className="dropdown-menu">
                 <li><a className="dropdown-item" href="#exercises" id="all" onClick={this.handleClick}>All</a></li>
@@ -101,7 +108,7 @@ export default class YourExercises extends React.Component {
             </div>
           </div>
           <div className="row justify-content-center mb-5">
-            <ExerciseCards exercises={this.state.exercises} />
+            <ExerciseCards exercises={exercises} />
           </div>
         </div>
       </div>

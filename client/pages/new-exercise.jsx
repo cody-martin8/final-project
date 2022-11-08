@@ -10,7 +10,8 @@ export default class NewExerciseForm extends React.Component {
       initialName: '',
       name: '',
       targetArea: '',
-      description: ''
+      description: '',
+      isLoading: true
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,7 +26,7 @@ export default class NewExerciseForm extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(exercises => this.setState({ exercises }));
+      .then(exercises => this.setState({ exercises, isLoading: false }));
 
     if (this.props.exerciseId !== null) {
       fetch(`/api/exercises/${this.props.exerciseId}`, {
@@ -46,9 +47,8 @@ export default class NewExerciseForm extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({
-      [event.target.id]: event.target.value
-    });
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
   }
 
   handleSubmit(event) {
@@ -72,6 +72,7 @@ export default class NewExerciseForm extends React.Component {
   }
 
   addExercise(newExercise) {
+    this.setState({ isLoading: true });
     fetch('/api/exercises', {
       headers: {
         'Content-Type': 'application/json',
@@ -81,11 +82,13 @@ export default class NewExerciseForm extends React.Component {
       body: JSON.stringify(newExercise)
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = '#exercises';
       });
   }
 
   editExercise(exercise) {
+    this.setState({ isLoading: true });
     fetch(`/api/exercises/${exercise.exerciseId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -95,6 +98,7 @@ export default class NewExerciseForm extends React.Component {
       body: JSON.stringify(exercise)
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = `#exerciseProfile?exerciseId=${exercise.exerciseId}`;
       });
   }
@@ -102,17 +106,27 @@ export default class NewExerciseForm extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
+    const { exercises, name, initialName, targetArea, description, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
     const nameArray = [];
-    for (let i = 0; i < this.state.exercises.length; i++) {
-      nameArray.push(this.state.exercises[i].name);
+    for (let i = 0; i < exercises.length; i++) {
+      nameArray.push(exercises[i].name);
     }
 
     let isTaken, formHeader;
     if (this.props.exerciseId === null) {
-      isTaken = nameArray.includes(this.state.name);
+      isTaken = nameArray.includes(name);
       formHeader = 'New Exercise';
     } else {
-      isTaken = (nameArray.includes(this.state.name) && this.state.name !== this.state.initialName);
+      isTaken = (nameArray.includes(name) && name !== initialName);
       formHeader = 'Edit Exercise';
     }
 
@@ -134,11 +148,18 @@ export default class NewExerciseForm extends React.Component {
             <div className={exerciseExists} role="alert">An exercise with this name already exists</div>
             <div className="mb-3">
               <label htmlFor="name" className="form-label">Name</label>
-              <input type="text" required className="form-control" id="name" value={this.state.name} onChange={this.handleChange} />
+              <input
+                required
+                id="name"
+                type="text"
+                name="name"
+                value={name}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className="mb-3">
               <label htmlFor="targetArea" className="form-label">Target Area</label>
-              <select required className="form-select" id="targetArea" value={this.state.targetArea} onChange={this.handleChange}>
+              <select required id="targetArea" name="targetArea" value={targetArea} onChange={this.handleChange} className="form-select" >
                 <option>Select the target area for this exercise</option>
                 <option value="Ankle and Foot" >Ankle and Foot</option>
                 <option value="Cervical" >Cervical</option>
@@ -151,14 +172,21 @@ export default class NewExerciseForm extends React.Component {
             </div>
             <div className="mb-3">
               <label htmlFor="description" className="form-label">Description</label>
-              <textarea type="textarea" className="form-control" id="description" rows="3" value={this.state.description} onChange={this.handleChange} />
+              <textarea
+                id="description"
+                name="description"
+                type="textarea"
+                rows="3"
+                value={description}
+                onChange={this.handleChange}
+                className="form-control" />
             </div>
             <div className="d-flex justify-content-between">
               <div>
                 <a href="#exercises" className="btn btn-secondary">Cancel</a>
               </div>
               <div>
-                <button type="submit" className="btn" style={{ backgroundColor: '#D78521', color: 'white' }}>Save Exercise</button>
+                <button type="submit" className="btn orange-button">Save Exercise</button>
               </div>
             </div>
           </form>

@@ -5,8 +5,8 @@ export default function PatientExerciseCards(props) {
 
   if (exercises.length === 0) {
     return (
-      <div className="row mt-5 mb-4 justify-content-center">
-        <div className="card col-12 col-lg-7 col-xl-7 col-xxl-6 lead d-block d-flex justify-content-center">
+      <div className="row mt-5 justify-content-center">
+        <div className="card col-12 col-lg-7 col-xl-7 col-xxl-6 lead d-block d-flex justify-content-center" style={{ backgroundColor: 'rgb(226, 226, 226)' }}>
           <div className="card-body text-center">
             No exercises have been assigned by your physical therapist yet.
           </div>
@@ -19,7 +19,7 @@ export default function PatientExerciseCards(props) {
     <>
       <div className="row mb-4 justify-content-center">
         <div className="col-md-10 col-lg-8 col-xl-7 col-xxl-5 lead px-1">
-          Click each exercise to view their description!
+          Click each exercise to view the description!
         </div>
       </div>
       <div className="row mb-5">
@@ -65,7 +65,7 @@ function Exercise(props) {
   const cardLink = `#exerciseDetails?exerciseId=${exerciseId}&exercise=${setsReps}&patientExerciseId=${patientExerciseId}`;
 
   return (
-    <div className="card col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-5">
+    <div className="card exercise-card col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-5">
       <a href={cardLink} className="text-decoration-none text-dark">
         <div className="card-body pb-2">
           <h4 className="text-center">{name}</h4>

@@ -8,7 +8,8 @@ export default class ExerciseAssignment extends React.Component {
     this.state = {
       exercise: null,
       patient: null,
-      patientExercise: null
+      patientExercise: null,
+      isLoading: true
     };
     this.deleteAssignment = this.deleteAssignment.bind(this);
   }
@@ -36,10 +37,11 @@ export default class ExerciseAssignment extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patientExercise => this.setState({ patientExercise }));
+      .then(patientExercise => this.setState({ patientExercise, isLoading: false }));
   }
 
   deleteAssignment() {
+    this.setState({ isLoading: true });
     const { patientExerciseId } = this.state.patientExercise;
     const { patientId } = this.state.patient;
     fetch(`/api/patientExercises/${patientExerciseId}`, {
@@ -50,6 +52,7 @@ export default class ExerciseAssignment extends React.Component {
       method: 'DELETE'
     })
       .then(res => {
+        this.setState({ isLoading: false });
         location.hash = `#patientProfile?patientId=${patientId}`;
       });
   }
@@ -57,12 +60,20 @@ export default class ExerciseAssignment extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    if (!this.state.patientExercise) return null;
-    if (!this.state.exercise) return null;
-    if (!this.state.patient) return null;
-    const { patientExerciseId, feedback } = this.state.patientExercise;
-    const { exerciseId, name, description } = this.state.exercise;
-    const { firstName, lastName, patientId } = this.state.patient;
+    const { patientExercise, exercise, patient, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center mt-5 load-container">
+          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (!patientExercise || !exercise || !patient) return null;
+    const { patientExerciseId, feedback } = patientExercise;
+    const { exerciseId, name, description } = exercise;
+    const { firstName, lastName, patientId } = patient;
     const patientName = `${firstName} ${lastName}`;
 
     return (
@@ -84,14 +95,14 @@ export default class ExerciseAssignment extends React.Component {
             </div>
           </div>
         </div>
-        <div className="row justify-content-center mb-3 mb-md-5">
-          <div className="col-12 col-md-11 col-lg-8 col-xl-7 mb-4 p-0 d-flex justify-content-between">
+        <div className="row justify-content-center mb-3 mb-md-4">
+          <div className="col-12 col-md-11 col-lg-8 col-xl-7 mb-4 p-0 d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
-              <h1 className="me-2">Assigned Exercise</h1>
+              <h1 className="me-2 mb-0">Assigned Exercise</h1>
             </div>
-            <a href={`#patientProfile?patientId=${patientId}`} className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
+            <a href={`#patientProfile?patientId=${patientId}`} className="btn px-2 py-1 orange-button">
               <i className="fa-solid fa-angle-left fa-sm"></i>
-              <span className="ms-1"> Patient</span>
+              <h6 className="d-inline mb-1"> Back</h6>
             </a>
           </div>
         </div>
@@ -100,23 +111,23 @@ export default class ExerciseAssignment extends React.Component {
             <div className="card">
               <div className="card-body">
                 <h5 className="card-subtitle mb-1 text-muted">{patientName}</h5>
-                <div className="d-flex flex-wrap flex-sm-nowrap align-items-center justify-content-between mb-5">
-                  <h3 className="mb-0 ms-2">{name}</h3>
-                  <h4 className="card-subtitle text-muted mt-2 ms-2 pt-0">{this.props.exercise}</h4>
+                <div className="d-flex flex-wrap justify-content-between mb-5">
+                  <h3 className="mb-2 mb-sm-0 ms-2">{name}</h3>
+                  <h4 className="card-subtitle text-muted mt-1 ms-2 pt-0">{this.props.exercise}</h4>
                 </div>
                 <h5 className="mb-1 text-decoration-underline">Description:</h5>
                 <p className="card-text lead ms-4 mb-4">{description}</p>
                 {(feedback) &&
                   <>
-                    <h5 className="mb-1">Patient Feedback:</h5>
-                    <p className="card-text lead ms-4 mb-5">{feedback}</p>
+                  <h5 className="mb-1" style={{ color: '#D78521' }}>Patient Feedback:</h5>
+                    <p className="card-text lead ms-4 mb-4">{feedback}</p>
                   </>
                 }
-                <div className="d-flex justify-content-around">
-                  <a href={`#assignExercise?patientExerciseId=${patientExerciseId}&exerciseId=${exerciseId}&patientId=${patientId}&exercise=${this.props.exercise}`} className="btn my-2" style={{ backgroundColor: '#D78521', color: 'white' }}>
+                <div className="d-flex justify-content-between">
+                  <a href={`#assignExercise?patientExerciseId=${patientExerciseId}&exerciseId=${exerciseId}&patientId=${patientId}&exercise=${this.props.exercise}`} className="btn ms-lg-3 my-2 orange-button">
                     <span>Update</span>
                   </a>
-                  <button className="btn btn-danger my-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                  <button className="btn btn-danger me-lg-3 my-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
                     <span>Remove</span>
                   </button>
                 </div>
