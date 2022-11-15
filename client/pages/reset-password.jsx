@@ -7,7 +7,8 @@ export default class ResetPassword extends React.Component {
       userId: null,
       email: '',
       password: '',
-      isLoading: false
+      isLoading: false,
+      networkError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -41,17 +42,41 @@ export default class ResetPassword extends React.Component {
       .then(result => {
         this.setState({ isLoading: false });
         window.location.hash = 'sign-in';
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
       });
   }
 
   render() {
 
-    const { isLoading } = this.state;
+    const { isLoading, networkError } = this.state;
 
     if (isLoading) {
       return (
         <div className="d-flex justify-content-center align-items-center mt-5 load-container">
           <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (networkError) {
+      return (
+        <div className="d-flex justify-content-center mt-5 px-4">
+          <div className="card mt-3">
+            <div className="card-header">
+              Error
+            </div>
+            <div className="card-body">
+              <h5 className="card-title">Network Error</h5>
+              <p className="card-text">It looks like there was an error connecting to the network. Please check your internet connection and try again.</p>
+            </div>
+          </div>
         </div>
       );
     }

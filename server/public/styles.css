@@ -1,9 +1,14 @@
+.demo-button:hover {
+  cursor: pointer;
+}
+
 .exercise-card:hover {
   background-color: rgb(226, 226, 226);
   transition: 0.2s;
 }
 
-.patient-name-button {
+.patient-name-button,
+.menu-button {
   color: black;
 }
 

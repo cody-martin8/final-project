@@ -6,7 +6,8 @@ export default class PatientTable extends React.Component {
     super(props);
     this.state = {
       patients: [],
-      isLoading: true
+      isLoading: true,
+      networkError: false
     };
   }
 
@@ -17,12 +18,22 @@ export default class PatientTable extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patients => this.setState({ patients, isLoading: false }));
+      .then(patients => this.setState({ patients, isLoading: false }))
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
+      });
   }
 
   render() {
 
-    if (this.state.isLoading) {
+    const { isLoading, networkError, patients } = this.state;
+
+    if (isLoading) {
       return (
         <div className="d-flex justify-content-center align-items-center mt-5 offset-load-container">
           <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
@@ -30,7 +41,23 @@ export default class PatientTable extends React.Component {
       );
     }
 
-    if (!this.state.patients[0]) {
+    if (networkError) {
+      return (
+        <div className="d-flex justify-content-center mt-5 px-4">
+          <div className="card mt-3">
+            <div className="card-header">
+              Error
+            </div>
+            <div className="card-body">
+              <h5 className="card-title">Network Error</h5>
+              <p className="card-text">It looks like there was an error connecting to the network. Please check your internet connection and try again.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (!patients[0]) {
       return (
         <div className="row justify-content-center align-items-center mt-4">
           <div className="card col-12 col-md-9 col-lg-8 lead d-flex justify-content-center" style={{ backgroundColor: 'rgb(226, 226, 226)' }}>
@@ -56,7 +83,7 @@ export default class PatientTable extends React.Component {
             </thead>
             <tbody>
               {
-                this.state.patients.map(patient => (
+                patients.map(patient => (
                   <tr key={patient.patientId}>
                     <Patient patient={patient} handleClick={this.handleClick} />
                   </tr>

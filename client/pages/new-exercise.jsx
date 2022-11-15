@@ -11,7 +11,8 @@ export default class NewExerciseForm extends React.Component {
       name: '',
       targetArea: '',
       description: '',
-      isLoading: true
+      isLoading: true,
+      networkError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -26,7 +27,15 @@ export default class NewExerciseForm extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(exercises => this.setState({ exercises, isLoading: false }));
+      .then(exercises => this.setState({ exercises, isLoading: false }))
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
+      });
 
     if (this.props.exerciseId !== null) {
       fetch(`/api/exercises/${this.props.exerciseId}`, {
@@ -42,6 +51,14 @@ export default class NewExerciseForm extends React.Component {
             targetArea: editExercise.targetArea,
             description: editExercise.description
           });
+        })
+        .catch(error => {
+          if (error) {
+            this.setState({
+              isLoading: false,
+              networkError: true
+            });
+          }
         });
     }
   }
@@ -84,6 +101,14 @@ export default class NewExerciseForm extends React.Component {
       .then(res => {
         this.setState({ isLoading: false });
         location.hash = '#exercises';
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
       });
   }
 
@@ -100,18 +125,42 @@ export default class NewExerciseForm extends React.Component {
       .then(res => {
         this.setState({ isLoading: false });
         location.hash = `#exerciseProfile?exerciseId=${exercise.exerciseId}`;
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
       });
   }
 
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    const { exercises, name, initialName, targetArea, description, isLoading } = this.state;
+    const { exercises, name, initialName, targetArea, description, isLoading, networkError } = this.state;
 
     if (isLoading) {
       return (
         <div className="d-flex justify-content-center align-items-center mt-5 load-container">
           <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (networkError) {
+      return (
+        <div className="d-flex justify-content-center mt-5 px-4">
+          <div className="card mt-3">
+            <div className="card-header">
+              Error
+            </div>
+            <div className="card-body">
+              <h5 className="card-title">Network Error</h5>
+              <p className="card-text">It looks like there was an error connecting to the network. Please check your internet connection and try again.</p>
+            </div>
+          </div>
         </div>
       );
     }

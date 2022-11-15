@@ -10,7 +10,8 @@ export default class AuthForm extends React.Component {
       accountType: '',
       patientId: null,
       error: false,
-      isLoading: true
+      isLoading: true,
+      networkError: false
     };
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -60,6 +61,14 @@ export default class AuthForm extends React.Component {
             this.setState({ error: false });
           }
           this.setState({ isLoading: false });
+        })
+        .catch(error => {
+          if (error) {
+            this.setState({
+              isLoading: false,
+              networkError: true
+            });
+          }
         });
     }
     if (id === 'patient') {
@@ -86,6 +95,14 @@ export default class AuthForm extends React.Component {
             this.setState({ error: false });
           }
           this.setState({ isLoading: false });
+        })
+        .catch(error => {
+          if (error) {
+            this.setState({
+              isLoading: false,
+              networkError: true
+            });
+          }
         });
     }
   }
@@ -117,6 +134,14 @@ export default class AuthForm extends React.Component {
         } else {
           this.setState({ error: false });
         }
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
       });
   }
 
@@ -124,12 +149,28 @@ export default class AuthForm extends React.Component {
 
     const { action } = this.props;
     const { handleChange, handleSubmit } = this;
-    const { accountType, error, isLoading } = this.state;
+    const { accountType, error, isLoading, networkError } = this.state;
 
     if (isLoading) {
       return (
         <div className="d-flex justify-content-center align-items-center mt-5 auth-load-container">
           <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (networkError) {
+      return (
+        <div className="d-flex justify-content-center mt-5 px-4">
+          <div className="card mt-3">
+            <div className="card-header">
+              Error
+            </div>
+            <div className="card-body">
+              <h5 className="card-title">Network Error</h5>
+              <p className="card-text">It looks like there was an error connecting to the network. Please check your internet connection and try again.</p>
+            </div>
+          </div>
         </div>
       );
     }
@@ -221,8 +262,8 @@ export default class AuthForm extends React.Component {
                     href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">View Sample Account
                   </a>
                   <ul className="dropdown-menu">
-                    <li><a className="dropdown-item" id="therapist" onClick={this.handleClick}>Physical Therapist Account</a></li>
-                    <li><a className="dropdown-item" id="patient" onClick={this.handleClick}>Patient Account</a></li>
+                    <li><a className="dropdown-item demo-button" id="therapist" onClick={this.handleClick}>Physical Therapist Account</a></li>
+                    <li><a className="dropdown-item demo-button" id="patient" onClick={this.handleClick}>Patient Account</a></li>
                   </ul>
                 </div>
               </div>
