@@ -9,7 +9,8 @@ export default class ExerciseDetails extends React.Component {
       exercise: null,
       patientExercise: null,
       feedback: '',
-      isLoading: true
+      isLoading: true,
+      networkError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -22,7 +23,15 @@ export default class ExerciseDetails extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(exercise => this.setState({ exercise }));
+      .then(exercise => this.setState({ exercise }))
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
+      });
 
     fetch(`/api/patientExercises/${this.context.user.patientId}/${this.props.exerciseId}`, {
       headers: {
@@ -41,6 +50,14 @@ export default class ExerciseDetails extends React.Component {
           this.setState({
             patientExercise,
             isLoading: false
+          });
+        }
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
           });
         }
       });
@@ -72,6 +89,14 @@ export default class ExerciseDetails extends React.Component {
       .then(res => {
         this.setState({ isLoading: false });
         location.hash = '#';
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
       });
     this.setState({ feedback: '' });
   }
@@ -79,12 +104,28 @@ export default class ExerciseDetails extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    const { exercise, feedback, isLoading } = this.state;
+    const { exercise, feedback, isLoading, networkError } = this.state;
 
     if (isLoading) {
       return (
         <div className="d-flex justify-content-center align-items-center mt-5 load-container">
           <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (networkError) {
+      return (
+        <div className="d-flex justify-content-center mt-5 px-4">
+          <div className="card mt-3">
+            <div className="card-header">
+              Error
+            </div>
+            <div className="card-body">
+              <h5 className="card-title">Network Error</h5>
+              <p className="card-text">It looks like there was an error connecting to the network. Please check your internet connection and try again.</p>
+            </div>
+          </div>
         </div>
       );
     }

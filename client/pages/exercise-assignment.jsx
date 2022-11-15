@@ -9,7 +9,8 @@ export default class ExerciseAssignment extends React.Component {
       exercise: null,
       patient: null,
       patientExercise: null,
-      isLoading: true
+      isLoading: true,
+      networkError: false
     };
     this.deleteAssignment = this.deleteAssignment.bind(this);
   }
@@ -21,7 +22,15 @@ export default class ExerciseAssignment extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(exercise => this.setState({ exercise }));
+      .then(exercise => this.setState({ exercise }))
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
+      });
 
     fetch(`/api/patients/${this.props.patientId}`, {
       headers: {
@@ -29,7 +38,15 @@ export default class ExerciseAssignment extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patient => this.setState({ patient }));
+      .then(patient => this.setState({ patient }))
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
+      });
 
     fetch(`/api/patientExercises/${this.props.patientId}/${this.props.exerciseId}`, {
       headers: {
@@ -37,7 +54,15 @@ export default class ExerciseAssignment extends React.Component {
       }
     })
       .then(res => res.json())
-      .then(patientExercise => this.setState({ patientExercise, isLoading: false }));
+      .then(patientExercise => this.setState({ patientExercise, isLoading: false }))
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
+      });
   }
 
   deleteAssignment() {
@@ -54,18 +79,42 @@ export default class ExerciseAssignment extends React.Component {
       .then(res => {
         this.setState({ isLoading: false });
         location.hash = `#patientProfile?patientId=${patientId}`;
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
       });
   }
 
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    const { patientExercise, exercise, patient, isLoading } = this.state;
+    const { patientExercise, exercise, patient, isLoading, networkError } = this.state;
 
     if (isLoading) {
       return (
         <div className="d-flex justify-content-center align-items-center mt-5 load-container">
-          <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+          <div className="lds-ellipsis d-block"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (networkError) {
+      return (
+        <div className="d-flex justify-content-center mt-5 px-4">
+          <div className="card mt-3 d-block">
+            <div className="card-header">
+              Error
+            </div>
+            <div className="card-body">
+              <h5 className="card-title">Network Error</h5>
+              <p className="card-text">It looks like there was an error connecting to the network. Please check your internet connection and try again.</p>
+            </div>
+          </div>
         </div>
       );
     }

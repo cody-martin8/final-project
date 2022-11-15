@@ -38,7 +38,6 @@ export default class ForgotPassword extends React.Component {
             .then(result => {
               window.location.hash = 'sign-in';
               this.setState({ isLoading: false });
-              // replace with alert saying that Reset Password email was sent
             });
         }
       });

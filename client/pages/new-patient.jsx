@@ -15,7 +15,8 @@ export default class NewPatientForm extends React.Component {
       notes: '',
       isActive: true,
       emailSignUp: false,
-      isLoading: true
+      isLoading: true,
+      networkError: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -31,6 +32,14 @@ export default class NewPatientForm extends React.Component {
       .then(res => res.json())
       .then(patients => {
         this.setState({ patients, isLoading: false });
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
       });
     if (this.props.patientId !== null) {
       fetch(`/api/patients/${this.props.patientId}`, {
@@ -48,6 +57,13 @@ export default class NewPatientForm extends React.Component {
             injuryAilment: editPatient.injuryAilment,
             notes: editPatient.notes
           });
+        })
+        .catch(error => {
+          if (error) {
+            this.setState({
+              networkError: true
+            });
+          }
         });
     }
   }
@@ -122,6 +138,14 @@ export default class NewPatientForm extends React.Component {
           method: 'POST',
           body: JSON.stringify(patientEmailDetails)
         });
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
       });
   }
 
@@ -138,6 +162,14 @@ export default class NewPatientForm extends React.Component {
       .then(res => {
         this.setState({ isLoading: false });
         location.hash = `#patientProfile?patientId=${patient.patientId}`;
+      })
+      .catch(error => {
+        if (error) {
+          this.setState({
+            isLoading: false,
+            networkError: true
+          });
+        }
       });
 
     const patientEmailDetails = {
@@ -158,12 +190,28 @@ export default class NewPatientForm extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    const { patients, firstName, lastName, patientEmail, age, injuryAilment, notes, isLoading } = this.state;
+    const { patients, firstName, lastName, patientEmail, age, injuryAilment, notes, isLoading, networkError } = this.state;
 
     if (isLoading) {
       return (
         <div className="d-flex justify-content-center align-items-center mt-5 load-container">
           <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+      );
+    }
+
+    if (networkError) {
+      return (
+        <div className="d-flex justify-content-center mt-5 px-4">
+          <div className="card mt-3">
+            <div className="card-header">
+              Error
+            </div>
+            <div className="card-body">
+              <h5 className="card-title">Network Error</h5>
+              <p className="card-text">It looks like there was an error connecting to the network. Please check your internet connection and try again.</p>
+            </div>
+          </div>
         </div>
       );
     }
