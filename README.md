@@ -4,7 +4,7 @@ A full stack JavaScript application for physical therapists who want to digitall
 
 ## Why I Built This
 
-As someone who went through physical therapy and was headed into the field as a career, patient access to assigned exercises was a need I thought should be addressed. Exercise printouts and/or emails were easily lost in between physical therapy sessions.
+As someone who went through physical therapy and was headed into the field as a career, patient access to assigned exercises was a need I thought should be addressed. Patients could easily lose exercise printouts and/or emails in between physical therapy sessions, making it difficult to keep up with their rehabilitation.
 
 ## Technologies Used
 
@@ -44,16 +44,16 @@ Try this application live at - https://pt-connection.cmartin.dev
 
 ## Preview
 
-![PT Connection - Physical Therapist]
+![PT Connection - Assigning an Exercise](assets/pt-connection-assign-exercise.gif "Physical Therapist Assigning an Exercise")
 
-![PT Connection - Patient]
+![PT Connection - Leaving Feedback](assets/pt-connection-leaving-feedback.gif "Patient Leaving Feedback On an Exercise")
 
 ## Stretch Features
 
 I would like to implement the following:
 
 - Physical therapist and patient can exchange messages regarding assigned exercises.
--
+- Physical therapist can assign multiple exercises at once.
 
 ## Development
 
@@ -69,7 +69,6 @@ I would like to implement the following:
 
     ```shell
     git clone https://github.com/cody-martin8/final-project
-    cd final-project
     ```
 
 2. Install all dependencies with NPM.
@@ -78,13 +77,21 @@ I would like to implement the following:
     npm install
     ```
 
-3. Import the example database to PostgreSQL.
+3. Create new .env file. Copy over content from .env.example. Where it says 'changeMe' in DATABASE_URL, change to 'finalProject'.
+
+4. Start the PostgreSQL database server.
+
+    ```shell
+    sudo service postgresql start
+    ```
+
+5. Import the example database to PostgreSQL.
 
     ```shell
     npm run db:import
     ```
 
-4. Start the project. Once started you can view the application by opening http://localhost:3000 in your browser.
+6. Start the project. Once started you can view the application by opening http://localhost:3000 in your browser.
 
     ```shell
     npm run dev
