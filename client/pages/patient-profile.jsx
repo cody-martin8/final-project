@@ -69,7 +69,7 @@ export default class PatientProfile extends React.Component {
   deleteProfile(event) {
     event.preventDefault();
     this.setState({ isLoading: true });
-    fetch(`/api/patients/${this.props.patientId}`, {
+    fetch(`/api/patientExercises/patient/${this.props.patientId}`, {
       headers: {
         'Content-Type': 'application/json',
         'X-Access-Token': this.context.token
@@ -77,8 +77,25 @@ export default class PatientProfile extends React.Component {
       method: 'DELETE'
     })
       .then(res => {
-        this.setState({ isLoading: false });
-        location.hash = '#';
+        fetch(`/api/patients/${this.props.patientId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Access-Token': this.context.token
+          },
+          method: 'DELETE'
+        })
+          .then(res => {
+            this.setState({ isLoading: false });
+            location.hash = '#';
+          })
+          .catch(error => {
+            if (error) {
+              this.setState({
+                isLoading: false,
+                networkError: true
+              });
+            }
+          });
       })
       .catch(error => {
         if (error) {

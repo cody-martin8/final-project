@@ -66,9 +66,10 @@ export default class ExerciseProfile extends React.Component {
       });
   }
 
-  deleteProfile() {
+  deleteProfile(event) {
+    event.preventDefault();
     this.setState({ isLoading: true });
-    fetch(`/api/exercises/${this.props.exerciseId}`, {
+    fetch(`/api/patientExercises/exercise/${this.props.exerciseId}`, {
       headers: {
         'Content-Type': 'application/json',
         'X-Access-Token': this.context.token
@@ -76,8 +77,25 @@ export default class ExerciseProfile extends React.Component {
       method: 'DELETE'
     })
       .then(res => {
-        this.setState({ isLoading: false });
-        location.hash = '#exercises';
+        fetch(`/api/exercises/${this.props.exerciseId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Access-Token': this.context.token
+          },
+          method: 'DELETE'
+        })
+          .then(res => {
+            this.setState({ isLoading: false });
+            location.hash = '#exercises';
+          })
+          .catch(error => {
+            if (error) {
+              this.setState({
+                isLoading: false,
+                networkError: true
+              });
+            }
+          });
       })
       .catch(error => {
         if (error) {

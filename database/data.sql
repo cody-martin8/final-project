@@ -1,9 +1,9 @@
-insert into "patients" ("patientId", "userId", "email", "firstName", "lastName", "injuryAilment", "age", "notes", "isActive")
-values (1, 1, 'george@example.com', 'George', 'Smith', 'Patellar Tendonitis', 65, 'Limited flexibility, and pain while weight-bearing.', 'false'),
-       (2, 1, 'stacey@example.com', 'Stacey', 'Armstrong', 'Tennis Elbow', 57, 'Pain in wrist and elbow upon rotation.', 'true'),
-       (3, 1, 'maria@example.com', 'Maria', 'Acosta', 'Lower Back Soreness', 46, 'Limited flexibility at the waist, and pain in lower back during back extension.', 'true'),
-       (4, 1, 'veronica@example.com', 'Veronica', 'Nguyen', 'Carpal Tunnel Syndrome', 24, 'Infrequent pain and numbness in thumb and index finger. Difficulty holding weight in hand for long durations.', 'false'),
-       (5, 1, 'david@example.com', 'David', 'Martel', 'Neck Stiffness', 61, 'Limited extension and little to no flexion of the neck. Back of neck tender under pressure.', 'true');
+insert into "patients" ("userId", "email", "firstName", "lastName", "injuryAilment", "age", "notes", "isActive")
+values (1, 'george@example.com', 'George', 'Smith', 'Patellar Tendonitis', 65, 'Limited flexibility, and pain while weight-bearing.', 'false'),
+       (1, 'stacey@example.com', 'Stacey', 'Armstrong', 'Tennis Elbow', 57, 'Pain in wrist and elbow upon rotation.', 'true'),
+       (1, 'maria@example.com', 'Maria', 'Acosta', 'Lower Back Soreness', 46, 'Limited flexibility at the waist, and pain in lower back during back extension.', 'true'),
+       (1, 'veronica@example.com', 'Veronica', 'Nguyen', 'Carpal Tunnel Syndrome', 24, 'Infrequent pain and numbness in thumb and index finger. Difficulty holding weight in hand for long durations.', 'false'),
+       (1, 'david@example.com', 'David', 'Martel', 'Neck Stiffness', 61, 'Limited extension and little to no flexion of the neck. Back of neck tender under pressure.', 'true');
 
 insert into "exercises" ("userId", "name", "targetArea", "description")
 values (1, 'Ankle Pumps', 'Ankle and Foot', 'Bend your foot up and down at your ankle joint.'),
