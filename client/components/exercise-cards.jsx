@@ -4,6 +4,7 @@ import { parseRoute } from '../lib';
 export default function ExerciseCards(props) {
   const route = parseRoute(window.location.hash);
   const exercises = props.exercises;
+  // const targetArea = props.targetArea;
 
   if (route.path === 'patientProfile' && exercises.length === 0) {
     return (
@@ -41,10 +42,11 @@ export default function ExerciseCards(props) {
 function Exercise(props) {
   const { exerciseId, name, targetArea } = props.exercise;
   const patientId = props.route.params.get('patientId');
+  const targetParameter = props.route.params.get('targetArea');
 
-  let cardLink = `#exerciseProfile?exerciseId=${exerciseId}`;
+  let cardLink = `#exerciseProfile?exerciseId=${exerciseId}&targetArea=${targetParameter}`;
   if (props.route.path === 'chooseExercise') {
-    cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}&pathway=0`;
+    cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}&targetArea=${targetParameter}&pathway=0`;
   }
 
   let cardExtra = targetArea;

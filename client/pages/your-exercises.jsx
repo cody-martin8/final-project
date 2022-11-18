@@ -1,4 +1,5 @@
 import React from 'react';
+import parseRoute from '../lib/parse-route';
 import Redirect from '../components/redirect';
 import AppContext from '../lib/app-context';
 import ExerciseCards from '../components/exercise-cards';
@@ -8,45 +9,18 @@ export default class YourExercises extends React.Component {
     super(props);
     this.state = {
       exercises: [],
-      targetArea: 'All',
+      route: parseRoute(window.location.hash),
       isLoading: true,
       networkError: false
     };
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(event) {
-    switch (event.target.id) {
-      case 'all':
-        this.setState({ targetArea: 'All' });
-        break;
-      case 'ankleAndFoot':
-        this.setState({ targetArea: 'Ankle and Foot' });
-        break;
-      case 'cervical':
-        this.setState({ targetArea: 'Cervical' });
-        break;
-      case 'elbowAndHand':
-        this.setState({ targetArea: 'Elbow and Hand' });
-        break;
-      case 'hipAndKnee':
-        this.setState({ targetArea: 'Hip and Knee' });
-        break;
-      case 'lumbarThoracic':
-        this.setState({ targetArea: 'Lumbar Thoracic' });
-        break;
-      case 'shoulder':
-        this.setState({ targetArea: 'Shoulder' });
-        break;
-      case 'other':
-        this.setState({ targetArea: 'Other' });
-        break;
-      default:
-        this.setState({ targetArea: 'All' });
-    }
   }
 
   componentDidMount() {
+    addEventListener('hashchange', event => {
+      this.setState({
+        route: parseRoute(window.location.hash)
+      });
+    });
     fetch('/api/exercises', {
       headers: {
         'X-Access-Token': this.context.token
@@ -67,7 +41,8 @@ export default class YourExercises extends React.Component {
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
-    const { targetArea, exercises, isLoading, networkError } = this.state;
+    const { exercises, isLoading, networkError } = this.state;
+    const { params } = this.state.route;
 
     if (isLoading) {
       return (
@@ -91,6 +66,37 @@ export default class YourExercises extends React.Component {
           </div>
         </div>
       );
+    }
+
+    let targetArea;
+    const targetParameter = params.get('targetArea');
+    switch (targetParameter) {
+      case 'all':
+        targetArea = 'All';
+        break;
+      case 'anklefoot':
+        targetArea = 'Ankle and Foot';
+        break;
+      case 'cervical':
+        targetArea = 'Cervical';
+        break;
+      case 'elbowhand':
+        targetArea = 'Elbow and Hand';
+        break;
+      case 'hipknee':
+        targetArea = 'Hip and Knee';
+        break;
+      case 'lumbarthoracic':
+        targetArea = 'Lumbar Thoracic';
+        break;
+      case 'shoulder':
+        targetArea = 'Shoulder';
+        break;
+      case 'other':
+        targetArea = 'Other';
+        break;
+      default:
+        targetArea = 'All';
     }
 
     for (let i = 0; i < exercises.length; i++) {
@@ -121,14 +127,14 @@ export default class YourExercises extends React.Component {
               <a className="btn dropdown-toggle orange-button"
                 href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">Target Area</a>
               <ul className="dropdown-menu">
-                <li><a className="dropdown-item" href="#exercises" id="all" onClick={this.handleClick}>All</a></li>
-                <li><a className="dropdown-item" href="#exercises" id="ankleAndFoot" onClick={this.handleClick}>Ankle and Foot</a></li>
-                <li><a className="dropdown-item" href="#exercises" id="cervical" onClick={this.handleClick}>Cervical</a></li>
-                <li><a className="dropdown-item" href="#exercises" id="elbowAndHand" onClick={this.handleClick}>Elbow and Hand</a></li>
-                <li><a className="dropdown-item" href="#exercises" id="hipAndKnee" onClick={this.handleClick}>Hip and Knee</a></li>
-                <li><a className="dropdown-item" href="#exercises" id="lumbarThoracic" onClick={this.handleClick}>Lumbar Thoracic</a></li>
-                <li><a className="dropdown-item" href="#exercises" id="shoulder" onClick={this.handleClick}>Shoulder</a></li>
-                <li><a className="dropdown-item" href="#exercises" id="other" onClick={this.handleClick}>Other</a></li>
+                <li><a className="dropdown-item" href="#exercises?targetArea=all" id="all" >All</a></li>
+                <li><a className="dropdown-item" href="#exercises?targetArea=anklefoot" id="anklefoot" >Ankle and Foot</a></li>
+                <li><a className="dropdown-item" href="#exercises?targetArea=cervical" id="cervical" >Cervical</a></li>
+                <li><a className="dropdown-item" href="#exercises?targetArea=elbowhand" id="elbowhand" >Elbow and Hand</a></li>
+                <li><a className="dropdown-item" href="#exercises?targetArea=hipknee" id="hipknee" >Hip and Knee</a></li>
+                <li><a className="dropdown-item" href="#exercises?targetArea=lumbarthoracic" id="lumbarthoracic" >Lumbar Thoracic</a></li>
+                <li><a className="dropdown-item" href="#exercises?targetArea=shoulder" id="shoulder" >Shoulder</a></li>
+                <li><a className="dropdown-item" href="#exercises?targetArea=other" id="other" >Other</a></li>
               </ul>
             </div>
           </div>

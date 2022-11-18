@@ -1,4 +1,5 @@
 import React from 'react';
+import parseRoute from '../lib/parse-route';
 import Redirect from '../components/redirect';
 import AppContext from '../lib/app-context';
 import ExerciseCards from '../components/exercise-cards';
@@ -9,45 +10,18 @@ export default class ChooseExercise extends React.Component {
     this.state = {
       exercises: [],
       patientExercises: [],
-      targetArea: 'All',
+      route: parseRoute(window.location.hash),
       isLoading: true,
       networkError: false
     };
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(event) {
-    switch (event.target.id) {
-      case 'all':
-        this.setState({ targetArea: 'All' });
-        break;
-      case 'ankleAndFoot':
-        this.setState({ targetArea: 'Ankle and Foot' });
-        break;
-      case 'cervical':
-        this.setState({ targetArea: 'Cervical' });
-        break;
-      case 'elbowAndHand':
-        this.setState({ targetArea: 'Elbow and Hand' });
-        break;
-      case 'hipAndKnee':
-        this.setState({ targetArea: 'Hip and Knee' });
-        break;
-      case 'lumbarThoracic':
-        this.setState({ targetArea: 'Lumbar Thoracic' });
-        break;
-      case 'shoulder':
-        this.setState({ targetArea: 'Shoulder' });
-        break;
-      case 'other':
-        this.setState({ targetArea: 'Other' });
-        break;
-      default:
-        this.setState({ targetArea: 'All' });
-    }
   }
 
   componentDidMount() {
+    addEventListener('hashchange', event => {
+      this.setState({
+        route: parseRoute(window.location.hash)
+      });
+    });
     fetch('/api/exercises', {
       headers: {
         'X-Access-Token': this.context.token
@@ -83,7 +57,8 @@ export default class ChooseExercise extends React.Component {
 
   render() {
     if (!this.context.user) return <Redirect to="sign-in" />;
-    const { exercises, patientExercises, targetArea, isLoading, networkError } = this.state;
+    const { exercises, patientExercises, isLoading, networkError } = this.state;
+    const { params } = this.state.route;
 
     if (isLoading) {
       return (
@@ -122,6 +97,37 @@ export default class ChooseExercise extends React.Component {
       }
     }
 
+    let targetArea;
+    const targetParameter = params.get('targetArea');
+    switch (targetParameter) {
+      case 'all':
+        targetArea = 'All';
+        break;
+      case 'anklefoot':
+        targetArea = 'Ankle and Foot';
+        break;
+      case 'cervical':
+        targetArea = 'Cervical';
+        break;
+      case 'elbowhand':
+        targetArea = 'Elbow and Hand';
+        break;
+      case 'hipknee':
+        targetArea = 'Hip and Knee';
+        break;
+      case 'lumbarthoracic':
+        targetArea = 'Lumbar Thoracic';
+        break;
+      case 'shoulder':
+        targetArea = 'Shoulder';
+        break;
+      case 'other':
+        targetArea = 'Other';
+        break;
+      default:
+        targetArea = 'All';
+    }
+
     for (let i = 0; i < exercisesArray.length; i++) {
       targetArea === 'All'
         ? exercisesArray[i].view = 'd-block mb-3'
@@ -145,14 +151,14 @@ export default class ChooseExercise extends React.Component {
               <a className="btn btn-sm dropdown-toggle orange-button"
                 href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">Target Area</a>
               <ul className="dropdown-menu">
-                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="all" onClick={this.handleClick}>All</a></li>
-                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="ankleAndFoot" onClick={this.handleClick}>Ankle and Foot</a></li>
-                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="cervical" onClick={this.handleClick}>Cervical</a></li>
-                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="elbowAndHand" onClick={this.handleClick}>Elbow and Hand</a></li>
-                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="hipAndKnee" onClick={this.handleClick}>Hip and Knee</a></li>
-                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="lumbarThoracic" onClick={this.handleClick}>Lumbar Thoracic</a></li>
-                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="shoulder" onClick={this.handleClick}>Shoulder</a></li>
-                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}`} id="other" onClick={this.handleClick}>Other</a></li>
+                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}&targetArea=all`} id="all" >All</a></li>
+                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}&targetArea=anklefoot`} id="anklefoot" >Ankle and Foot</a></li>
+                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}&targetArea=cervical`} id="cervical" >Cervical</a></li>
+                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}&targetArea=elbowhand`} id="elbowhand" >Elbow and Hand</a></li>
+                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}&targetArea=hipknee`} id="hipknee" >Hip and Knee</a></li>
+                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}&targetArea=lumbarthoracic`} id="lumbarthoracic" >Lumbar Thoracic</a></li>
+                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}&targetArea=shoulder`} id="shoulder" >Shoulder</a></li>
+                <li><a className="dropdown-item" href={`#chooseExercise?patientId=${this.props.patientId}&targetArea=other`} id="other" >Other</a></li>
               </ul>
             </div>
           </div>
