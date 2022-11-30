@@ -4,7 +4,6 @@ import { parseRoute } from '../lib';
 export default function ExerciseCards(props) {
   const route = parseRoute(window.location.hash);
   const exercises = props.exercises;
-  // const targetArea = props.targetArea;
 
   if (route.path === 'patientProfile' && exercises.length === 0) {
     return (

@@ -9,7 +9,8 @@ export default class AuthForm extends React.Component {
       password: '',
       accountType: '',
       patientId: null,
-      error: false,
+      signInError: false,
+      passwordError: false,
       isLoading: true,
       networkError: false
     };
@@ -56,9 +57,9 @@ export default class AuthForm extends React.Component {
             this.props.onSignIn(result);
           }
           if (result.error === 'invalid login') {
-            this.setState({ error: true });
+            this.setState({ signInError: true });
           } else {
-            this.setState({ error: false });
+            this.setState({ signInError: false });
           }
           this.setState({ isLoading: false });
         })
@@ -90,9 +91,9 @@ export default class AuthForm extends React.Component {
             this.props.onSignIn(result);
           }
           if (result.error === 'invalid login') {
-            this.setState({ error: true });
+            this.setState({ signInError: true });
           } else {
-            this.setState({ error: false });
+            this.setState({ signInError: false });
           }
           this.setState({ isLoading: false });
         })
@@ -110,46 +111,54 @@ export default class AuthForm extends React.Component {
   handleChange(event) {
     const { name, value } = event.target;
     this.setState({ [name]: value });
+    if (name === 'password' && value.length < 8) {
+      this.setState({ passwordError: true });
+    } else {
+      this.setState({ passwordError: false });
+    }
   }
 
   handleSubmit(event) {
     event.preventDefault();
     const { action } = this.props;
-    fetch(`/api/auth/${action}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(this.state)
-    })
-      .then(res => res.json())
-      .then(result => {
-        if (action === 'sign-up') {
-          window.location.hash = 'sign-in';
-        } else if (result.user && result.token) {
-          this.props.onSignIn(result);
-        }
-        if (result.error === 'invalid login') {
-          this.setState({ error: true });
-        } else {
-          this.setState({ error: false });
-        }
+    const { passwordError } = this.state;
+    if (!passwordError) {
+      fetch(`/api/auth/${action}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(this.state)
       })
-      .catch(error => {
-        if (error) {
-          this.setState({
-            isLoading: false,
-            networkError: true
-          });
-        }
-      });
+        .then(res => res.json())
+        .then(result => {
+          if (action === 'sign-up') {
+            window.location.hash = 'sign-in';
+          } else if (result.user && result.token) {
+            this.props.onSignIn(result);
+          }
+          if (result.error === 'invalid login') {
+            this.setState({ signInError: true });
+          } else {
+            this.setState({ signInError: false });
+          }
+        })
+        .catch(error => {
+          if (error) {
+            this.setState({
+              isLoading: false,
+              networkError: true
+            });
+          }
+        });
+    }
   }
 
   render() {
 
     const { action } = this.props;
     const { handleChange, handleSubmit } = this;
-    const { accountType, error, isLoading, networkError } = this.state;
+    const { accountType, signInError, passwordError, isLoading, networkError } = this.state;
 
     if (isLoading) {
       return (
@@ -193,7 +202,10 @@ export default class AuthForm extends React.Component {
     const forgotPasswordLink = action === 'sign-up'
       ? 'd-none'
       : 'text-muted ps-1';
-    const errorText = error
+    const errorText = signInError
+      ? 'alert alert-danger py-2 mb-3'
+      : 'd-none';
+    const passwordErrorText = passwordError
       ? 'alert alert-danger py-2 mb-3'
       : 'd-none';
     if (accountType === 'patient') {
@@ -233,6 +245,9 @@ export default class AuthForm extends React.Component {
                   name="password"
                   onChange={handleChange}
                   className="form-control bg-light" />
+              </div>
+              <div className={passwordErrorText}>
+                <p className="my-1">Your password must have 8 characters or more.</p>
               </div>
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <small>
