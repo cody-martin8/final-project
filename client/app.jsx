@@ -43,14 +43,14 @@ export default class App extends React.Component {
     let timeoutId = setTimeout(() => {
       this.setState({ isActive: false });
       this.handleSignOut();
-    }, 900 * 1000);
+    }, 1800 * 1000);
 
     window.addEventListener('mousemove', event => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         this.setState({ isActive: false });
         this.handleSignOut();
-      }, 900 * 1000);
+      }, 1800 * 1000);
     });
 
     const token = window.localStorage.getItem('pt-connection-jwt');
