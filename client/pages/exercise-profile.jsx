@@ -1,4 +1,5 @@
 import React from 'react';
+import parseRoute from '../lib/parse-route';
 import Redirect from '../components/redirect';
 import AppContext from '../lib/app-context';
 import PatientDropdown from '../components/patient-dropdown';
@@ -10,6 +11,7 @@ export default class ExerciseProfile extends React.Component {
       exercise: null,
       patients: [],
       patientExercises: [],
+      route: parseRoute(window.location.hash),
       isLoading: true,
       networkError: false
     };
@@ -66,9 +68,10 @@ export default class ExerciseProfile extends React.Component {
       });
   }
 
-  deleteProfile() {
+  deleteProfile(event) {
+    event.preventDefault();
     this.setState({ isLoading: true });
-    fetch(`/api/exercises/${this.props.exerciseId}`, {
+    fetch(`/api/patientExercises/exercise/${this.props.exerciseId}`, {
       headers: {
         'Content-Type': 'application/json',
         'X-Access-Token': this.context.token
@@ -76,8 +79,25 @@ export default class ExerciseProfile extends React.Component {
       method: 'DELETE'
     })
       .then(res => {
-        this.setState({ isLoading: false });
-        location.hash = '#exercises';
+        fetch(`/api/exercises/${this.props.exerciseId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Access-Token': this.context.token
+          },
+          method: 'DELETE'
+        })
+          .then(res => {
+            this.setState({ isLoading: false });
+            location.hash = '#exercises';
+          })
+          .catch(error => {
+            if (error) {
+              this.setState({
+                isLoading: false,
+                networkError: true
+              });
+            }
+          });
       })
       .catch(error => {
         if (error) {
@@ -93,6 +113,7 @@ export default class ExerciseProfile extends React.Component {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
     const { patients, exercise, patientExercises, isLoading, networkError } = this.state;
+    const targetParameter = this.state.route.params.get('targetArea');
 
     if (isLoading) {
       return (
@@ -130,6 +151,11 @@ export default class ExerciseProfile extends React.Component {
       if (!patientExercisesArray.includes(patients[i].patientId)) {
         patientsArray.push(patients[i]);
       }
+    }
+
+    let backButton = '#exercises';
+    if (targetParameter) {
+      backButton = `#exercises?targetArea=${targetParameter}`;
     }
 
     return (
@@ -173,7 +199,7 @@ export default class ExerciseProfile extends React.Component {
             <div className="d-flex align-items-center">
               <h1 className="me-2">Exercise Profile</h1>
             </div>
-            <a href="#exercises" className="btn my-2 my-xl-3 orange-button">
+            <a href={backButton} className="btn my-2 my-xl-3 orange-button">
               <i className="fa-solid fa-angle-left fa-sm"></i>
               <span className="ms-1">Back</span>
             </a>

@@ -1,4 +1,5 @@
 import React from 'react';
+import parseRoute from '../lib/parse-route';
 import Redirect from '../components/redirect';
 import AppContext from '../lib/app-context';
 
@@ -11,6 +12,7 @@ export default class AssignExercise extends React.Component {
       sets: '',
       repetitions: '',
       hold: '',
+      route: parseRoute(window.location.hash),
       isLoading: true,
       networkError: false
     };
@@ -148,6 +150,7 @@ export default class AssignExercise extends React.Component {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
     const { exercise, sets, repetitions, hold, isLoading, networkError } = this.state;
+    const targetParameter = this.state.route.params.get('targetArea');
 
     if (isLoading) {
       return (
@@ -179,9 +182,15 @@ export default class AssignExercise extends React.Component {
     let heading = 'Assign Exercise';
     let headingLink = `#chooseExercise?patientId=${this.props.patientId}`;
     let submitButton = 'Assign Exercise';
+
+    if (targetParameter) {
+      headingLink = `#chooseExercise?patientId=${this.props.patientId}&targetArea=${targetParameter}`;
+    }
+
     if (this.props.pathway === '1') {
       headingLink = `#exerciseProfile?exerciseId=${exerciseId}`;
     }
+
     if (this.props.patientExerciseId !== null) {
       heading = 'Update Exercise';
       headingLink = `#exerciseAssignment?patientId=${patientId}&exerciseId=${exerciseId}&exercise=${this.props.exercise}`;

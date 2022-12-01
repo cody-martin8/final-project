@@ -25,6 +25,7 @@ export default class App extends React.Component {
     this.state = {
       user: null,
       token: null,
+      isActive: true,
       isAuthorizing: true,
       route: parseRoute(window.location.hash)
     };
@@ -38,6 +39,20 @@ export default class App extends React.Component {
         route: parseRoute(window.location.hash)
       });
     });
+
+    let timeoutId = setTimeout(() => {
+      this.setState({ isActive: false });
+      this.handleSignOut();
+    }, 1800 * 1000);
+
+    window.addEventListener('mousemove', event => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        this.setState({ isActive: false });
+        this.handleSignOut();
+      }, 1800 * 1000);
+    });
+
     const token = window.localStorage.getItem('pt-connection-jwt');
     const user = token ? jwtDecode(token) : null;
     this.setState({ user, token, isAuthorizing: false });
@@ -130,6 +145,7 @@ export default class App extends React.Component {
     const { user, token, route } = this.state;
     const { handleSignIn, handleSignOut } = this;
     const contextValue = { user, token, route, handleSignIn, handleSignOut };
+
     return (
       <AppContext.Provider value={contextValue}>
         <>

@@ -41,10 +41,11 @@ export default function ExerciseCards(props) {
 function Exercise(props) {
   const { exerciseId, name, targetArea } = props.exercise;
   const patientId = props.route.params.get('patientId');
+  const targetParameter = props.route.params.get('targetArea');
 
-  let cardLink = `#exerciseProfile?exerciseId=${exerciseId}`;
+  let cardLink = `#exerciseProfile?exerciseId=${exerciseId}&targetArea=${targetParameter}`;
   if (props.route.path === 'chooseExercise') {
-    cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}&pathway=0`;
+    cardLink = `#assignExercise?patientId=${patientId}&exerciseId=${exerciseId}&targetArea=${targetParameter}&pathway=0`;
   }
 
   let cardExtra = targetArea;
