@@ -68,7 +68,7 @@ I would like to implement the following:
 1. Clone the repository.
 
     ```shell
-    git clone https://github.com/cody-martin8/final-project
+    git clone https://github.com/cody-martin8/pt-connection
     ```
 
 2. Install all dependencies with NPM.
@@ -77,7 +77,7 @@ I would like to implement the following:
     npm install
     ```
 
-3. Create new .env file. Copy over content from .env.example. Where it says 'changeMe' in DATABASE_URL, change to 'finalProject'.
+3. Create new .env file. Copy over content from .env.example. Where it says 'changeMe' in DATABASE_URL, change to 'ptConnection'.
 
 4. Start the PostgreSQL database server.
 
@@ -85,13 +85,19 @@ I would like to implement the following:
     sudo service postgresql start
     ```
 
-5. Import the example database to PostgreSQL.
+5. Create the PostgreSQL database server.
+
+    ```shell
+    createdb ptConnection
+    ```
+
+6. Import the example database to PostgreSQL.
 
     ```shell
     npm run db:import
     ```
 
-6. Start the project. Once started you can view the application by opening http://localhost:3000 in your browser.
+7. Start the project. Once started you can view the application by opening http://localhost:3000 in your browser.
 
     ```shell
     npm run dev
